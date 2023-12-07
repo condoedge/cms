@@ -10,7 +10,7 @@ trait Observable
 
     protected static $callbackObservers = [];
 
-    public static $events = [
+    protected static $events = [
         'after' => [
             'update',
             'save',

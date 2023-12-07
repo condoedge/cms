@@ -127,7 +127,7 @@ class PageItem extends Model
     	$pageItem = new PageItem();
     	$pageItem->page_id = $this->page_id;
     	$pageItem->page_item_id = $this->id;
-        $pageItem->block_type = static::TYPES[0]::ITEM_NAME;
+        $pageItem->block_type = config('page-editor.types')[0]::ITEM_NAME;
     	$pageItem->save();
 
         return $pageItem;

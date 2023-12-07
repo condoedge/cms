@@ -2,6 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
+use Anonimatrix\PageEditor\Models\PageItem;
+
 class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
@@ -23,6 +25,17 @@ class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         $this->app->bind('page-item-types', function () {
             return collect(config('page-editor.types'));
+        });
+    }
+
+    public function boot(): void
+    {
+        PageItem::afterSave(function ($pageItem) {
+            $pageItem->getPageItemType()?->afterSave($pageItem);
+        });
+
+        PageItem::beforeSave(function ($pageItem) {
+            $pageItem->getPageItemType()?->beforeSave($pageItem);
         });
     }
 

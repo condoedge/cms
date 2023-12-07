@@ -32,7 +32,7 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->app->singleton('page-editor-features', function () {
             $featureService = new FeaturesService();
 
-            config('page-editor.features', [])
+            collect(config('page-editor.features', []))
                 ->each(function ($feature) use ($featureService) {
                     $featureService->addFeature($feature);
                 });

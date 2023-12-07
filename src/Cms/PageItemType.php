@@ -338,7 +338,7 @@ abstract class PageItemType
      * @return void
      */
     public function beforeSave($model = null) {
-        
+
     }
 
 
