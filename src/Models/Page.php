@@ -3,6 +3,7 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Support\Facades\Features;
+use Anonimatrix\PageEditor\Support\Facades\Teams;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teams\Team;
 use App\Models\User;
@@ -36,7 +37,7 @@ class Page extends Model
             return null;
         }
 
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Teams::getTeamClass());
     }
 
     public function parentPage()

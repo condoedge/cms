@@ -2,9 +2,12 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
-use Anonimatrix\PageEditor\FeaturesService;
+use Anonimatrix\PageEditor\Features\EditorVariablesService;
+use Anonimatrix\PageEditor\Features\TeamsService;
+use Anonimatrix\PageEditor\Features\FeaturesService;
 use Anonimatrix\PageEditor\PageEditorService;
 use Anonimatrix\PageEditor\PageItemService;
+use Anonimatrix\PageEditor\Support\Facades\Features;
 use Illuminate\Support\ServiceProvider;
 
 class PageEditorServiceProvider extends ServiceProvider
@@ -36,6 +39,22 @@ class PageEditorServiceProvider extends ServiceProvider
 
             return $featureService;
         });
+
+        if (Features::hasFeature('teams')) {
+            $this->app->singleton('page-editor-teams', function () {
+                $teamsService = new TeamsService();
+
+                $teamsService->setTeamClass();
+
+                return $teamsService;
+            });
+        }
+
+        if (Features::hasFeature('editor_variables')) {
+            $this->app->singleton('page-editor-variables', function () {
+                return new EditorVariablesService();
+            });
+        }
     }
 
     private function loadCommands(): void

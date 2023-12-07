@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor;
+namespace Anonimatrix\PageEditor\Features;
 
 class FeaturesService
 {

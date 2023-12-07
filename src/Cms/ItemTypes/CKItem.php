@@ -11,7 +11,7 @@ class CKItem extends PageItemType
     public const ITEM_DESCRIPTION = 'newsletter.text-subtitles-lists-and-more';
     public const CUSTOM_CLASSES = false;
 
-    public function __construct(\App\Models\Cms\PageItem $pageItem, $interactsWithPageItem = true)
+    public function __construct(\Anonimatrix\PageEditor\Models\PageItem $pageItem, $interactsWithPageItem = true)
     {
         parent::__construct($pageItem, $interactsWithPageItem);
 

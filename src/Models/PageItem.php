@@ -3,16 +3,7 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\PageItemStyle;
-use App\Cms\ItemTypes\ButtonItem;
-use App\Cms\ItemTypes\CKItem;
 use Illuminate\Database\Eloquent\Model;
-use App\Cms\ItemTypes\H1Item;
-use App\Cms\ItemTypes\HeaderItem;
-use App\Cms\ItemTypes\ImgItem;
-use App\Cms\ItemTypes\KompoItem;
-use App\Cms\ItemTypes\VideoItem;
-use App\Cms\ItemTypes\ElementType1Item;
-use App\Cms\ItemTypes\H2Item;
 use Anonimatrix\PageEditor\Cms\PageItemType;
 
 class PageItem extends Model
@@ -21,21 +12,6 @@ class PageItem extends Model
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Traits\HasImageTrait;
-
-    public const TYPES = [
-        H1Item::class,
-        VideoItem::class,
-        CKItem::class,
-        HeaderItem::class,
-        ImgItem::class,
-        KompoItem::class,
-        ButtonItem::class,
-        ElementType1Item::class,
-    ];
-
-    public const HIDDEN_TYPES = [
-        H2Item::class,
-    ];
 
     protected $casts = [
         'image' => 'array',
@@ -78,15 +54,11 @@ class PageItem extends Model
     }
 
     /* ATTRIBUTES */
-    public function getTeamAttribute()
-    {
-        return $this->page->user->currentTeam;
-    }
 
     /* CALCULATED FIELDS */
     public static function allPageItemTypes()
     {
-        return collect(array_merge(PageItem::TYPES, PageItem::HIDDEN_TYPES));
+        return collect(array_merge(config('page-editor.types'), config('page-editor.hidden_types')));
     }
 
     public static function blockTypes()
@@ -112,37 +84,22 @@ class PageItem extends Model
 
     public function getBackgroundColor()
     {
-        return $this->background_color ?: $this->page->getContentBackgroundColor();
-    }
-
-    public function getTitleColor()
-    {
-        return $this->title_color ?: $this->page->getTitleColor();
+        return $this->styles?->content?->background_color;
     }
 
     public function getTextColor()
     {
-        return $this->text_color ?: $this->page->getTextColor();
-    }
-
-    public function getButtonColor()
-    {
-        return $this->button_color ?: $this->page->getButtonColor();
-    }
-
-    public function getLinkColor()
-    {
-        return $this->link_color ?: $this->page->getLinkColor();
+        return $this->styles?->content?->text_color;
     }
 
     public function getFontSize()
     {
-        return $this->font_size ?: $this->page->getFontSize();
+        return $this->styles?->content?->font_size;
     }
 
     public function getFontFamily()
     {
-        return "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'";
+        return config('page-editor.default_font_family');
     }
 
     public function imageUrl()
@@ -152,49 +109,6 @@ class PageItem extends Model
         }
 
         return \Storage::url($this->image['path']);
-    }
-
-    public static function columnWidths()
-    {
-        return [
-            1 => ['col-md-6', 'col-md-6'],
-            //2 => ['col-md-5', 'col-md-7'],
-            3 => ['col-md-4', 'col-md-8'],
-            4 => ['col-md-3', 'col-md-9'],
-            //5 => ['col-md-7', 'col-md-5'],
-            6 => ['col-md-8', 'col-md-4'],
-            7 => ['col-md-9', 'col-md-3'],
-        ];
-    }
-
-    public static function rowClasses()
-    {
-        return [
-            1 => ['grid-2-container', '', ''],
-            //2 => ['col-md-5', 'col-md-7'],
-            3 => ['grid-3-container', '', 'col-span-2'],
-            4 => ['grid-4-container', '', 'col-span-3'],
-            //5 => ['col-md-7', 'col-md-5'],
-            6 => ['grid-3-container', 'col-span-2', ''],
-            7 => ['grid-4-container', 'col-span-3', ''],
-        ];
-    }
-
-    public static function getColumnWidths($key)
-    {
-        $cols = PageItem::columnWidths();
-
-        if (array_key_exists($key, $cols) ) {
-            return $cols[$key];
-        }
-
-        return $cols[1];
-    }
-
-    public static function getColumnsKey($col1, $col2)
-    {
-        return collect(PageItem::columnWidths())
-            ->filter(fn($cols) => ($col1 == $cols[0]) && ($col2 == $cols[1]))->keys()->first();
     }
 
     /* ACTIONS */
