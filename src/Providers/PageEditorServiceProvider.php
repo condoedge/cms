@@ -50,7 +50,6 @@ class PageEditorServiceProvider extends ServiceProvider
     protected function registerModels()
     {
         $this->app->bind('page-model', function () {
-            dd(config('page-editor.models.page'));
             return config('page-editor.models.page');
         });
 

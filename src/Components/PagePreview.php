@@ -23,7 +23,7 @@ class PagePreview extends Query
 
     public function created()
     {
-        $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : PageModel::create();
+        $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : new PageModel;
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
     }
@@ -31,7 +31,7 @@ class PagePreview extends Query
     public function top()
     {
         return $this->withEditor ? _Rows(
-            _Link('campaign.preview-in-browser')->class('w-full bg-blue-100 p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
+            !$this->page->id ? null : _Link('campaign.preview-in-browser')->class('w-full bg-blue-100 p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
             _Button('campaign.add-zone')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
         ) : _Html('');
     }
