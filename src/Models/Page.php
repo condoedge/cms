@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
 
-class Page extends Model
+class Page extends Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageInterface
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
@@ -117,7 +117,7 @@ class Page extends Model
                 $sentAt,
                 $lastModif,
                 _Flex(
-                    _Link()->icon(_Sax('clipboard', 20))->class('text-gray-400 pr-2')
+                    _Link()->class('text-gray-400 pr-2')
                         ->selfGet('duplicatePage', ['id' => $this->id])
                         ->refresh($refreshId),
                     _DeleteLink()->byKey($this),

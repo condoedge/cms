@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'models' => [
+        'page' => \Anonimatrix\PageEditor\Cms\Page::class,
+        'page_item' => \Anonimatrix\PageEditor\Cms\PageItem::class,
+        'page_item_style' => \Anonimatrix\PageEditor\Cms\PageItemStyle::class,
+    ],
+
     'types' => [
         \Anonimatrix\PageEditor\Cms\ItemTypes\H1Item::class,
         \Anonimatrix\PageEditor\Cms\ItemTypes\H2Item::class,

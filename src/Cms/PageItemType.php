@@ -5,6 +5,7 @@ namespace Anonimatrix\PageEditor\Cms;
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
+use Illuminate\Database\Eloquent\Model;
 
 abstract class PageItemType
 {
@@ -16,7 +17,7 @@ abstract class PageItemType
     protected string | object $content;
     protected string $classes;
     protected string|Style $styles;
-    protected PageItem $pageItem;
+    protected Model $pageItem;
     protected $variables = [];
 
     protected $editPanelId = '';
@@ -32,7 +33,7 @@ abstract class PageItemType
 
     protected $interactsWithPageItem = true;
 
-    public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
+    public function __construct(Model $pageItem, $interactsWithPageItem = true)
     {
         $this->content = $pageItem?->content ?: '';
 

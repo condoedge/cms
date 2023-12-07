@@ -2,12 +2,12 @@
 
 namespace Anonimatrix\PageEditor\Models;
 
-class PageItemStyle extends \Illuminate\Database\Eloquent\Model
+class PageItemStyle extends \Illuminate\Database\Eloquent\Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageItemStyleInterface
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $casts = [
-        'content' => \App\Casts\StylesCast::class,
+        'content' => \Anonimatrix\PageEditor\Casts\StylesCast::class,
     ];
 
     public function pageItem()

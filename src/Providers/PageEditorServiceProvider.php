@@ -5,6 +5,10 @@ namespace Anonimatrix\PageEditor\Providers;
 use Anonimatrix\PageEditor\Features\EditorVariablesService;
 use Anonimatrix\PageEditor\Features\TeamsService;
 use Anonimatrix\PageEditor\Features\FeaturesService;
+use Anonimatrix\PageEditor\Interfaces\PageInterface;
+use Anonimatrix\PageEditor\Interfaces\PageItemInterface;
+use Anonimatrix\PageEditor\Interfaces\PageItemStyleInterface;
+use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\PageEditorService;
 use Anonimatrix\PageEditor\PageItemService;
 use Anonimatrix\PageEditor\Support\Facades\Features;
@@ -57,6 +61,21 @@ class PageEditorServiceProvider extends ServiceProvider
         }
     }
 
+    protected function registerModels()
+    {
+        $this->app->bind(PageInterface::class, function () {
+            return config('page-editor.models.page');
+        });
+
+        $this->app->bind(PageItemInterface::class, function () {
+            return config('page-editor.models.page_item');
+        });
+
+        $this->app->bind(PageItemStyleInterface::class, function () {
+            return config('page-editor.models.page_item_style');
+        });
+    }
+
     private function loadCommands(): void
     {
         if ($this->app->runningInConsole()) {
@@ -71,7 +90,7 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/page-editor.php' => config_path('page-editor.php'),
             __DIR__ . '/../../database/migrations/' => database_path('migrations/page-editor'),
-            __DIR__.'/../Models' => app_path(),
+            __DIR__.'/../Models' => app_path('Models/PageEditor'),
         ], 'page-editor');
     }
 }

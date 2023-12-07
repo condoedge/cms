@@ -6,7 +6,7 @@ use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Illuminate\Database\Eloquent\Model;
 use Anonimatrix\PageEditor\Cms\PageItemType;
 
-class PageItem extends Model
+class PageItem extends Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageItemInterface
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
