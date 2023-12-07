@@ -2,8 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Cms;
 
-use Anonimatrix\PageEditor\Interfaces\PageItemInterface;
-use Anonimatrix\PageEditor\Support\Facades\PageItemModel;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 
@@ -61,7 +60,7 @@ class GroupPageItemType extends PageItemType
             $content = request($i . '_content');
             $image = request($i . '_image');
 
-            $item = $this->groupItems[$i] ?? PageItemModel::create();
+            $item = $this->groupItems[$i] ?? PageItemModel::make();
 
             $item->title = $title;
             $item->content = $content;
