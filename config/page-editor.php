@@ -2,9 +2,9 @@
 
 return [
     'models' => [
-        'page' => \Anonimatrix\PageEditor\Cms\Page::class,
-        'page_item' => \Anonimatrix\PageEditor\Cms\PageItem::class,
-        'page_item_style' => \Anonimatrix\PageEditor\Cms\PageItemStyle::class,
+        'page' => \Anonimatrix\PageEditor\Models\Page::class,
+        'page_item' => \Anonimatrix\PageEditor\Models\PageItem::class,
+        'page_item_style' => \Anonimatrix\PageEditor\Models\PageItemStyle::class,
     ],
 
     'types' => [

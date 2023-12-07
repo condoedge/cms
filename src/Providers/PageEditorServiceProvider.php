@@ -50,15 +50,15 @@ class PageEditorServiceProvider extends ServiceProvider
     protected function registerModels()
     {
         $this->app->bind('page-model', function () {
-            return config('page-editor.models.page');
+            return new (config('page-editor.models.page'));
         });
 
         $this->app->bind('page-item-model', function () {
-            return config('page-editor.models.page_item');
+            return new (config('page-editor.models.page_item'));
         });
 
         $this->app->bind('page-item-style-model', function () {
-            return config('page-editor.models.page_item_style');
+            return new (config('page-editor.models.page_item_style'));
         });
     }
 
