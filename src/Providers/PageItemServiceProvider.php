@@ -30,12 +30,12 @@ class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function boot(): void
     {
-        PageItem::afterSave(function ($pageItem) {
-            $pageItem->getPageItemType()?->afterSave($pageItem);
-        });
-
-        PageItem::beforeSave(function ($pageItem) {
+        PageItem::creating(function ($pageItem) {
             $pageItem->getPageItemType()?->beforeSave($pageItem);
+        });
+        
+        PageItem::created(function ($pageItem) {
+            $pageItem->getPageItemType()?->afterSave($pageItem);
         });
     }
 
