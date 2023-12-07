@@ -8,7 +8,6 @@ use Anonimatrix\PageEditor\Cms\PageItemType;
 
 class PageItem extends Model
 {
-    use \Anonimatrix\PageEditor\Listeners\Observable;
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Traits\HasImageTrait;
