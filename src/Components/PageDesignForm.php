@@ -5,13 +5,15 @@ namespace Anonimatrix\PageEditor\Components;
 use Kompo\Form;
 
 class PageDesignForm extends Form
-{
-    public $model = Page::class;
-    
+{   
     public $id = 'page_design_form';
 
     public const PREVIEW_PAGE_PANEL = 'preview_page_panel';
     public const PAGE_ITEM_PANEL = 'page_item_panel';
+
+    public function create(){
+        $this->model(app('page-model'));
+    }
 
     public function render()
     {

@@ -5,9 +5,6 @@ namespace Anonimatrix\PageEditor\Providers;
 use Anonimatrix\PageEditor\Features\EditorVariablesService;
 use Anonimatrix\PageEditor\Features\TeamsService;
 use Anonimatrix\PageEditor\Features\FeaturesService;
-use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
-use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
-use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\PageEditorService;
 use Anonimatrix\PageEditor\PageItemService;
 use Anonimatrix\PageEditor\Support\Facades\Features;
@@ -17,6 +14,8 @@ class PageEditorServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->loadConfig();
+
         $this->loadCommands();
 
         $this->loadPublishes();
@@ -51,6 +50,7 @@ class PageEditorServiceProvider extends ServiceProvider
     protected function registerModels()
     {
         $this->app->bind('page-model', function () {
+            dd(config('page-editor.models.page'));
             return config('page-editor.models.page');
         });
 
@@ -82,7 +82,7 @@ class PageEditorServiceProvider extends ServiceProvider
         }
     }
 
-    private function loadCommands(): void
+    protected function loadCommands(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -91,7 +91,12 @@ class PageEditorServiceProvider extends ServiceProvider
         }
     }
 
-    private function loadPublishes(): void
+    protected function loadConfig(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../../config/page-editor.php', 'page-editor');
+    }
+
+    protected function loadPublishes(): void
     {
         $this->publishes([
             __DIR__ . '/../../config/page-editor.php' => config_path('page-editor.php'),

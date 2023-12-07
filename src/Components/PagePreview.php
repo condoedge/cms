@@ -23,11 +23,9 @@ class PagePreview extends Query
 
     public function created()
     {
-        $this->page = PageModel::findOrFail($this->prop('page_id'));
+        $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : PageModel::create();
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
-
-        if(!$this->withEditor) $this->changeBgColor($this->page->getExteriorBackgroundColor());
     }
 
     public function top()
