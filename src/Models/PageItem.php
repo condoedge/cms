@@ -3,10 +3,10 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\PageItemStyle;
-use Illuminate\Database\Eloquent\Model;
 use Anonimatrix\PageEditor\Cms\PageItemType;
+use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
 
-class PageItem extends Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageItemInterface
+class PageItem extends PageItemModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;

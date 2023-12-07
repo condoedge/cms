@@ -2,12 +2,12 @@
 
 namespace Anonimatrix\PageEditor\Support\Facades;
 
-use Anonimatrix\PageEditor\Interfaces\PageInterface;
+use Anonimatrix\PageEditor\Models\Abstracts\PageModel as AbstractsPageModel;
 
 class PageModel extends \Illuminate\Support\Facades\Facade
 {
     protected static function getFacadeAccessor()
     {
-        return PageInterface::class;
+        return AbstractsPageModel::class;
     }
 }

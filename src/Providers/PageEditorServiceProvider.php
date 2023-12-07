@@ -5,9 +5,8 @@ namespace Anonimatrix\PageEditor\Providers;
 use Anonimatrix\PageEditor\Features\EditorVariablesService;
 use Anonimatrix\PageEditor\Features\TeamsService;
 use Anonimatrix\PageEditor\Features\FeaturesService;
-use Anonimatrix\PageEditor\Interfaces\PageInterface;
-use Anonimatrix\PageEditor\Interfaces\PageItemInterface;
-use Anonimatrix\PageEditor\Interfaces\PageItemStyleInterface;
+use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
+use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\PageEditorService;
 use Anonimatrix\PageEditor\PageItemService;
@@ -51,15 +50,15 @@ class PageEditorServiceProvider extends ServiceProvider
 
     protected function registerModels()
     {
-        $this->app->bind(PageInterface::class, function () {
+        $this->app->bind(PageModel::class, function () {
             return config('page-editor.models.page');
         });
 
-        $this->app->bind(PageItemInterface::class, function () {
+        $this->app->bind(PageItemModel::class, function () {
             return config('page-editor.models.page_item');
         });
 
-        $this->app->bind(PageItemStyleInterface::class, function () {
+        $this->app->bind(PageItemStyle::class, function () {
             return config('page-editor.models.page_item_style');
         });
     }

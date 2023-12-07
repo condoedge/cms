@@ -2,13 +2,12 @@
 
 namespace Anonimatrix\PageEditor\Models;
 
+use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\Features;
 use Anonimatrix\PageEditor\Support\Facades\Teams;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
-
-class Page extends Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageInterface
+class Page extends PageModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;

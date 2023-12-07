@@ -2,7 +2,9 @@
 
 namespace Anonimatrix\PageEditor\Models;
 
-class PageItemStyle extends \Illuminate\Database\Eloquent\Model implements \Anonimatrix\PageEditor\Models\Interfaces\PageItemStyleInterface
+use Anonimatrix\PageEditor\Models\Abstracts\PageItemStyleModel;
+
+class PageItemStyle extends PageItemStyleModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
 
