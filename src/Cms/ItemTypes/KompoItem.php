@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Cms\ItemTypes;
+namespace Anonimatrix\PageEditor\Cms\ItemTypes;
 
-use App\Models\Cms\PageItem;
-use App\Cms\PageItemType;
+use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Cms\PageItemType;
 
 class KompoItem extends PageItemType
 {

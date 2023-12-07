@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models\Cms;
+namespace Anonimatrix\PageEditor\Models;
 
+use Anonimatrix\PageEditor\Support\Facades\Features;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teams\Team;
 use App\Models\User;
@@ -11,7 +12,7 @@ class Page extends Model
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
-    use \App\Models\Traits\PageCopyTrait;
+    use \Anonimatrix\PageEditor\Traits\PageCopyTrait;
 
     protected $casts = [
         'published_at' => 'datetime',
@@ -31,6 +32,10 @@ class Page extends Model
 
     public function team()
     {
+        if(!Features::hasFeature('teams')) {
+            return null;
+        }
+
         return $this->belongsTo(Team::class);
     }
 
@@ -86,39 +91,9 @@ class Page extends Model
         }, collect());
     }
 
-    public function getContentBackgroundColor()
-    {
-        return $this->content_background_color ?: '#FFFFFF';
-    }
-
     public function getExteriorBackgroundColor()
     {
         return $this->exterior_background_color ?: '#ECEEF2';
-    }
-
-    public function getTextColor()
-    {
-        return $this->text_color ?: '#000000';
-    }
-
-    public function getTitleColor()
-    {
-        return $this->title_color ?: '#000000';
-    }
-
-    public function getLinkColor()
-    {
-        return $this->link_color ?: '#003AB3';
-    }
-
-    public function getButtonColor()
-    {
-        return $this->button_color ?: '#003AB3';
-    }
-
-    public function getFontSize()
-    {
-        return $this->font_size ?: 12;
     }
 
     /* ELEMENTS */
@@ -163,7 +138,8 @@ class Page extends Model
 
     public function deletable()
     {
-        return auth()->user()->isTeamOwner();
+        //return auth()->user()->isTeamOwner();
+        return true;
     }
 
 }

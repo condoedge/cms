@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Cms;
+namespace Anonimatrix\PageEditor\Cms;
 
-use App\Models\Cms\PageItem;
+use Anonimatrix\PageEditor\Models\PageItem;
 use Illuminate\Http\UploadedFile;
 
 class GroupPageItemType extends PageItemType

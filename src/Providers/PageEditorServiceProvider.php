@@ -2,7 +2,9 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
-use Anonimatrix\PageEditor\PageEditor;
+use Anonimatrix\PageEditor\FeaturesService;
+use Anonimatrix\PageEditor\PageEditorService;
+use Anonimatrix\PageEditor\PageItemService;
 use Illuminate\Support\ServiceProvider;
 
 class PageEditorServiceProvider extends ServiceProvider
@@ -17,7 +19,22 @@ class PageEditorServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('page-editor', function () {
-            return new PageEditor();
+            return new PageEditorService();
+        });
+
+        $this->app->singleton('page-item', function () {
+            return new PageItemService();
+        });
+
+        $this->app->singleton('page-editor-features', function () {
+            $featureService = new FeaturesService();
+
+            config('page-editor.features', [])
+                ->each(function ($feature) use ($featureService) {
+                    $featureService->addFeature($feature);
+                });
+
+            return $featureService;
         });
     }
 

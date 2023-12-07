@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Traits;
+namespace Anonimatrix\PageEditor\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Kompo\Core\FileHandler;

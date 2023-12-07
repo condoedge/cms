@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Cms;
+namespace Anonimatrix\PageEditor\Cms;
 
 class Style {
     // Missing filters. If is required, add them.

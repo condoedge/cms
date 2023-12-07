@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Casts;
+namespace Anonimatrix\PageEditor\Casts;
 
-use App\Cms\Style;
+use Anonimatrix\PageEditor\Cms\Style;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class StylesCast implements CastsAttributes

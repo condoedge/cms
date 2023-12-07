@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Models\Cms;
+namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\PageItemStyle;
-use App\Casts\StylesCast;
 use App\Cms\ItemTypes\ButtonItem;
 use App\Cms\ItemTypes\CKItem;
 use Illuminate\Database\Eloquent\Model;
@@ -14,13 +13,14 @@ use App\Cms\ItemTypes\KompoItem;
 use App\Cms\ItemTypes\VideoItem;
 use App\Cms\ItemTypes\ElementType1Item;
 use App\Cms\ItemTypes\H2Item;
-use App\Cms\PageItemType;
+use Anonimatrix\PageEditor\Cms\PageItemType;
 
 class PageItem extends Model
 {
+    use \Anonimatrix\PageEditor\Listeners\Observable;
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
-    use \App\Models\Traits\HasImageTrait;
+    use \Anonimatrix\PageEditor\Traits\HasImageTrait;
 
     public const TYPES = [
         H1Item::class,

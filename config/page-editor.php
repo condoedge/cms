@@ -10,5 +10,8 @@ return [
         \App\Cms\ItemTypes\ButtonItem::class,
         \App\Cms\ItemTypes\KompoItem::class,
         \App\Cms\ItemTypes\ElementType1Item::class,
+    ],
+    'features' => [
+        'teams' => true,
     ]
 ];

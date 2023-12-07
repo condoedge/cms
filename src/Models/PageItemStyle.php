@@ -2,8 +2,6 @@
 
 namespace Anonimatrix\PageEditor\Models;
 
-use App\Models\Cms\Page;
-
 class PageItemStyle extends \Illuminate\Database\Eloquent\Model
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;

@@ -1,5 +1,7 @@
 <?php
 
+use Anonimatrix\PageEditor\Support\Facades\Features;
+use Anonimatrix\PageEditor\Support\Facades\PageItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +24,12 @@ class CreatePagesTable extends Migration
             $table->dateTime('sent_at')->nullable();
             $table->string('title', 500)->nullable();
             $table->string('permalink', 1000)->nullable();
+            $table->string('exterior_background_color')->nullable();
+
+            if(Features::hasFeature('teams')) {
+                $table->foreignId('team_id')->nullable()->constrained();
+            }
+
             $table->timestamps();
             $table->softDeletes();
         });

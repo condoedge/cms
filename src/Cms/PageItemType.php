@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Cms;
+namespace Anonimatrix\PageEditor\Cms;
 
+use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
-use App\Models\Cms\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 
 abstract class PageItemType
 {
@@ -268,7 +269,7 @@ abstract class PageItemType
      */
     protected function defaultStyles($pageItem): string
     {
-        return PageItemStyle::getGenericStylesOfType(static::class);
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id);
     }
 
     protected function overrideStyles($styles, $withDefault = false)
@@ -291,9 +292,9 @@ abstract class PageItemType
     public function authorize()
     {
         return [
-            'create' => [true, 'auth.you-are-not-authorized-to-create-this-item-type'],
-            'update' => [true, 'auth.you-are-not-authorized-to-update-this-item-type'],
-            'delete' => [true, 'auth.you-are-not-authorized-to-delete-this-item-type'],
+            'create' => [PageItemFacade::authorize('create'), 'auth.you-are-not-authorized-to-create-this-item-type'],
+            'update' => [PageItemFacade::authorize('update'), 'auth.you-are-not-authorized-to-update-this-item-type'],
+            'delete' => [PageItemFacade::authorize('delete'), 'auth.you-are-not-authorized-to-delete-this-item-type'],
         ];
     }
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Cms\ItemTypes;
+namespace Anonimatrix\PageEditor\Cms\ItemTypes;
 
-use App\Cms\PageItemType;
-use App\Models\Cms\PageItem;
+use Anonimatrix\PageEditor\Cms\PageItemType;
+use Anonimatrix\PageEditor\Models\PageItem;
 
 class ButtonItem extends PageItemType
 {
