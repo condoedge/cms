@@ -44,21 +44,9 @@ class PageEditorServiceProvider extends ServiceProvider
             return $featureService;
         });
 
-        if (Features::hasFeature('teams')) {
-            $this->app->singleton('page-editor-teams', function () {
-                $teamsService = new TeamsService();
+        $this->registerFeatures();
 
-                $teamsService->setTeamClass();
-
-                return $teamsService;
-            });
-        }
-
-        if (Features::hasFeature('editor_variables')) {
-            $this->app->singleton('page-editor-variables', function () {
-                return new EditorVariablesService();
-            });
-        }
+        $this->registerModels();
     }
 
     protected function registerModels()
@@ -74,6 +62,25 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->app->bind(PageItemStyleInterface::class, function () {
             return config('page-editor.models.page_item_style');
         });
+    }
+
+    protected function registerFeatures()
+    {
+        if (Features::hasFeature('teams')) {
+            $this->app->singleton('page-editor-teams', function () {
+                $teamsService = new TeamsService();
+
+                $teamsService->setTeamClass();
+
+                return $teamsService;
+            });
+        }
+
+        if (Features::hasFeature('editor_variables')) {
+            $this->app->singleton('page-editor-variables', function () {
+                return new EditorVariablesService();
+            });
+        }
     }
 
     private function loadCommands(): void
