@@ -23,7 +23,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Anonimatrix\\PageEditor\\Providers\\PageEditorServiceProvider"
+                "Anonimatrix\\PageEditor\\Providers\\PageEditorServiceProvider",
+                "Anonimatrix\\PageEditor\\Providers\\PageItemServiceProvider"
             ]
         }
     },
