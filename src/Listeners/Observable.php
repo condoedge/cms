@@ -44,9 +44,9 @@ trait Observable
         static::$callbackObservers[$method] = $args[0];
     }
 
-    public function observe(ObserverInterface $observer)
+    public static function observe(ObserverInterface $observer)
     {
-        $this->observers[] = $observer;
+        static::$observers[] = $observer;
     }
 
     public function notifyObservers($event, $model)
