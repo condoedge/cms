@@ -8,7 +8,7 @@ class TeamsService
 
     public function setTeamClass($class = null)
     {
-        $this->teamClass = $class ?? config('page-editor.teams.class');
+        $this->teamClass = $class ?? config('page-editor.teams.model');
     }
 
     public function getTeamClass()
