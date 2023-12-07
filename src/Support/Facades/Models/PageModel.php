@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Support\Facades;
+namespace Anonimatrix\PageEditor\Support\Facades\Models;
 
 use Anonimatrix\PageEditor\Models\Abstracts\PageModel as AbstractsPageModel;
 

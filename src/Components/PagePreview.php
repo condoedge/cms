@@ -2,8 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Components;
 
-use Anonimatrix\PageEditor\Support\Facades\PageItemModel;
-use Anonimatrix\PageEditor\Support\Facades\PageModel;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Kompo\Query;
 
 class PagePreview extends Query
