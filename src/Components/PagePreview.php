@@ -2,6 +2,10 @@
 
 namespace Anonimatrix\PageEditor\Components;
 
+use Anonimatrix\PageEditor\Support\Facades\PageItemModel;
+use Anonimatrix\PageEditor\Support\Facades\PageModel;
+use Kompo\Query;
+
 class PagePreview extends Query
 {
     public $page;
@@ -19,7 +23,7 @@ class PagePreview extends Query
 
     public function created()
     {
-        $this->page = Page::findOrFail($this->prop('page_id'));
+        $this->page = PageModel::findOrFail($this->prop('page_id'));
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
 
@@ -71,14 +75,14 @@ class PagePreview extends Query
 
     public function addPageItemColumn($id)
     {
-    	$mainPageItem = PageItem::findOrFail($id);
+    	$mainPageItem = PageItemModel::findOrFail($id);
 
         $mainPageItem->addPageItemColumn();
     }
 
     public function switchColumnOrder($id)
     {
-    	$secondPageItem = PageItem::findOrFail($id);
+    	$secondPageItem = PageItemModel::findOrFail($id);
 
         $secondPageItem->switchColumnOrder();
     }
