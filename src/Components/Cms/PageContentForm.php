@@ -13,6 +13,11 @@ class PageContentForm extends Form
         $this->model(app('page-model'));
     }
 
+    public function beforeSave()
+    {
+        $this->model->user_id = auth()->id();
+    }
+
     public function render()
     {
         return _Rows(

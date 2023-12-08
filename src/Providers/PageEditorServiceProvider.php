@@ -9,6 +9,7 @@ use Anonimatrix\PageEditor\Services\PageEditorService;
 use Anonimatrix\PageEditor\Services\PageItemService;
 use Anonimatrix\PageEditor\Services\PageStyleService;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Illuminate\Support\ServiceProvider;
 
 class PageEditorServiceProvider extends ServiceProvider
@@ -20,6 +21,10 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->loadCommands();
 
         $this->loadPublishes();
+
+        PageModel::creating(function ($page) {
+            $page->beforeSave();
+        });
     }
 
     public function register(): void

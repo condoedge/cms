@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
-use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 
 class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -30,11 +30,11 @@ class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function boot(): void
     {
-        PageItem::creating(function ($pageItem) {
+        PageItemModel::creating(function ($pageItem) {
             $pageItem->getPageItemType()?->beforeSave($pageItem);
         });
         
-        PageItem::created(function ($pageItem) {
+        PageItemModel::created(function ($pageItem) {
             $pageItem->getPageItemType()?->afterSave($pageItem);
         });
     }

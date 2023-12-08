@@ -3,8 +3,8 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
-use Anonimatrix\PageEditor\Support\Facades\Features;
-use Anonimatrix\PageEditor\Support\Facades\Teams;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
+use Anonimatrix\PageEditor\Support\Facades\Features\Teams;
 use App\Models\User;
 
 class Page extends PageModel
@@ -22,6 +22,11 @@ class Page extends PageModel
         'title',
         'permalink',
     ];
+
+    public function beforeSave()
+    {
+        $this->user_id = auth()->id();
+    }
 
 	/* RELATIONS */
     public function user() //the author
