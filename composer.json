@@ -6,7 +6,11 @@
     "autoload": {
         "psr-4": {
             "Anonimatrix\\PageEditor\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers/components.php",
+            "src/helpers/utils.php"
+        ]
     },
     "authors": [
         {
