@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Cms\ItemTypes;
+namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 class H2Item extends H1Item
 {

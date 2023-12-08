@@ -1,8 +1,8 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Cms\ItemTypes;
+namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
-use Anonimatrix\PageEditor\Cms\PageItemType;
+use Anonimatrix\PageEditor\Items\PageItemType;
 
 class CKItem extends PageItemType
 {

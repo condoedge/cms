@@ -23,15 +23,19 @@ return [
         \Anonimatrix\PageEditor\Cms\ItemTypes\KompoItem::class,
         \Anonimatrix\PageEditor\Cms\ItemTypes\ElementType1Item::class,
     ],
+    
     'hidden_types' => [ // Won't be displayed, but it will work in groups
         \Anonimatrix\PageEditor\Cms\ItemTypes\H2Item::class,
     ],
+
     'features' => [
         'teams' => false,
         'editor_variables' => false,
     ],
+
     'teams' => [
         // 'model' => \App\Models\Team::class,
     ],
+
     'default_font_family' => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
 ];

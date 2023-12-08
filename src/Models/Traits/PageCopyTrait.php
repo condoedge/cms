@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Traits;
+namespace Anonimatrix\PageEditor\Models\Traits;
 
 trait PageCopyTrait
 {

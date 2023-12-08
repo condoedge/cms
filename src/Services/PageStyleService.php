@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Styles;
+namespace Anonimatrix\PageEditor\Services;
 
 class PageStyleService
 {

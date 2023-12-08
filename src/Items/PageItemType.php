@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Cms;
+namespace Anonimatrix\PageEditor\Items;
 
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Models\PageItemStyle;

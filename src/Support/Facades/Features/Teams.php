@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Support\Facades;
+namespace Anonimatrix\PageEditor\Support\Facades\Features;
 
 class Teams extends \Illuminate\Support\Facades\Facade
 {

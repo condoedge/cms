@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor;
+namespace Anonimatrix\PageEditor\Services;
 
 use Illuminate\Support\Facades\Route;
 
@@ -24,17 +24,17 @@ class PageEditorService
     {
         // We need to remove layout
         Route::layout('layouts.main')->middleware(['auth'])->group(function() use ($route) {
-            Route::get($route, \Anonimatrix\PageEditor\Components\PagePreview::class)->name('page.preview');
+            Route::get($route, \Anonimatrix\PageEditor\Components\Cms\PagePreview::class)->name('page.preview');
         });
     }
 
-    public function getPageFormComponent()
+    public function getPageFormComponent(...$args)
     {
-        return config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\PageContentForm::class);
+        return new (config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class)(...$args));
     }
 
-    public function getPageDesignFormComponent()
+    public function getPageDesignFormComponent(...$args)
     {
-        return config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\PageDesignForm::class);
+        return new (config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class))(...$args);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Components;
 
-use Anonimatrix\PageEditor\Support\Facades\Features;
-use Anonimatrix\PageEditor\Support\Facades\Variables;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
+use Anonimatrix\PageEditor\Support\Facades\Features\Variables;
 use Kompo\TranslatableEditor;
 
 class CKEditorPageItem extends TranslatableEditor

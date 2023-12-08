@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Cms;
+namespace Anonimatrix\PageEditor\Items;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Illuminate\Database\Eloquent\Model;

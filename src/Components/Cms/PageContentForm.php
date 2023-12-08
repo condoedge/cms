@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Components;
+namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
@@ -9,7 +9,7 @@ class PageContentForm extends Form
 {
     public $id = 'page_content_form';
 
-    public function create(){
+    public function created(){
         $this->model(app('page-model'));
     }
 
@@ -21,7 +21,7 @@ class PageContentForm extends Form
                 $this->extraInputs(),
                 _SubmitButton('campaign.save')->class('mt-4')->refresh(),
             )->class('p-4'),
-            new (PageEditor::getPageDesignFormComponent())($this->model?->id),
+            PageEditor::getPageDesignFormComponent($this->model?->id),
         );
     }
 

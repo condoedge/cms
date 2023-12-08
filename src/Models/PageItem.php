@@ -3,14 +3,14 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\PageItemStyle;
-use Anonimatrix\PageEditor\Cms\PageItemType;
+use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
 
 class PageItem extends PageItemModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
-    use \Anonimatrix\PageEditor\Traits\HasImageTrait;
+    use \Anonimatrix\PageEditor\Models\Traits\HasImageTrait;
 
     protected $casts = [
         'image' => 'array',

@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Components;
+namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
@@ -43,13 +43,6 @@ class PageItemForm extends Form
         }
 
         PageStyle::setStylesToModel($this->model->styles);
-
-        // $this->model->getPageItemType()?->beforeSave($this->model); This was replaced with observers
-    }
-
-    public function afterSave()
-    {
-        // $this->model->getPageItemType()?->afterSave($this->model); This was replaced with observers
     }
 
     public function render()
@@ -75,7 +68,7 @@ class PageItemForm extends Form
             )->label('campaign.zone-content'),
             _Tab(
                 _Rows(
-                    new (PageStyle::itemStylesFormComponent())($this->model->styles),
+                    PageStyle::itemStylesFormComponent($this->model->styles?->id),
                     _Panel(
                         $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
                     )->id(static::ITEM_FORM_STYLES_ID)->class('mt-4'),

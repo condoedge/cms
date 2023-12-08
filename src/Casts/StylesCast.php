@@ -2,7 +2,6 @@
 
 namespace Anonimatrix\PageEditor\Casts;
 
-use Anonimatrix\PageEditor\Cms\Style;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class StylesCast implements CastsAttributes

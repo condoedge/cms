@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Cms\ItemTypes;
+namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use App\Cms\GroupPageItemType;
 

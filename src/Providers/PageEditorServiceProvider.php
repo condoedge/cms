@@ -5,10 +5,10 @@ namespace Anonimatrix\PageEditor\Providers;
 use Anonimatrix\PageEditor\Features\EditorVariablesService;
 use Anonimatrix\PageEditor\Features\TeamsService;
 use Anonimatrix\PageEditor\Features\FeaturesService;
-use Anonimatrix\PageEditor\PageEditorService;
-use Anonimatrix\PageEditor\PageItemService;
-use Anonimatrix\PageEditor\Styles\PageStyleService;
-use Anonimatrix\PageEditor\Support\Facades\Features;
+use Anonimatrix\PageEditor\Services\PageEditorService;
+use Anonimatrix\PageEditor\Services\PageItemService;
+use Anonimatrix\PageEditor\Services\PageStyleService;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Illuminate\Support\ServiceProvider;
 
 class PageEditorServiceProvider extends ServiceProvider
