@@ -40,7 +40,7 @@ class PageEditorService
 
     public function getPageFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class)(...$args));
+        return new (config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class))(...$args);
     }
 
     public function getPageDesignFormComponent(...$args)
@@ -48,8 +48,8 @@ class PageEditorService
         return new (config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class))(...$args);
     }
 
-    public function getItemStylesFormComponent()
+    public function getItemStylesFormComponent(...$args)
     {
-        return config('page-editor.components.item_styles_form', \Anonimatrix\PageEditor\Components\StylePageItemForm::class);
+        return new (config('page-editor.components.item_styles_form', \Anonimatrix\PageEditor\Components\StylePageItemForm::class))(...$args);
     }
 }
