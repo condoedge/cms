@@ -7,6 +7,7 @@ use Anonimatrix\PageEditor\Features\TeamsService;
 use Anonimatrix\PageEditor\Features\FeaturesService;
 use Anonimatrix\PageEditor\PageEditorService;
 use Anonimatrix\PageEditor\PageItemService;
+use Anonimatrix\PageEditor\PageStyleService;
 use Anonimatrix\PageEditor\Support\Facades\Features;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +30,10 @@ class PageEditorServiceProvider extends ServiceProvider
 
         $this->app->singleton('page-item', function () {
             return new PageItemService();
+        });
+
+        $this->app->singleton('page-style-service', function () {
+            return new PageStyleService();
         });
 
         $this->app->singleton('page-editor-features', function () {

@@ -7,6 +7,10 @@ return [
         'page_item_style' => \Anonimatrix\PageEditor\Models\PageItemStyle::class,
     ],
 
+    'components' => [
+        'page-item-styles-form' => \Anonimatrix\PageEditor\Components\StylePageItemForm::class,
+    ],
+
     'types' => [
         \Anonimatrix\PageEditor\Cms\ItemTypes\H1Item::class,
         \Anonimatrix\PageEditor\Cms\ItemTypes\H2Item::class,

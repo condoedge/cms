@@ -3,13 +3,13 @@
 namespace Anonimatrix\PageEditor\Components;
 
 use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
+use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 use Kompo\Form;
 
 class PageItemForm extends Form
 {
-    public $model = PageItem::class;
-
     protected $refresh = true;
     protected $pageId;
     protected $updateOrder;
@@ -18,6 +18,8 @@ class PageItemForm extends Form
 
     public function created()
     {
+        $this->model(app('page-item-model'));
+
         $this->updateOrder = $this->prop('update_order');
 
         $this->pageId = $this->prop('page_id');
@@ -35,6 +37,12 @@ class PageItemForm extends Form
         $this->model->title = request('title');
         $this->model->content = request('content');
         $this->model->styles = request('styles');
+
+        if (!$this->model->styles) {
+            $this->model->styles = PageItemStyleModel::make();
+        }
+
+        PageStyle::setStylesToModel($this->model->styles);
 
         // $this->model->getPageItemType()?->beforeSave($this->model); This was replaced with observers
     }
@@ -67,31 +75,7 @@ class PageItemForm extends Form
             )->label('campaign.zone-content'),
             _Tab(
                 _Rows(
-                    _InputNumber('campaign.font-size')->name('font_size')->value($this->model->getFontSize())->class('mb-2'),
-                    _Input('campaign.background-color')->type('color')->value($this->model->getBackgroundColor())->name('background_color')->class('mb-2'),
-                    _Columns(
-                        _Input('campaign.title-color')->type('color')->value($this->model->getTitleColor())->name('title_color')->class('mb-2'),
-                        _Input('campaign.text-color')->type('color')->value($this->model->getTextColor())->name('text_color')->class('mb-2'),
-                    )->class('!mb-0'),
-                    _Columns(
-                        _Input('campaign.button-color')->type('color')->value($this->model->getButtonColor())->name('button_color'),
-                        _Input('campaign.link-color')->type('color')->value($this->model->getLinkColor())->name('link_color'),
-                    )->class('!mb-0'),
-                    _Card(
-                        _Html('campaign.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
-                        _Html('campaign.padding-px')->class('font-semibold text-sm mb-1'),
-                        _Columns(
-                            _Input()->placeholder('campaign.top')->name('padding_top')->class('whiteField'),
-                            _Input()->placeholder('campaign.right')->name('padding_right')->class('whiteField'),
-                            _Input()->placeholder('campaign.bottom')->name('padding_bottom')->class('whiteField'),
-                            _Input()->placeholder('campaign.left')->name('padding_left')->class('whiteField'),
-                        ),
-                        _Input()->placeholder('campaign.styles')
-                            ->name('styles', false)
-                            ->value((string) $this->model->styles)
-                            ->class('whiteField'),
-                        _Input()->placeholder('campaign.classes')->name('classes')->class('whiteField'),
-                    )->class('bg-gray-100 p-4'),
+                    new (PageStyle::itemStylesFormComponent())($this->model->styles),
                     _Panel(
                         $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
                     )->id(static::ITEM_FORM_STYLES_ID)->class('mt-4'),
