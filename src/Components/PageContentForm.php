@@ -17,11 +17,11 @@ class PageContentForm extends Form
     {
         return _Rows(
             _Card(
-                _Input('campaign.title')->name('title', false)->value($this->model->title)->class('mb-2'),
+                _Input('campaign.title')->name('title')->class('mb-2'),
                 $this->extraInputs(),
                 _SubmitButton('campaign.save')->class('mt-4')->refresh(),
             )->class('p-4'),
-            new (PageEditor::getPageDesignFormComponent())($this->model->id),
+            new (PageEditor::getPageDesignFormComponent())($this->model?->id),
         );
     }
 
