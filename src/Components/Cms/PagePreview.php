@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
+use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Query;
 
 class PagePreview extends Query
@@ -64,10 +65,10 @@ class PagePreview extends Query
         $pageId = $this?->page?->id ?? request('page_id');
 
         return _Rows(
-            new PageItemForm($itemId, [
+            PageEditor::getPageItemFormComponent($itemId, [
                 'page_id' => $pageId,
                 'update_order' => !$itemId,
-            ])
+            ]),
         );
     }
 

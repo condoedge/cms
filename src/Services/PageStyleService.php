@@ -21,9 +21,4 @@ class PageStyleService
             $model->content->replaceProperty($style, request($style));
         }
     }
-
-    public function itemStylesFormComponent()
-    {
-        return config('page-editor.components.item_styles_form', \Anonimatrix\PageEditor\Components\StylePageItemForm::class);
-    }
 }

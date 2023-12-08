@@ -8,9 +8,11 @@ return [
     ],
 
     'components' => [
-        'page-item-styles-form' => \Anonimatrix\PageEditor\Components\StylePageItemForm::class,
-        'page-content-form' => \Anonimatrix\PageEditor\Components\PageContentForm::class,
-        'page-design-form' => \Anonimatrix\PageEditor\Components\PageDesignForm::class,
+        'page-item-styles-form' => \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class,
+        'page-content-form' => \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class,
+        'page-design-form' => \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class,
+        'page-item-form' => \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class,
+        'page-preview' => \Anonimatrix\PageEditor\Components\Cms\PagePreview::class,
     ],
 
     'types' => [

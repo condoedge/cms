@@ -28,6 +28,16 @@ class PageEditorService
         });
     }
 
+    public function getPageItemFormComponent(...$args)
+    {
+        return new (config('page-editor.components.page-item-form', \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class))(...$args);
+    }
+
+    public function getPagePreviewComponent(...$args)
+    {
+        return new (config('page-editor.components.page-preview', \Anonimatrix\PageEditor\Components\Cms\PagePreview::class))(...$args);
+    }
+
     public function getPageFormComponent(...$args)
     {
         return new (config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class)(...$args));
@@ -36,5 +46,10 @@ class PageEditorService
     public function getPageDesignFormComponent(...$args)
     {
         return new (config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class))(...$args);
+    }
+
+    public function getItemStylesFormComponent()
+    {
+        return config('page-editor.components.item_styles_form', \Anonimatrix\PageEditor\Components\StylePageItemForm::class);
     }
 }

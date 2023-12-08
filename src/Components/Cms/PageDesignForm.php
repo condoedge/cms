@@ -20,11 +20,11 @@ class PageDesignForm extends Form
     {
         return _Div(
             _Panel(
-                new PagePreview([
+                PageEditor::getPagePreviewComponent([
                     'page_id' => $this->model?->id,
                     'panel_id' => static::PAGE_ITEM_PANEL,
                     'with_editor' => true
-                ])
+                ]),
             )->id(static::PREVIEW_PAGE_PANEL)->class('w-1/2 mt-4'),
             _Card(
                 _Panel(
@@ -36,7 +36,7 @@ class PageDesignForm extends Form
 
     public function getPageItemForm()
     {
-        return new PageItemForm(null, [
+        return PageEditor::getPageItemFormComponent(null, [
             'page_id' => $this->model?->id,
             'update_order' => true
         ]);

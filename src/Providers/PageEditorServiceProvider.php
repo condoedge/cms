@@ -55,15 +55,33 @@ class PageEditorServiceProvider extends ServiceProvider
     protected function registerModels()
     {
         $this->app->bind('page-model', function () {
-            return new (config('page-editor.models.page'));
+            $class = config('page-editor.models.page');
+
+            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\Page::class)) {
+                throw new \Exception('Page model must extend ' . \Anonimatrix\PageEditor\Models\Page::class);
+            }
+
+            return new $class();
         });
 
         $this->app->bind('page-item-model', function () {
-            return new (config('page-editor.models.page_item'));
+            $class = config('page-editor.models.page_item');
+
+            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\PageItem::class)) {
+                throw new \Exception('Page item model must extend ' . \Anonimatrix\PageEditor\Models\PageItem::class);
+            }
+
+            return new $class();
         });
 
         $this->app->bind('page-item-style-model', function () {
-            return new (config('page-editor.models.page_item_style'));
+            $class = config('page-editor.models.page_item_style');
+
+            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\PageItemStyle::class)) {
+                throw new \Exception('Page item style model must extend ' . \Anonimatrix\PageEditor\Models\PageItemStyle::class);
+            }
+
+            return new $class();
         });
     }
 

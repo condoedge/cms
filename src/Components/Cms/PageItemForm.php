@@ -3,6 +3,7 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
@@ -68,7 +69,7 @@ class PageItemForm extends Form
             )->label('campaign.zone-content'),
             _Tab(
                 _Rows(
-                    PageStyle::itemStylesFormComponent($this->model->styles?->id),
+                    PageEditor::getItemStylesFormComponent($this->model->styles?->id),
                     _Panel(
                         $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
                     )->id(static::ITEM_FORM_STYLES_ID)->class('mt-4'),
@@ -81,11 +82,13 @@ class PageItemForm extends Form
 
     public function getPagePreview()
     {
-        return new PagePreview([
-            'page_id' => $this->pageId,
-            'panel_id' => PageDesignForm::PAGE_ITEM_PANEL,
-            'with_editor' => true
-        ]);
+        return PageEditor::getPagePreviewComponent(
+            [
+                'page_id' => $this->pageId,
+                'panel_id' => PageDesignForm::PAGE_ITEM_PANEL,
+                'with_editor' => true
+            ]
+        );
     }
 
     public function itemForm()
@@ -94,7 +97,7 @@ class PageItemForm extends Form
             return _Rows();
         }
 
-        $item = PageItem::blockTypes()[request('block_type')];
+        $item = PageItemModel::blockTypes()[request('block_type')];
         $item = new $item($this->model);
 
         return _Rows(
@@ -108,7 +111,7 @@ class PageItemForm extends Form
             return _Rows();
         }
 
-        $item = PageItem::blockTypes()[request('block_type')];
+        $item = PageItemModel::blockTypes()[request('block_type')];
         $item = new $item($this->model);
 
         return _Rows(
@@ -120,6 +123,6 @@ class PageItemForm extends Form
     {
         $blockType = $blockType ?? request('block_type');
 
-        return $blockType && PageItem::blockTypes()->has($blockType);
+        return $blockType && PageItemModel::blockTypes()->has($blockType);
     }
 }
