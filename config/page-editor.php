@@ -16,18 +16,18 @@ return [
     ],
 
     'types' => [
-        \Anonimatrix\PageEditor\Cms\ItemTypes\H1Item::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\H2Item::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\ImgItem::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\VideoItem::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\CKItem::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\ButtonItem::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\KompoItem::class,
-        \Anonimatrix\PageEditor\Cms\ItemTypes\ElementType1Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\H1Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\VideoItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\CKItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ButtonItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
     ],
     
     'hidden_types' => [ // Won't be displayed, but it will work in groups
-        \Anonimatrix\PageEditor\Cms\ItemTypes\H2Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
     ],
 
     'features' => [
