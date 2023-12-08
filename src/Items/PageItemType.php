@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Items;
 
-use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Casts\Style;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 use Illuminate\Database\Eloquent\Model;

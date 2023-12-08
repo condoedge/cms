@@ -11,7 +11,7 @@ class Page extends PageModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
-    use \Anonimatrix\PageEditor\Traits\PageCopyTrait;
+    use \Anonimatrix\PageEditor\Models\Traits\PageCopyTrait;
 
     protected $casts = [
         'published_at' => 'datetime',
