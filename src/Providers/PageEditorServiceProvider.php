@@ -57,9 +57,7 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->app->bind('page-model', function () {
             $class = config('page-editor.models.page');
 
-            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\Page::class)) {
-                throw new \Exception('Page model must extend ' . \Anonimatrix\PageEditor\Models\Page::class);
-            }
+            $this->checkRegisterModel($class, \Anonimatrix\PageEditor\Models\Page::class);
 
             return new $class();
         });
@@ -67,9 +65,7 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->app->bind('page-item-model', function () {
             $class = config('page-editor.models.page_item');
 
-            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\PageItem::class)) {
-                throw new \Exception('Page item model must extend ' . \Anonimatrix\PageEditor\Models\PageItem::class);
-            }
+            $this->checkRegisterModel($class, \Anonimatrix\PageEditor\Models\PageItem::class);
 
             return new $class();
         });
@@ -77,12 +73,17 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->app->bind('page-item-style-model', function () {
             $class = config('page-editor.models.page_item_style');
 
-            if (!is_subclass_of($class, \Anonimatrix\PageEditor\Models\PageItemStyle::class)) {
-                throw new \Exception('Page item style model must extend ' . \Anonimatrix\PageEditor\Models\PageItemStyle::class);
-            }
+            $this->checkRegisterModel($class, \Anonimatrix\PageEditor\Models\PageItemStyle::class);
 
             return new $class();
         });
+    }
+
+    protected function checkRegisterModel($class, $expected)
+    {
+        if (!is_subclass_of($class, $expected) || $class === $expected) {
+            throw new \Exception('Page model must extend ' . $expected);
+        }
     }
 
     protected function registerFeatures()
