@@ -50,6 +50,6 @@ class PageEditorService
 
     public function getItemStylesFormComponent(...$args)
     {
-        return new (config('page-editor.components.item_styles_form', \Anonimatrix\PageEditor\Components\StylePageItemForm::class))(...$args);
+        return new (config('page-editor.components.page-item-styles-form', \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class))(...$args);
     }
 }
