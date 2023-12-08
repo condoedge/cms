@@ -9,6 +9,8 @@ return [
 
     'components' => [
         'page-item-styles-form' => \Anonimatrix\PageEditor\Components\StylePageItemForm::class,
+        'page-content-form' => \Anonimatrix\PageEditor\Components\PageContentForm::class,
+        'page-design-form' => \Anonimatrix\PageEditor\Components\PageDesignForm::class,
     ],
 
     'types' => [

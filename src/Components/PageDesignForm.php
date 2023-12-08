@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components;
 
+use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
 class PageDesignForm extends Form
@@ -20,7 +21,7 @@ class PageDesignForm extends Form
         return _Div(
             _Panel(
                 new PagePreview([
-                    'page_id' => $this->model->id,
+                    'page_id' => $this->model?->id,
                     'panel_id' => static::PAGE_ITEM_PANEL,
                     'with_editor' => true
                 ])
@@ -36,7 +37,7 @@ class PageDesignForm extends Form
     public function getPageItemForm()
     {
         return new PageItemForm(null, [
-            'page_id' => $this->model->id,
+            'page_id' => $this->model?->id,
             'update_order' => true
         ]);
     }

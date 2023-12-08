@@ -27,4 +27,14 @@ class PageEditorService
             Route::get($route, \Anonimatrix\PageEditor\Components\PagePreview::class)->name('page.preview');
         });
     }
+
+    public function getPageFormComponent()
+    {
+        return config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\PageContentForm::class);
+    }
+
+    public function getPageDesignFormComponent()
+    {
+        return config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\PageDesignForm::class);
+    }
 }
