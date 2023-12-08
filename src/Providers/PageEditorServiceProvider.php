@@ -81,7 +81,7 @@ class PageEditorServiceProvider extends ServiceProvider
 
     protected function checkRegisterModel($class, $expected)
     {
-        if (!is_subclass_of($class, $expected) || $class === $expected) {
+        if (!is_subclass_of($class, $expected) || $class !== $expected) {
             throw new \Exception('Page model must extend ' . $expected);
         }
     }
