@@ -50,5 +50,6 @@ return [
         'font-size' => 'px',
         'color' => '',
         'background-color' => '',
+        'text-align' => '',
     ],
 ];

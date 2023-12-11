@@ -25,6 +25,12 @@ class StylePageItemForm extends Form
             _Columns(
                 _Input('campaign.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2'),
             )->class('!mb-0'),
+            _Select('campaign.text-align')->name('text-align', false)->default($this->styleModel?->text_align ?? 'center')
+                ->options([
+                    'left' => 'campaign.left',
+                    'center' => 'campaign.center',
+                    'right' => 'campaign.right',
+                ])->class('mb-2'),
             _Rows(
                 $this->extraInputs(),
             ),
