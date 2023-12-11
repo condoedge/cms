@@ -2,7 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
-use App\Cms\GroupPageItemType;
+use Anonimatrix\PageEditor\Items\GroupPageItemType;
+use Illuminate\Database\Eloquent\Model;
 
 class ElementType1Item extends GroupPageItemType
 {
@@ -17,7 +18,7 @@ class ElementType1Item extends GroupPageItemType
         ButtonItem::class,
     ];
 
-    public function __construct(\App\Models\Cms\PageItem $pageItem)
+    public function __construct(Model $pageItem)
     {
         parent::__construct($pageItem);
 
@@ -43,7 +44,7 @@ class ElementType1Item extends GroupPageItemType
     {
         $styles = 'font-size: 1.4rem !important; padding: 10px 0; text-align: center;';
 
-        $styles .= 'color: ' . $parentPageItem->getTitleColor(). '!important ;';
+        $styles .= 'color: ' . $parentPageItem->getTextColor(). '!important ;';
 
         return $styles;
     }
@@ -51,7 +52,7 @@ class ElementType1Item extends GroupPageItemType
     protected function buttonItemStyles($pageItem, $parentPageItem)
     {
         $styles = 'border-radius: 5px;';
-        $styles .= 'background-color: ' . $parentPageItem->getButtonColor() . '!important;';
+        $styles .= 'background-color: ' . $parentPageItem->getBackgroundColor() . '!important;';
         $styles .= 'color: white !important;';
 
         return $styles;

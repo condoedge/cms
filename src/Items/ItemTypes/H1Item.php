@@ -51,7 +51,7 @@ class H1Item extends PageItemType
         $styles = parent::defaultStyles($pageItem);
         $styles .= 'text-align: center;';
 
-        if($pageItem->getTitleColor()) $styles .= 'color: ' . $pageItem->getTitleColor() . ';';
+        if($pageItem->getTextColor()) $styles .= 'color: ' . $pageItem->getTextColor() . ';';
 
         return $styles;
     }
