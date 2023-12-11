@@ -32,10 +32,10 @@ class StylePageItemForm extends Form
                 _Html('campaign.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
                 _Html('campaign.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
-                    _Input()->placeholder('campaign.top')->name('padding-top', false)->default($this->styleModel?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.right')->name('padding-right', false)->default($this->styleModel?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.left')->name('padding-left', false)->default($this->styleModel?->padding_top)->class('whiteField'),
+                    _Input()->placeholder('campaign.top')->name('padding-top', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
+                    _Input()->placeholder('campaign.right')->name('padding-right', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
+                    _Input()->placeholder('campaign.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
+                    _Input()->placeholder('campaign.left')->name('padding-left', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
                 ),
                 _Input()->placeholder('campaign.styles')
                     ->name('styles', false)

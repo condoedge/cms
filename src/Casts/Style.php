@@ -28,6 +28,13 @@ class Style {
 
     public function __get($name) {
         $name = str_replace('_', '-', $name);
+
+        if(str_ends_with($name, '-raw')) {
+            $name = str_replace('-raw', '', $name);
+
+            return $this->getRawProperty($name);
+        }
+
         return $this->getProperty($name);
     }
 

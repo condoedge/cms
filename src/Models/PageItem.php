@@ -104,7 +104,7 @@ class PageItem extends PageItemModel
 
     public function getFontSize()
     {
-        return $this->styles?->content?->font_size ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : 16);
+        return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : 16);
     }
 
     public function getFontFamily()
