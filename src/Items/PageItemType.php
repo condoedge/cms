@@ -41,7 +41,7 @@ abstract class PageItemType
         $this->classes = $this->defaultClasses($pageItem);
 
         $this->classes .= $pageItem?->classes ?: '';
-        $this->styles .= $pageItem?->styles ?: '';
+        $this->styles .= $pageItem?->styles?->content ?: '';
 
         $this->pageItem = $pageItem;
 
