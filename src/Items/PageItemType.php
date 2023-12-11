@@ -296,7 +296,7 @@ abstract class PageItemType
 
     public function getDefaultFontSize()
     {
-        return '16px';
+        return 16;
     }
 
     /** AUTHORIZATION */
