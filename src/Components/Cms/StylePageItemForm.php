@@ -36,8 +36,9 @@ class StylePageItemForm extends Form
                     ->name('styles', false)
                     ->value((string) $this->model->styles)
                     ->class('whiteField'),
+                _Input()->placeholder('campaign.classes')->name('styles', false)->class('whiteField'),
                 _Input()->placeholder('campaign.classes')->name('classes')->class('whiteField'),
             )->class('bg-gray-100 p-4'),
-            );
+        );
     }
 }

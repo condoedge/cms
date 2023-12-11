@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
@@ -44,14 +45,18 @@ class PagePreview extends Query
 
     public function render($pageItem)
     {
-        $team = $pageItem->team;
         $pageItemType = $pageItem?->getPageItemType();
 
-        $pageItemType?->setVariables([
-            'team_name' => $team->name,
-            'team_logo' => $team->emailLogoHtml(),
-            'subscribe_to_newsletter' => $team->getLinkHtmlToSubscribe(),
-        ]);
+        if (Features::has('teams')) {
+            $team = $pageItem->team;
+            $team = $pageItem->page->team;
+
+            $pageItemType?->setVariables([
+                'team_name' => $team?->name,
+                'team_logo' => $team?->emailLogoHtml(),
+                'subscribe_to_newsletter' => $team?->getLinkHtmlToSubscribe(),
+            ]);
+        }
 
         $pageItemType?->setEditPanelId($this->panelId);
         $el = $pageItemType?->toPreviewElement($this->withEditor);

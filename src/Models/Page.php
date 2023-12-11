@@ -26,6 +26,10 @@ class Page extends PageModel
     public function beforeSave()
     {
         $this->user_id = auth()->id();
+
+        if (Features::hasFeature('teams')) {
+            $this->team_id = auth()->user()->current_team_id;
+        }
     }
 
 	/* RELATIONS */

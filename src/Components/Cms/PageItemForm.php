@@ -36,13 +36,14 @@ class PageItemForm extends Form
 
         $this->model->title = request('title');
         $this->model->content = request('content');
-        $this->model->styles = request('styles');
+    }
 
-        if (!$this->model->styles) {
-            $this->model->styles = PageItemStyleModel::make();
-        }
+    public function afterSave()
+    {
+        $styleModel = $this->model->styles ?? PageItemStyleModel::make();
+        PageStyle::setStylesToModel($styleModel);
 
-        PageStyle::setStylesToModel($this->model->styles);
+        $this->model->styles()->save($styleModel);
     }
 
     public function render()
