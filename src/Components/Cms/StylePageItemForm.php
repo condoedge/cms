@@ -20,9 +20,9 @@ class StylePageItemForm extends Form
         return _Rows(
             _Button('campaign.clear')->selfPost('clearStyles')->refresh()->class('mb-4'),
             _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getDefaultFontSize())->class('mb-2'),
-            _Input('campaign.background-color')->type('color')->default($this->model->getDefaultBackground())->name('background-color', false)->class('mb-2'),
+            _Input('campaign.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2'),
             _Columns(
-                _Input('campaign.text-color')->type('color')->default($style->color)->name('color', $this->model->getDefaultTextColor())->class('mb-2'),
+                _Input('campaign.text-color')->type('color')->default($style->color)->name('color', $this->model->getTextColor())->class('mb-2'),
             )->class('!mb-0'),
             _Rows(
                 $this->extraInputs(),
