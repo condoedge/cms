@@ -41,6 +41,8 @@ class StylePageItemForm extends Form
                     ->name('styles', false)
                     ->class('whiteField'),
                 _Input()->placeholder('campaign.classes')->name('classes')->class('whiteField'),
+
+                _Input('campaign.constructed-styles')->class('disabled')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
             )->class('bg-gray-100 p-4'),
         );
     }

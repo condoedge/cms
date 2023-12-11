@@ -94,17 +94,17 @@ class PageItem extends PageItemModel
 
     public function getBackgroundColor()
     {
-        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor() : '#fff');
+        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor() : '#ffffff');
     }
 
     public function getTextColor()
     {
-        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor() : 'black');
+        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor() : '#000000');
     }
 
     public function getFontSize()
     {
-        return $this->styles?->content?->font_size ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : '16');
+        return $this->styles?->content?->font_size ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : 16);
     }
 
     public function getFontFamily()

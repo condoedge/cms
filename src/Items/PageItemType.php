@@ -286,12 +286,12 @@ abstract class PageItemType
 
     public static function getDefaultBackgroundColor()
     {
-        return '#fff';
+        return '#ffffff';
     }
 
     public static function getDefaultTextColor()
     {
-        return '#000';
+        return '#000000';
     }
 
     public static function getDefaultFontSize()
