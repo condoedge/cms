@@ -15,7 +15,7 @@ class PageContentForm extends Form
     protected $withDesign = true;
 
     public function created(){
-        $this->model(PageModel::find($this->prop('id')) ?? PageModel::make());
+        $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
     public function response()

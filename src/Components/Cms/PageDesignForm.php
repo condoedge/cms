@@ -14,7 +14,7 @@ class PageDesignForm extends Form
     public const PAGE_ITEM_PANEL = 'page_item_panel';
 
     public function created(){
-        $this->model(PageModel::find($this->prop('id')) ?? PageModel::make());
+        $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
     public function render()

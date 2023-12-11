@@ -10,7 +10,7 @@ class StylePageItemForm extends Form
 {
     public function created()
     {
-        $this->model(PageItemStyleModel::find($this->prop('id')) ?? PageItemStyleModel::make());
+        $this->model(PageItemStyleModel::find($this->modelKey()) ?? PageItemStyleModel::make());
     }
 
     public function render()

@@ -18,7 +18,7 @@ class PageItemForm extends Form
 
     public function created()
     {
-        $this->model(PageItemModel::find($this->prop('id')) ?? PageItemModel::make());
+        $this->model(PageItemModel::find($this->modelKey()) ?? PageItemModel::make());
 
         $this->updateOrder = $this->prop('update_order');
 
