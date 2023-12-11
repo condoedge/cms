@@ -284,17 +284,17 @@ abstract class PageItemType
         return $this;
     }
 
-    public function getDefaultBackgroundColor()
-    {
-        return 'transparent';
-    }
-
-    public function getDefaultTextColor()
+    public static function getDefaultBackgroundColor()
     {
         return '#fff';
     }
 
-    public function getDefaultFontSize()
+    public static function getDefaultTextColor()
+    {
+        return '#000';
+    }
+
+    public static function getDefaultFontSize()
     {
         return 16;
     }

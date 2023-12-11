@@ -81,19 +81,30 @@ class PageItem extends PageItemModel
         return new $blockTypes[$this->block_type]($this);
     }
 
+    public function getPageItemTypeStatic()
+    {
+        $blockTypes = PageItem::blockTypes();
+
+        if(!$blockTypes->has($this->block_type)) {
+            return null;
+        }
+
+        return $blockTypes[$this->block_type];
+    }
+
     public function getBackgroundColor()
     {
-        return $this->styles?->content?->background_color ?: $this->getPageItemType()?->getDefaultBackgroundColor() ?? 'transparent';
+        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor() : '#fff');
     }
 
     public function getTextColor()
     {
-        return $this->styles?->content?->text_color ?: $this->getPageItemType()?->getDefaultTextColor() ?? 'black';
+        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor() : 'black');
     }
 
     public function getFontSize()
     {
-        return $this->styles?->content?->font_size ?: $this->getPageItemType()?->getDefaultFontSize() ?? '16px';
+        return $this->styles?->content?->font_size ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : '16');
     }
 
     public function getFontFamily()

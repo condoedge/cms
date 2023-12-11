@@ -3,20 +3,21 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Kompo\Form;
 
 class StylePageItemForm extends Form
 {
+    protected $styleModel = null;
+
     public function created()
     {
         $this->model(PageItemModel::find($this->modelKey()) ?? PageItemModel::make());
+
+        $this->styleModel = $this->model->styles ?? null;
     }
 
     public function render()
     {
-        $style = $this->model->styles?->content;
-
         return _Rows(
             _Button('campaign.clear')->selfPost('clearStyles')->refresh()->class('mb-4'),
             _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2'),
@@ -31,10 +32,10 @@ class StylePageItemForm extends Form
                 _Html('campaign.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
                 _Html('campaign.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
-                    _Input()->placeholder('campaign.top')->name('padding-top', false)->default($style?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.right')->name('padding-right', false)->default($style?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.bottom')->name('padding-bottom', false)->default($style?->padding_top)->class('whiteField'),
-                    _Input()->placeholder('campaign.left')->name('padding-left', false)->default($style?->padding_top)->class('whiteField'),
+                    _Input()->placeholder('campaign.top')->name('padding-top', false)->default($this->styleModel?->padding_top)->class('whiteField'),
+                    _Input()->placeholder('campaign.right')->name('padding-right', false)->default($this->styleModel?->padding_top)->class('whiteField'),
+                    _Input()->placeholder('campaign.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_top)->class('whiteField'),
+                    _Input()->placeholder('campaign.left')->name('padding-left', false)->default($this->styleModel?->padding_top)->class('whiteField'),
                 ),
                 _Input()->placeholder('campaign.styles')
                     ->name('styles', false)
@@ -51,9 +52,9 @@ class StylePageItemForm extends Form
 
     public function clearStyles()
     {
-        if(!$this->model->exists()) return;
+        if(!$this->styleModel) return;
 
-        $this->model->content = "";
-        $this->model->save();
+        $this->styleModel->content = "";
+        $this->styleModel->save();
     }
 }
