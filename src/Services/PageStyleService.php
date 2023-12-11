@@ -13,10 +13,10 @@ class PageStyleService
 
     public function setStylesToModel($model)
     {
-        foreach ($this->automaticStyles as $style) {
-            if(!request($style)) continue;
+        foreach ($this->automaticStyles as $styleName => $styleSuffix) {
+            if(!request($styleName)) continue;
 
-            $model->content->replaceProperty($style, request($style));
+            $model->content->replaceProperty($styleName, request($styleName) . $styleSuffix);
         }
     }
 }
