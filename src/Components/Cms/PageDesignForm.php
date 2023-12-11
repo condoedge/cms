@@ -19,20 +19,23 @@ class PageDesignForm extends Form
 
     public function render()
     {
-        return _Div(
-            _Panel(
-                PageEditor::getPagePreviewComponent([
-                    'page_id' => $this->model?->id,
-                    'panel_id' => static::PAGE_ITEM_PANEL,
-                    'with_editor' => true
-                ]),
-            )->id(static::PREVIEW_PAGE_PANEL)->class('w-1/2 mt-4'),
-            _Card(
+        return _Rows(
+            _Div(
                 _Panel(
-                    $this->getPageItemForm()
-                )->id(static::PAGE_ITEM_PANEL),
-            )->class('px-8 py-6 mt-4 w-1/2 bg-gray-100'),
-        )->class('vlFlex gap-4 w-full items-start');
+                    PageEditor::getPagePreviewComponent([
+                        'page_id' => $this->model?->id,
+                        'panel_id' => static::PAGE_ITEM_PANEL,
+                        'with_editor' => true
+                    ]),
+                )->id(static::PREVIEW_PAGE_PANEL)->class('w-1/2 mt-4'),
+                _Card(
+                    _Panel(
+                        $this->getPageItemForm()
+                    )->id(static::PAGE_ITEM_PANEL),
+                )->class('px-8 py-6 mt-4 w-1/2 bg-gray-100'),
+            )->class('vlFlex gap-4 w-full items-start ' . ($this->model?->id ? '' : 'p-6')),
+            $this->model?->id ? null : _Html('campaign.first-save-page')->class('text-4xl flex justify-center items-center font-semibold bg-opacity-70 bg-white text-gray-800 absolute rounded-lg p-4 w-full h-full'),
+        )->class('relative');
     }
 
     public function getPageItemForm()
