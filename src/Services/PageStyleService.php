@@ -18,6 +18,8 @@ class PageStyleService
     public function setStylesToModel($model)
     {
         foreach ($this->automaticStyles as $style) {
+            if(!request($style)) continue;
+            
             $model->content->replaceProperty($style, request($style));
         }
     }
