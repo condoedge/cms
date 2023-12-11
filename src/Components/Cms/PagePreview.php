@@ -47,7 +47,7 @@ class PagePreview extends Query
     {
         $pageItemType = $pageItem?->getPageItemType();
 
-        if (Features::has('teams')) {
+        if (Features::hasFeature('teams')) {
             $team = $pageItem->team;
             $team = $pageItem->page->team;
 
