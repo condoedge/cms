@@ -20,17 +20,17 @@ class StylePageItemForm extends Form
     {
         return _Rows(
             _Button('campaign.clear')->selfPost('clearStyles')->refresh()->class('mb-4'),
-            _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2'),
-            _Input('campaign.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2'),
+            _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
+            _Input('campaign.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
             _Columns(
-                _Input('campaign.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2'),
+                _Input('campaign.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
             )->class('!mb-0'),
             _Select('campaign.text-align')->name('text-align', false)->default($this->styleModel?->text_align ?: 'center')
                 ->options([
                     'left' => 'campaign.left',
                     'center' => 'campaign.center',
                     'right' => 'campaign.right',
-                ])->class('mb-2'),
+                ])->class('mb-2 whiteField'),
             _Rows(
                 $this->extraInputs(),
             ),
