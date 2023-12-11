@@ -12,6 +12,11 @@ class PageItemStyle extends PageItemStyleModel
         'content' => \Anonimatrix\PageEditor\Casts\StylesCast::class,
     ];
 
+    public function getAttribute($key)
+    {
+        return $this->content->{$key} ?? parent::getAttribute($key);
+    }
+
     public function pageItem()
     {
         return $this->belongsTo(PageItem::class);
