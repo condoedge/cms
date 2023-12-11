@@ -4,22 +4,18 @@ namespace Anonimatrix\PageEditor\Services;
 
 class PageStyleService
 {
-    public $automaticStyles = [
-        'padding_top',
-        'padding_bottom',
-        'padding_left',
-        'padding_right',
+    protected $automaticStyles;
 
-        'font_size',
-        'color',
-        'background_color',
-    ];
+    public function __construct($autoStyles = [])
+    {
+        $this->automaticStyles = $autoStyles;
+    }
 
     public function setStylesToModel($model)
     {
         foreach ($this->automaticStyles as $style) {
             if(!request($style)) continue;
-            
+
             $model->content->replaceProperty($style, request($style));
         }
     }

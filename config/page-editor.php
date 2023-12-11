@@ -40,4 +40,15 @@ return [
     ],
 
     'default_font_family' => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+
+    'automapping_styles' => [
+        'padding-top',
+        'padding-bottom',
+        'padding-left',
+        'padding-right',
+
+        'font-size',
+        'color',
+        'background-color',
+    ],
 ];

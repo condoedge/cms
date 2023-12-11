@@ -43,6 +43,8 @@ class PageItemForm extends Form
         $styleModel = $this->model->styles ?? PageItemStyleModel::make();
         PageStyle::setStylesToModel($styleModel);
 
+        $styleModel->content .= request('styles');
+
         $this->model->styles()->save($styleModel);
     }
 

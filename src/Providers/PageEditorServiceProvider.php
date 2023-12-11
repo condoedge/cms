@@ -38,7 +38,7 @@ class PageEditorServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('page-style-service', function () {
-            return new PageStyleService();
+            return new PageStyleService(config("page-editor.automapping_styles"));
         });
 
         $this->app->singleton('page-editor-features', function () {
