@@ -270,7 +270,7 @@ abstract class PageItemType
      */
     protected function defaultStyles($pageItem): string
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id);
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id) ?? '';
     }
 
     protected function overrideStyles($styles, $withDefault = false)
