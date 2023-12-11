@@ -7,13 +7,13 @@ use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
 class PageDesignForm extends Form
-{   
+{
     public $id = 'page_design_form';
 
     public const PREVIEW_PAGE_PANEL = 'preview_page_panel';
     public const PAGE_ITEM_PANEL = 'page_item_panel';
 
-    public function create(){
+    public function created(){
         $this->model(PageModel::find($this->prop('id')) ?? PageModel::make());
     }
 

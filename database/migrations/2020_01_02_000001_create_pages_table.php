@@ -1,7 +1,6 @@
 <?php
 
-use Anonimatrix\PageEditor\Support\Facades\Features;
-use Anonimatrix\PageEditor\Support\Facades\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
