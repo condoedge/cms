@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
@@ -13,7 +14,7 @@ class PageDesignForm extends Form
     public const PAGE_ITEM_PANEL = 'page_item_panel';
 
     public function create(){
-        $this->model(app('page-model'));
+        $this->model(PageModel::find($this->prop('id')) ?? PageModel::make());
     }
 
     public function render()

@@ -31,6 +31,6 @@ class PageItemStyle extends PageItemStyleModel
         return static::where('block_type', $class::ITEM_NAME)
             ->when($pageId, fn($q) => $q->where('page_id', $pageId))
             ->whereNull('page_item_id')
-            ->first()->content;
+            ->first()?->content;
     }
 }

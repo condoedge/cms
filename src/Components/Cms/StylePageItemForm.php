@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 use Kompo\Form;
 
@@ -9,7 +10,7 @@ class StylePageItemForm extends Form
 {
     public function created()
     {
-        $this->model(app('page-item-style-model'));
+        $this->model(PageItemStyleModel::find($this->prop('id')) ?? PageItemStyleModel::make());
     }
 
     public function render()

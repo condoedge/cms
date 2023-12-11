@@ -6,6 +6,7 @@ use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
+use Anonimatrix\PageEditor\Support\Facades\PageItem as FacadesPageItem;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 use Kompo\Form;
 
@@ -19,7 +20,7 @@ class PageItemForm extends Form
 
     public function created()
     {
-        $this->model(app('page-item-model'));
+        $this->model(FacadesPageItem::find($this->prop('id')) ?? FacadesPageItem::make());
 
         $this->updateOrder = $this->prop('update_order');
 
