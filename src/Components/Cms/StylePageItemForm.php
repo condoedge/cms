@@ -49,6 +49,10 @@ class StylePageItemForm extends Form
                     ->class('whiteField'),
                 _Input()->placeholder('campaign.classes')->name('classes')->class('whiteField'),
 
+                _Panel(
+                    $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
+                )->id(PageItemForm::ITEM_FORM_STYLES_ID)->class('mt-4'),
+
                 _Input('campaign.constructed-styles')->class('disabled')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
             )->class('bg-gray-100 p-4'),
         );

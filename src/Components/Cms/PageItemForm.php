@@ -13,8 +13,8 @@ class PageItemForm extends Form
     protected $refresh = true;
     protected $pageId;
     protected $updateOrder;
-    protected const ITEM_FORM_PANEL_ID = 'itemFormPanel';
-    protected const ITEM_FORM_STYLES_ID = 'itemFormStyles';
+    public const ITEM_FORM_PANEL_ID = 'itemFormPanel';
+    public const ITEM_FORM_STYLES_ID = 'itemFormStyles';
 
     public function created()
     {
@@ -74,9 +74,6 @@ class PageItemForm extends Form
                     _Panel(
                         PageEditor::getItemStylesFormComponent($this->model->id),
                     )->id('item_styles_form')->class('mt-4'),
-                    _Panel(
-                        $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
-                    )->id(static::ITEM_FORM_STYLES_ID)->class('mt-4'),
                     _SubmitButton('campaign.save')->class('ml-auto mt-3')
                         ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
                 )->class('!mb-2')

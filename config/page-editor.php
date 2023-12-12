@@ -51,5 +51,7 @@ return [
         'color' => '',
         'background-color' => '',
         'text-align' => '',
+
+        'link-color' => '',
     ],
 ];
