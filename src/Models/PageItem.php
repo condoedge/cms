@@ -107,6 +107,11 @@ class PageItem extends PageItemModel
         return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : 16);
     }
 
+    public function getLinkColor()
+    {
+        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor() : '#0000ff');
+    }
+
     public function getFontFamily()
     {
         return config('page-editor.default_font_family');

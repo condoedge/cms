@@ -299,6 +299,11 @@ abstract class PageItemType
         return 16;
     }
 
+    public static function getDefaultLinkColor()
+    {
+        return '#2443e0';
+    }
+
     /** AUTHORIZATION */
 
     /**

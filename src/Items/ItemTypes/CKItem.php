@@ -29,6 +29,13 @@ class CKItem extends PageItemType
         return $item;
     }
 
+    public function blockTypeEditorStylesElement()
+    {
+        return _Rows(
+            _Input('campaign.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+        );
+    }
+
     protected function toElement()
     {
         return _Html($this->content)->replaceCKEditorContent($this->variables)
