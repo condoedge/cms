@@ -69,7 +69,7 @@ class ButtonItem extends PageItemType
         $styles = parent::defaultStyles($pageItem);
         $styles .= 'text-align: center !important; padding: 10px 0 !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: 30%;border-radius: 5px;';
 
-        $styles .= 'background-color: ' . $pageItem->styles->background_color . '!important;';
+        $styles .= 'background-color: ' . $pageItem->styles?->background_color . '!important;';
 
         return $styles;
     }

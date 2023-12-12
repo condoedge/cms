@@ -20,43 +20,44 @@ class StylePageItemForm extends Form
     public function render()
     {
         return _Rows(
-            _Button('campaign.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
-            _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
-            _Input('campaign.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
+            _Button('translate.page-editor.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
+            _InputNumber('translate.page-editor.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
+            _Input('translate.page-editor.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
             _Columns(
-                _Input('campaign.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
+                _Input('translate.page-editor.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
             )->class('!mb-0'),
-            _Select('campaign.text-align')->name('text-align', false)->default($this->styleModel?->text_align ?: 'center')
+            _Select('translate.page-editor.text-align')->name('text-align', false)->default($this->styleModel?->text_align ?: 'center')
                 ->options([
-                    'left' => 'campaign.left',
-                    'center' => 'campaign.center',
-                    'right' => 'campaign.right',
+                    'left' => 'translate.page-editor.left',
+                    'center' => 'translate.page-editor.center',
+                    'right' => 'translate.page-editor.right',
                 ])->class('mb-2 whiteField'),
             _Rows(
                 $this->extraInputs(),
             ),
-            _Card(
-                _Html('campaign.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
-                _Html('campaign.padding-px')->class('font-semibold text-sm mb-1'),
+            _Rows(
+                _Html('translate.page-editor.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
+                _Html('translate.page-editor.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
-                    _Input()->placeholder('campaign.top')->name('padding-top', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
-                    _Input()->placeholder('campaign.right')->name('padding-right', false)->default($this->styleModel?->padding_right_raw)->class('whiteField'),
-                    _Input()->placeholder('campaign.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_bottom_raw)->class('whiteField'),
-                    _Input()->placeholder('campaign.left')->name('padding-left', false)->default($this->styleModel?->padding_left_raw)->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.top')->name('padding-top', false)->default($this->styleModel?->padding_top_raw)->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.right')->name('padding-right', false)->default($this->styleModel?->padding_right_raw)->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_bottom_raw)->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.left')->name('padding-left', false)->default($this->styleModel?->padding_left_raw)->class('whiteField'),
                 ),
-                _Input()->placeholder('campaign.styles')
+                _Input()->placeholder('translate.page-editor.styles')
                     ->name('styles', false)
                     ->class('whiteField'),
-                _Input()->placeholder('campaign.classes')->name('classes')->class('whiteField'),
+                _Input()->placeholder('translate.page-editor.classes')->name('classes')->class('whiteField'),
 
-                !$this->model->id ? _Html('') : _Rows(
-                    _Panel(
-                        _Html('campaign.styles-for-item')->class('text-sm font-semibold mb-1'),
-                        $this->model->getPageItemType()?->blockTypeEditorStylesElement(),
-                    )->id(PageItemForm::ITEM_FORM_STYLES_ID),
-                )->class('mt-2'),
+                _Panel(
+                    !$this->model?->getPageItemType()?->blockTypeEditorStylesElement() ? null : _Rows(
+                        _Html('translate.page-editor.styles-for-item')->class('text-sm font-semibold mb-1'),
+                        $this->model?->getPageItemType()?->blockTypeEditorStylesElement(),
+                    )->class('mt-2')
+                )->id(PageItemForm::ITEM_FORM_STYLES_ID),
 
-                _Input('campaign.constructed-styles')->class('disabled')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
+                _Input('translate.page-editor.constructed-styles')->class('disabled mt-2')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
+
             )->class('bg-gray-100 p-4'),
         );
     }
@@ -64,6 +65,11 @@ class StylePageItemForm extends Form
     protected function extraInputs()
     {
         return [];
+    }
+
+    public function setGenericStyles()
+    {
+
     }
 
     public function clearStyles()

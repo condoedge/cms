@@ -22,6 +22,8 @@ class PageEditorServiceProvider extends ServiceProvider
 
         $this->loadPublishes();
 
+        $this->loadTranslations();
+
         PageModel::creating(function ($page) {
             $page->beforeSave();
         });
@@ -124,12 +126,18 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../../config/page-editor.php', 'page-editor');
     }
 
+    protected function loadTranslations(): void
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang/*', 'page-editor');
+    }
+
     protected function loadPublishes(): void
     {
         $this->publishes([
             __DIR__ . '/../../config/page-editor.php' => config_path('page-editor.php'),
             __DIR__ . '/../../database/migrations/' => database_path('migrations/page-editor'),
-            __DIR__.'/../Models' => app_path('Models/PageEditor'),
+            __DIR__ . '/../Models' => app_path('Models/PageEditor'),
+            __DIR__ . '/../../resources/lang' => resource_path('lang/vendor/page-editor'),
         ], 'page-editor');
     }
 }

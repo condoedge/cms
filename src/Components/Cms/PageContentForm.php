@@ -32,7 +32,6 @@ class PageContentForm extends Form
                 $this->extraInputs(),
                 $this->submitMethod(),
             ),
-            _Html()->class('border-t-2 border-gray-400 mt-4 pt-4'),
             !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->model?->id),
         );
     }
@@ -45,12 +44,12 @@ class PageContentForm extends Form
     protected function inputs()
     {
         return [
-            _Translatable('campaign.title')->name('title')->class('mb-2'),
+            _Translatable('translate.page-editor.title')->name('title')->class('mb-2'),
         ];
     }
 
     protected function submitMethod()
     {
-        return _SubmitButton('campaign.save')->class('mt-4');
+        return _SubmitButton('translate.page-editor.save')->class('mt-4');
     }
 }
