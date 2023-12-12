@@ -3,6 +3,7 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
+use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
 class StylePageItemForm extends Form
@@ -19,7 +20,7 @@ class StylePageItemForm extends Form
     public function render()
     {
         return _Rows(
-            _Button('campaign.clear')->selfPost('clearStyles')->refresh()->class('mb-4'),
+            _Button('campaign.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
             _InputNumber('campaign.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
             _Input('campaign.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
             _Columns(
@@ -64,5 +65,7 @@ class StylePageItemForm extends Form
 
         $this->styleModel->content = "";
         $this->styleModel->save();
+
+        return PageEditor::getItemStylesFormComponent($this->model->id);
     }
 }

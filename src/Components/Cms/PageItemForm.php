@@ -71,7 +71,9 @@ class PageItemForm extends Form
             )->label('campaign.zone-content'),
             _Tab(
                 _Rows(
-                    PageEditor::getItemStylesFormComponent($this->model->id),
+                    _Panel(
+                        PageEditor::getItemStylesFormComponent($this->model->id),
+                    )->id('item_styles_form')->class('mt-4'),
                     _Panel(
                         $this->model->id ? $this->model->getPageItemType()?->blockTypeEditorStylesElement() : _Html(''),
                     )->id(static::ITEM_FORM_STYLES_ID)->class('mt-4'),
