@@ -116,7 +116,7 @@ abstract class PageItemType
                 ->class('border-2 border-dashed box-content border-gray-300 hover:border-blue-600 w-full py-1 px-2')
                 ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
                 ->inPanel($this->editPanelId)
-                ->run('() => {document.querySelector(".kompoScrollableContent").scrollTop = 0;}'),
+                ->run('() => {if(document.querySelector(".kompoScrollableContent")) { document.querySelector(".kompoScrollableContent").scrollTop = 0;} }'),
         )->class('group relative mb-3 mt-10')->style('flex-grow: 1');
     }
 
@@ -259,7 +259,7 @@ abstract class PageItemType
      * Get the default classes for the item.
      * @return string
      */
-    protected function defaultClasses($pageItem): string
+    public function defaultClasses($pageItem): string
     {
         return '';
     }
@@ -268,9 +268,9 @@ abstract class PageItemType
      * Get the default styles for the item.
      * @return string
      */
-    protected function defaultStyles($pageItem): string
+    public function defaultStyles($pageItem): string
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id) ?? '';
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id)->content ?? '';
     }
 
     protected function overrideStyles($styles, $withDefault = false)
@@ -284,24 +284,24 @@ abstract class PageItemType
         return $this;
     }
 
-    public static function getDefaultBackgroundColor()
+    public static function getDefaultBackgroundColor($pageId = null)
     {
-        return '#ffffff';
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->background_color ?? '#ffffff';
     }
 
-    public static function getDefaultTextColor()
+    public static function getDefaultTextColor($pageId = null)
     {
-        return '#000000';
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->color ?? '#000000';
     }
 
-    public static function getDefaultFontSize()
+    public static function getDefaultFontSize($pageId = null)
     {
-        return 16;
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->font_size_raw ?? 16;
     }
 
-    public static function getDefaultLinkColor()
+    public static function getDefaultLinkColor($pageId = null)
     {
-        return '#2443e0';
+        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->link_color ?? '#2443e0';
     }
 
     /** AUTHORIZATION */

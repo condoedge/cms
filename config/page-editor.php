@@ -53,5 +53,12 @@ return [
         'text-align' => '',
 
         'link-color' => '',
+
+        'height' => 'px',
+        'width' => 'px',
+
+        'border-radius' => 'px',
+
+        'align-items' => '',
     ],
 ];

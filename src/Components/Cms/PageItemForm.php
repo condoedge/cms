@@ -58,7 +58,7 @@ class PageItemForm extends Form
                     _Columns(
                         _Select('translate.page-editor.zone-type')->options(
                             $types,
-                        )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
+                        )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form') && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
                         $this->model->id ? _DeleteButton('translate.page-editor.clear')->byKey($this->model)->refresh('page_design_form')->col('col-md-4') : null,
                     )->class('items-center'),
                     _Input('translate.page-editor.zone-name')->name('name_pi'),
@@ -72,12 +72,13 @@ class PageItemForm extends Form
             _Tab(
                 _Rows(
                     _Panel(
-                        PageEditor::getItemStylesFormComponent($this->model->id),
+                        $this->getStyleFormComponent(),
                     )->id('item_styles_form')->class('mt-4'),
                     _FlexBetween(
-                        _SubmitButton('translate.page-editor.save')->class('ml-auto mt-3')
+                        _Button('translate.page-editor.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
+                        _SubmitButton('translate.page-editor.save')->class('ml-auto')
                             ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                    ),
+                    )->class('gap-4 mt-3'),
                 )->class('!mb-2')
             )->label('translate.page-editor.zone-styles'),
         );
@@ -92,6 +93,24 @@ class PageItemForm extends Form
                 'with_editor' => true
             ]
         );
+    }
+
+    public function getStyleFormComponent()
+    {
+        return PageEditor::getItemStylesFormComponent($this->model->id, [
+            'page_id' => $this->pageId,
+            'block_type' => request('block_type') ?? $this->model->block_type,
+        ]);
+    }
+
+    public function setGenericStyles()
+    {
+        $styleModel = PageItemStyleModel::getGenericStylesOfType($this->model->getPageItemType()::class, $this->pageId) ?? PageItemStyleModel::make();
+        PageStyle::setStylesToModel($styleModel);
+        
+        $styleModel->block_type = request('block_type');
+        $styleModel->page_id = $this->pageId;
+        $styleModel->save();
     }
 
     public function itemForm()

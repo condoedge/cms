@@ -30,6 +30,13 @@ class ElementType1Item extends GroupPageItemType
         ];
     }
 
+    public function blockTypeEditorStylesElement()
+    {
+        return _Rows(
+            _Input('translate.page-editor.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+        );
+    }
+
     protected function ckItemStyles($pageItem, $parentPageItem)
     {
         $styles = 'padding: 30px !important;';
@@ -52,7 +59,7 @@ class ElementType1Item extends GroupPageItemType
     protected function buttonItemStyles($pageItem, $parentPageItem)
     {
         $styles = 'border-radius: 5px;';
-        $styles .= 'background-color: ' . $parentPageItem->getBackgroundColor() . '!important;';
+        $styles .= 'background-color: ' . $parentPageItem->getLinkColor() . '!important;';
         $styles .= 'color: white !important;';
 
         return $styles;

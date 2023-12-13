@@ -25,10 +25,6 @@ class ButtonItem extends PageItemType
     public function beforeSave($model = null)
     {
         parent::beforeSave($model);
-
-        $this->pageItem->content = collect(config('kompo.locales'))->mapWithKeys(function ($language, $locale) {
-            return [$locale => request($this->nameContent)];
-        })->all();
     }
 
     public function blockTypeEditorElement()

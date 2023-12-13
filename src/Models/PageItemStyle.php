@@ -19,7 +19,7 @@ class PageItemStyle extends PageItemStyleModel
 
     public function pageItem()
     {
-        return $this->belongsTo(PageItem::class);
+        return $this->belongsTo(PageItem::class, 'page_item_id');
     }
 
     public function page()
@@ -36,6 +36,7 @@ class PageItemStyle extends PageItemStyleModel
         return static::where('block_type', $class::ITEM_NAME)
             ->when($pageId, fn($q) => $q->where('page_id', $pageId))
             ->whereNull('page_item_id')
-            ->first()?->content;
+            ->orderBy('page_id', 'desc')
+            ->first();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Models\Traits;
 
-use Illuminate\Database\Eloquent\Model;
+use Kompo\Model;
 use Kompo\Core\FileHandler;
 
 trait HasImageTrait

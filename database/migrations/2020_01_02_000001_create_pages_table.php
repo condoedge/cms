@@ -25,10 +25,8 @@ class CreatePagesTable extends Migration
             $table->string('permalink', 1000)->nullable();
             $table->string('exterior_background_color')->nullable();
 
-            if(Features::hasFeature('teams')) {
-                $table->foreignId('team_id')->nullable()->constrained();
-            }
-
+            $table->foreignId('team_id')->nullable()->constrained();
+            
             $table->timestamps();
             $table->softDeletes();
         });

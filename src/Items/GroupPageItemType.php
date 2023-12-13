@@ -39,28 +39,20 @@ class GroupPageItemType extends PageItemType
     }
 
     public function beforeSave($model = null)
-    {
-        collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType, $i) use ($model) {
-            $instance = new $groupItemType($this->pageItem, false);
-
-            $instance->setPrefixFormNames($i . '_');
-
-            $instance->beforeSave($model);
-        });
-    }
+    {}
 
     public function afterSave($model = null)
     {
         if(!$model) return;
 
-        $groupItems = collect();
-
-        collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i) use ($groupItems, $model) {
+        $groupItemsToSave = collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i) use ($model) {
             $title = request($i . '_title');
             $content = request($i . '_content');
             $image = request($i . '_image');
 
             $item = $this->groupItems[$i] ?? PageItemModel::make();
+
+            $instance = new $groupItemType($item, false);
 
             $item->title = $title;
             $item->content = $content;
@@ -73,17 +65,22 @@ class GroupPageItemType extends PageItemType
                 $item->manualUploadImage($image);
             }
 
-            $groupItems->push($item);
+            $instance->setPrefixFormNames($i . '_');
+            $instance->beforeSave($item);
+
+            return $item;
         });
 
-        $model->groupPageItems()->saveMany($groupItems);
+        $this->groupItems = $model->groupPageItems()->saveMany($groupItemsToSave);
 
-        collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType) use ($model) {
-            $instance = new $groupItemType($this->pageItem, false);
+        collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType, $i) use ($model) {
+            $item = $this->groupItems[$i];
 
-            $instance->setPrefixFormNames('0_');
+            $instance = new $groupItemType($item, false);
 
-            $instance->afterSave($model);
+            $instance->setPrefixFormNames($i . '_');
+
+            $instance->afterSave($item);
         });
     }
 

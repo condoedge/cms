@@ -5,6 +5,7 @@ namespace Anonimatrix\PageEditor\Models;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 
 class PageItem extends PageItemModel
 {
@@ -49,12 +50,25 @@ class PageItem extends PageItemModel
 
     public function styles()
     {
-        return $this->hasOne(PageItemStyle::class);
+        return $this->hasOne(PageItemStyle::class, 'page_item_id', 'id');
     }
 
     /* ATTRIBUTES */
 
     /* CALCULATED FIELDS */
+    public function getOrCreateStyles()
+    {
+        if (!$this->styles) {
+            $styleModel = PageItemStyleModel::make();
+            $styleModel->content = "";
+            $this->styles()->save($styleModel);
+
+            return $styleModel->refresh();
+        } else {
+            return $this->styles;
+        }
+    }
+
     public static function allPageItemTypes()
     {
         return collect(array_merge(config('page-editor.types'), config('page-editor.hidden_types')));
@@ -94,22 +108,22 @@ class PageItem extends PageItemModel
 
     public function getBackgroundColor()
     {
-        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor() : '#ffffff');
+        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor($this->page_id) : '#ffffff');
     }
 
     public function getTextColor()
     {
-        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor() : '#000000');
+        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page_id) : '#000000');
     }
 
     public function getFontSize()
     {
-        return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize() : 16);
+        return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize($this->page_id) : 16);
     }
 
     public function getLinkColor()
     {
-        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor() : '#0000ff');
+        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor($this->page_id) : '#0000ff');
     }
 
     public function getFontFamily()
@@ -170,5 +184,15 @@ class PageItem extends PageItemModel
     public function scopeNotLinked($query)
     {
         return $query->whereNull('page_item_id')->whereNull('group_page_item_id');
+    }
+
+    /* ACTIONS */
+    public function save(array $options = [])
+    {
+        $this->getPageItemType()?->beforeSave($this);
+        $result = parent::save($options);
+        $this->getPageItemType()?->afterSave($this);
+
+        return $result;
     }
 }

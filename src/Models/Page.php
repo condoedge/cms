@@ -32,6 +32,8 @@ class Page extends PageModel
         }
     }
 
+    public function afterSave() {}
+
 	/* RELATIONS */
     public function user() //the author
     {
@@ -150,4 +152,12 @@ class Page extends PageModel
         return true;
     }
 
+    public function save(array $options = [])
+    {
+        $this->beforeSave($this);
+        $result = parent::save($options);
+        $this->afterSave($this);
+
+        return $result;
+    }
 }

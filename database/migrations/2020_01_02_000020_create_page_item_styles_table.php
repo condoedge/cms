@@ -17,8 +17,8 @@ class CreatePageItemStylesTable extends Migration
             $table->id();
             $table->string('content', 1000)->nullable();
             $table->string('block_type')->nullable();
-            $table->foreignId('page_item_id')->nullable()->constrained();
-            $table->foreignId('page_id')->nullable()->constrained(); // If page_id is null, it's a generic style
+            $table->foreignId('page_item_id')->nullable()->constrained('page_items');
+            $table->foreignId('page_id')->nullable()->constrained(); // If page_id or page_item_id is null, it's a generic style
             $table->timestamps();
             $table->softDeletes();
         });
