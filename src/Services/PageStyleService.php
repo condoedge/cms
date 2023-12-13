@@ -11,9 +11,11 @@ class PageStyleService
         $this->automaticStyles = $autoStyles;
     }
 
-    public function setStylesToModel($model)
+    public function setStylesToModel($model, $otherStyles = [])
     {
-        foreach ($this->automaticStyles as $styleName => $styleSuffix) {
+        $stylesToMap = array_merge($this->automaticStyles, $otherStyles);
+
+        foreach ($stylesToMap as $styleName => $styleSuffix) {
             if(!request($styleName)) {
                 $model->content->removeProperty($styleName);
                 continue;

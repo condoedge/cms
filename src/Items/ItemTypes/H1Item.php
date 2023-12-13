@@ -55,4 +55,9 @@ class H1Item extends PageItemType
 
         return $styles;
     }
+
+    public static function getDefaultFontSize($teamId = null, $page = null)
+    {
+        return static::defaultGenericStyles($teamId)?->font_size_raw ?? 18;
+    }
 }

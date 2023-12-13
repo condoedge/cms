@@ -3,6 +3,7 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\Abstracts\PageItemStyleModel;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 
 class PageItemStyle extends PageItemStyleModel
 {
@@ -27,16 +28,35 @@ class PageItemStyle extends PageItemStyleModel
         return $this->belongsTo(Page::class);
     }
 
-    public static function getGenericStylesOfType(string $class, $pageId = null)
+    public function beforeSave()
+    {
+        if(Features::hasFeature('teams'))
+        {
+            $this->team_id = auth()->user()->current_team_id;
+        }
+    }
+
+    public function afterSave() { }
+
+    public static function getGenericStylesOfType(string $class, $teamId = null)
     {
         if(!app('page-item-types')->contains($class)) {
             throw new \Exception("Class $class is not a valid page item type. Please check in the PageItemServiceProvider");
         }
 
         return static::where('block_type', $class::ITEM_NAME)
-            ->when($pageId, fn($q) => $q->where('page_id', $pageId))
+            ->when($teamId, fn($q) => $q->where('team_id', $teamId))
             ->whereNull('page_item_id')
-            ->orderBy('page_id', 'desc')
+            ->whereNull('page_id')
             ->first();
+    }
+
+    public function save(array $options = [])
+    {
+        $this->beforeSave();
+        $result = parent::save($options);
+        $this->afterSave();
+
+        return $result;
     }
 }

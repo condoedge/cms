@@ -29,8 +29,6 @@ class StylePageItemForm extends Form
         $this->model->block_type = $this->blockType;
         $this->model->page_id = $this->pageId;
 
-        $defaultStyles = new Style($this->model->getPageItemType()?->defaultStyles($this->model));
-
         return _Rows(
             _Button('translate.page-editor.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
             _InputNumber('translate.page-editor.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
@@ -38,7 +36,7 @@ class StylePageItemForm extends Form
             _Columns(
                 _Input('translate.page-editor.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
             )->class('!mb-0'),
-            _Select('translate.page-editor.text-align')->name('text-align', false)->default($this->styleModel?->text_align ?: $defaultStyles?->text_align ?: 'center')
+            _Select('translate.page-editor.text-align')->name('text-align', false)->default($this->model?->getStyleProperty('text_align') ?: 'center')
                 ->options([
                     'left' => 'translate.page-editor.left',
                     'center' => 'translate.page-editor.center',
@@ -51,10 +49,10 @@ class StylePageItemForm extends Form
                 _Html('translate.page-editor.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
                 _Html('translate.page-editor.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
-                    _Input()->placeholder('translate.page-editor.top')->name('padding-top', false)->default($this->styleModel?->padding_top_raw ?: $defaultStyles?->padding_top_raw)->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.right')->name('padding-right', false)->default($this->styleModel?->padding_right_raw ?: $defaultStyles?->padding_right_raw)->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.bottom')->name('padding-bottom', false)->default($this->styleModel?->padding_bottom_raw ?: $defaultStyles?->padding_bottom_raw)->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.left')->name('padding-left', false)->default($this->styleModel?->padding_left_raw ?: $defaultStyles?->padding_left_raw)->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
                 ),
                 _Input()->placeholder('translate.page-editor.styles')
                     ->name('styles', false)

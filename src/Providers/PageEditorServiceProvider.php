@@ -47,8 +47,8 @@ class PageEditorServiceProvider extends ServiceProvider
             $featureService = new FeaturesService();
 
             collect(config('page-editor.features', []))
-                ->each(function ($feature) use ($featureService) {
-                    $featureService->addFeature($feature);
+                ->each(function ($val, $feature) use ($featureService) {
+                    if($val) $featureService->addFeature($feature);
                 });
 
             return $featureService;

@@ -10,8 +10,8 @@ class TeamsService
     {
         $this->teamClass = $class ?? config('page-editor.teams.model');
 
-        if (class_implements($class, \Anonimatrix\PageEditor\Models\Contracts\TeamContract::class)) {
-            throw new \Exception("Class $class must implement the TeamContract interface");
+        if (!in_array(\Anonimatrix\PageEditor\Models\Contracts\TeamContract::class, class_implements($this->teamClass))) {
+            throw new \Exception("Class {$this->teamClass} must implement the TeamContract interface");
         }
     }
 

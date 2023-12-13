@@ -108,22 +108,22 @@ class PageItem extends PageItemModel
 
     public function getBackgroundColor()
     {
-        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor($this->page_id) : '#ffffff');
+        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor($this->page?->team_id, $this->page) : '#ffffff');
     }
 
     public function getTextColor()
     {
-        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page_id) : '#000000');
+        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page?->team_id, $this->page) : '#000000');
     }
 
     public function getFontSize()
     {
-        return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize($this->page_id) : 16);
+        return $this->styles?->content?->font_size_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultFontSize($this->page?->team_id, $this->page) : 16);
     }
 
     public function getLinkColor()
     {
-        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor($this->page_id) : '#0000ff');
+        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor($this->page?->team_id, $this->page) : '#0000ff');
     }
 
     public function getFontFamily()
@@ -138,6 +138,11 @@ class PageItem extends PageItemModel
         }
 
         return \Storage::url($this->image['path']);
+    }
+
+    public function getStyleProperty($property)
+    {
+        return $this->styles?->content?->$property ?? !$this->getPageItemTypeStatic() ? null : PageItemStyleModel::getGenericStylesOfType($this->getPageItemTypeStatic(), $this->page->team_id)?->content?->$property ?? $this->page->getStyleProperty($property);
     }
 
     /* ACTIONS */

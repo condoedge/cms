@@ -270,7 +270,12 @@ abstract class PageItemType
      */
     public function defaultStyles($pageItem): string
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageItem->page_id)->content ?? '';
+        return static::defaultGenericStyles($pageItem->page?->team?->id) ?? '';
+    }
+
+    public static function defaultGenericStyles($teamId = null): string|Style
+    {
+        return PageItemStyle::getGenericStylesOfType(static::class, $teamId)->content ?? '';
     }
 
     protected function overrideStyles($styles, $withDefault = false)
@@ -284,24 +289,24 @@ abstract class PageItemType
         return $this;
     }
 
-    public static function getDefaultBackgroundColor($pageId = null)
+    public static function getDefaultBackgroundColor($teamId = null, $page = null)
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->background_color ?? '#ffffff';
+        return static::defaultGenericStyles($teamId)?->background_color ?? $page->getContentBackgroundColor() ?? '#ffffff';
     }
 
-    public static function getDefaultTextColor($pageId = null)
+    public static function getDefaultTextColor($teamId = null, $page = null)
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->color ?? '#000000';
+        return static::defaultGenericStyles($teamId)?->color ?? $page->getTextColor() ??  '#000000';
     }
 
-    public static function getDefaultFontSize($pageId = null)
+    public static function getDefaultFontSize($teamId = null, $page = null)
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->font_size_raw ?? 16;
+        return static::defaultGenericStyles($teamId)?->font_size_raw ?? $page->getFontSize() ?? 12;
     }
 
-    public static function getDefaultLinkColor($pageId = null)
+    public static function getDefaultLinkColor($teamId = null, $page = null)
     {
-        return PageItemStyle::getGenericStylesOfType(static::class, $pageId)?->content?->link_color ?? '#2443e0';
+        return static::defaultGenericStyles($teamId)?->link_color ?? $page->getLinkColor() ?? '#2443e0';
     }
 
     /** AUTHORIZATION */

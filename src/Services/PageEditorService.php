@@ -23,14 +23,17 @@ class PageEditorService
     public function setRoutes($route = 'crm/page/{page_id}/preview')
     {
         // We need to remove layout
-        Route::layout('layouts.main')->middleware(['auth'])->group(function() use ($route) {
-            Route::get($route, \Anonimatrix\PageEditor\Components\Cms\PagePreview::class)->name('page.preview');
-        });
+        Route::get($route, \Anonimatrix\PageEditor\Components\Cms\PagePreview::class)->name('page.preview');
     }
 
     public function getPageItemFormComponent(...$args)
     {
         return new (config('page-editor.components.page-item-form', \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class))(...$args);
+    }
+
+    public function getPageStyleFormComponent(...$args)
+    {
+        return new (config('page-editor.components.page-style-form', \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class))(...$args);
     }
 
     public function getPagePreviewComponent(...$args)

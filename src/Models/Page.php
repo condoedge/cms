@@ -69,6 +69,11 @@ class Page extends PageModel
         return $this->pageItems()->notLinked()->orderBy('order');
     }
 
+    public function styles()
+    {
+        return $this->hasOne(PageItemStyle::class, 'page_id', 'id');
+    }
+
     /* CALCULATED FIELDS */
     public function getHtmlContent($variables = [])
     {
@@ -104,6 +109,31 @@ class Page extends PageModel
     public function getExteriorBackgroundColor()
     {
         return $this->exterior_background_color ?: '#ECEEF2';
+    }
+
+    public function getStyleProperty($property)
+    {
+        return $this->styles?->content?->$property;
+    }
+
+    public function getContentBackgroundColor()
+    {
+        return $this->getStyleProperty('background_color') ?: '#FFFFFF';
+    }
+
+    public function getTextColor()
+    {
+        return $this->getStyleProperty('color') ?: '#000000';
+    }
+
+    public function getLinkColor()
+    {
+        return $this->getStyleProperty('link_color') ?: '#003AB3';
+    }
+
+    public function getFontSize()
+    {
+        return $this->getStyleProperty('font_size_raw') ?: 12;
     }
 
     /* ELEMENTS */

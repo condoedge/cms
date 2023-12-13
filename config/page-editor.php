@@ -13,10 +13,12 @@ return [
         'page-design-form' => \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class,
         'page-item-form' => \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class,
         'page-preview' => \Anonimatrix\PageEditor\Components\Cms\PagePreview::class,
+        'page-style-form' => \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class,
     ],
 
     'types' => [
         \Anonimatrix\PageEditor\Items\ItemTypes\H1Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\NumberLineItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\VideoItem::class,
@@ -25,18 +27,18 @@ return [
         \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
     ],
-    
+
     'hidden_types' => [ // Won't be displayed, but it will work in groups
         \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
     ],
 
     'features' => [
         'teams' => false,
-        'editor_variables' => false,
+        'editor_variables' => true,
     ],
 
     'teams' => [
-        // 'model' => \App\Models\Team::class,
+        // 'model' => \App\Models\Teams\Team::class,
     ],
 
     'default_font_family' => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
@@ -60,5 +62,9 @@ return [
         'border-radius' => 'px',
 
         'align-items' => '',
+
+        'bg-number-color' => '',
+        'font-size-number' => 'px',
+        'bg-size-number' => 'px',
     ],
 ];
