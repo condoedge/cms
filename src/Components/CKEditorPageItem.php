@@ -16,19 +16,24 @@ class CKEditorPageItem extends TranslatableEditor
 
 		$this->class('vlTranslatableEditor relative comms-editor');
 
-        $variables = Features::hasFeature('editor_variables')
-            ? Variables::getVariables()
-            : [];
-
-		$this->config([
-			'variables' => $variables,
-		]);
+        $this->setVariablesSection();
 	}
 
     public function withoutHeight()
     {
         return $this->config([
             'withoutHeight' => true,
+        ]);
+    }
+
+    public function setVariablesSection($section = 'default')
+    {
+        $variables = Features::hasFeature('editor_variables')
+            ? Variables::getVariables($section)
+            : [];
+
+        $this->config([
+            'variables' => $variables,
         ]);
     }
 }

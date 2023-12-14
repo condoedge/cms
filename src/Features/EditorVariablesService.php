@@ -6,9 +6,9 @@ class EditorVariablesService
 {
     protected $variables = [];
 
-    public function setVariables(callable $callback)
+    public function setVariables(callable $callback, $section = 'default')
     {
-        $this->variables = $callback($this);
+        $this->variables[$section] = $callback($this);
     }
 
     public function link($label, $type, $class = null)
@@ -18,8 +18,8 @@ class EditorVariablesService
             ->emitRoot('insertVariable', ['type' => $type, 'label' => __($label)]);
 	}
 
-    public function getVariables()
+    public function getVariables($section = 'default')
     {
-        return $this->variables;
+        return $this->variables[$section];
     }
 }
