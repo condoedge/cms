@@ -3,12 +3,14 @@
 namespace Anonimatrix\PageEditor\Models;
 
 use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
+use Anonimatrix\PageEditor\Models\Traits\HasPackageFactory;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Features\Teams;
 use App\Models\User;
 
 class Page extends PageModel
 {
+    use HasPackageFactory;
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Models\Traits\PageCopyTrait;

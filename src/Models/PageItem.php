@@ -5,10 +5,12 @@ namespace Anonimatrix\PageEditor\Models;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\Abstracts\PageItemModel;
+use Anonimatrix\PageEditor\Models\Traits\HasPackageFactory;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 
 class PageItem extends PageItemModel
 {
+    use HasPackageFactory;
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Models\Traits\HasImageTrait;
