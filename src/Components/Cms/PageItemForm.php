@@ -73,7 +73,7 @@ class PageItemForm extends Form
                 _Rows(
                     _Panel(
                         $this->getStyleFormComponent(),
-                    )->id('item_styles_form')->class('mt-4'),
+                    )->id('item_styles_form'),
                     _FlexBetween(
                         _Button('translate.page-editor.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
                         _SubmitButton('translate.page-editor.save')->class('ml-auto')

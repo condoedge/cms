@@ -94,7 +94,7 @@ class Style {
      */
     public function removeProperty($propertyToRemove)
     {
-        $this->rawStyle = preg_replace("/(^|;)\s*{$propertyToRemove}:(.*?);/", '', $this->rawStyle);
+        $this->rawStyle = preg_replace("/(^|;)\s*{$propertyToRemove}:(.*?);/", '$1', $this->rawStyle);
     }
 
     /**

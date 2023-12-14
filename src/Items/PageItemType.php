@@ -33,6 +33,10 @@ abstract class PageItemType
 
     protected $interactsWithPageItem = true;
 
+    public const DISABLE_AUTO_STYLES = false;
+
+    public const ONLY_CUSTOM_STYLES = false;
+
     public function __construct(Model $pageItem, $interactsWithPageItem = true)
     {
         $this->content = $pageItem?->content ?: '';
@@ -78,6 +82,8 @@ abstract class PageItemType
 
     final protected function toElementWithStyles()
     {
+        if(static::DISABLE_AUTO_STYLES) return $this->toElement();
+
         return $this->toElement()?->style((string) $this->styles)?->class($this->classes);
     }
 
@@ -307,6 +313,30 @@ abstract class PageItemType
     public static function getDefaultLinkColor($teamId = null, $page = null)
     {
         return static::defaultGenericStyles($teamId)?->link_color ?? $page->getLinkColor() ?? '#2443e0';
+    }
+
+    /* STYLES ELEMENTS */
+    protected function justifyStylesEls()
+    {
+        return _Rows(
+            _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('align-items', false)->options([
+                'start' => __('cms.left'),
+                'center' => __('cms.center'),
+                'end' => __('cms.right'),
+            ])->optionClass('px-4 py-2 text-center cursor-pointer')
+            ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
+            ->value($this->styles->align_items ?: 'center'),
+        );
+    }
+
+    protected function borderWidthsStylesEls()
+    {
+        return _Columns(
+            _Input()->placeholder('translate.page-editor.border-top')->name('border-top-width', false)->default($this->styles?->border_top_width_raw)->class('whiteField'),
+            _Input()->placeholder('translate.page-editor.border-right')->name('border-right-width', false)->default($this->styles?->border_right_width_raw)->class('whiteField'),
+            _Input()->placeholder('translate.page-editor.border-bottom')->name('border-bottom-width', false)->default($this->styles?->border_bottom_width_raw)->class('whiteField'),
+            _Input()->placeholder('translate.page-editor.border-left')->name('border-left-width', false)->default($this->styles?->border_left_width_raw)->class('whiteField'),
+        );
     }
 
     /** AUTHORIZATION */

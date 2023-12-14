@@ -25,6 +25,7 @@ return [
         \Anonimatrix\PageEditor\Items\ItemTypes\CKItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ButtonItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\BoxedContentItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
     ],
 
@@ -60,12 +61,52 @@ return [
         'width' => 'px',
         'max-width' => '%',
 
-        'border-radius' => 'px',
-
         'align-items' => '',
 
         'bg-number-color' => '',
         'font-size-number' => 'px',
         'bg-size-number' => 'px',
+
+        'preset-color' => '',
+
+        'border-radius' => 'px',
+        'border-color' => '',
+        'border-top-width' => 'px',
+        'border-bottom-width' => 'px',
+        'border-left-width' => 'px',
+        'border-right-width' => 'px',
+    ],
+
+    'boxed_content' => [
+        'gray' => [
+            'background-color' => '#f5f5f5',
+            'color' => '#000000',
+            'border-color' => '#d5d5d5',
+            'label' => 'translate.page-editor.gray',
+        ],
+        'blue' => [
+            'background-color' => '#e6f7ff',
+            'color' => '#000000',
+            'border-color' => '#98cde5',
+            'label'=> 'translate.page-editor.blue',
+        ],
+        'green' => [
+            'background-color' => '#f0fff0',
+            'color' => '#000000',
+            'border-color' => '#c6dfc6',
+            'label' => 'translate.page-editor.green',
+        ],
+        'yellow' => [
+            'background-color' => '#ffffe6',
+            'color' => '#000000',
+            'border-color' => '#ffffcc',
+            'label' => 'translate.page-editor.yellow',
+        ],
+        'red' => [
+            'background-color' => '#ffe6e6',
+            'color' => '#000000',
+            'border-color' => '#ffcccc',
+            'label' => 'translate.page-editor.red',
+        ],
     ],
 ];

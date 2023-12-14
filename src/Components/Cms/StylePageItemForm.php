@@ -31,20 +31,23 @@ class StylePageItemForm extends Form
 
         return _Rows(
             _Button('translate.page-editor.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
-            _InputNumber('translate.page-editor.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
-            _Input('translate.page-editor.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
-            _Columns(
-                _Input('translate.page-editor.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
-            )->class('!mb-0'),
-            _Select('translate.page-editor.text-align')->name('text-align', false)->default($this->model?->getStyleProperty('text_align') ?: 'center')
-                ->options([
-                    'left' => 'translate.page-editor.left',
-                    'center' => 'translate.page-editor.center',
-                    'right' => 'translate.page-editor.right',
-                ])->class('mb-2 whiteField'),
+            $this->model->getPageItemType() && $this->model->getPageItemType()::ONLY_CUSTOM_STYLES ? null : 
             _Rows(
-                $this->extraInputs(),
-            ),
+                _InputNumber('translate.page-editor.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
+                _Input('translate.page-editor.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
+                _Columns(
+                    _Input('translate.page-editor.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
+                )->class('!mb-0'),
+                _Select('translate.page-editor.text-align')->name('text-align', false)->default($this->model?->getStyleProperty('text_align') ?: 'center')
+                    ->options([
+                        'left' => 'translate.page-editor.left',
+                        'center' => 'translate.page-editor.center',
+                        'right' => 'translate.page-editor.right',
+                    ])->class('mb-2 whiteField'),
+                _Rows(
+                    $this->extraInputs(),
+                ),
+            )->class('mb-4'),
             _Rows(
                 _Html('translate.page-editor.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
                 _Html('translate.page-editor.padding-px')->class('font-semibold text-sm mb-1'),
@@ -68,7 +71,7 @@ class StylePageItemForm extends Form
 
                 _Input('translate.page-editor.constructed-styles')->class('disabled mt-2')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
 
-            )->class('bg-gray-100 p-4'),
+            )->class('bg-gray-100 px-4 pb-4'),
         );
     }
 
