@@ -142,7 +142,7 @@ class PageItem extends PageItemModel
 
     public function getStyleProperty($property)
     {
-        return $this->styles?->content?->$property ?? !$this->getPageItemTypeStatic() ? null : PageItemStyleModel::getGenericStylesOfType($this->getPageItemTypeStatic(), $this->page->team_id)?->content?->$property ?? $this->page->getStyleProperty($property);
+        return $this->styles?->content?->$property ?? (!$this->getPageItemTypeStatic() ? null : PageItemStyleModel::getGenericStylesOfType($this->getPageItemTypeStatic(), $this->page->team_id)?->content?->$property) ?? $this->page->getStyleProperty($property);
     }
 
     /* ACTIONS */
