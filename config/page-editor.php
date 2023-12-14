@@ -58,6 +58,7 @@ return [
 
         'height' => 'px',
         'width' => 'px',
+        'max-width' => '%',
 
         'border-radius' => 'px',
 

@@ -24,6 +24,8 @@ class PageEditorServiceProvider extends ServiceProvider
 
         $this->loadTranslations();
 
+        $this->loadRoutes();
+
         PageModel::creating(function ($page) {
             $page->beforeSave();
         });
@@ -124,6 +126,11 @@ class PageEditorServiceProvider extends ServiceProvider
     protected function loadConfig(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/page-editor.php', 'page-editor');
+    }
+
+    protected function loadRoutes()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../../routes/page-editor.php');
     }
 
     protected function loadTranslations(): void

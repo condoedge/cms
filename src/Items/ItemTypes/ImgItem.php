@@ -4,11 +4,12 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Items\PageItemType;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 
 class ImgItem extends PageItemType
 {
+    public const PANEL_MAX_WIDTH_ID = 'panelMaxWidth';
+
     public const ITEM_TAG = 'div';
     public const ITEM_NAME = 'img';
     public const ITEM_TITLE = 'newsletter.image';
@@ -26,7 +27,8 @@ class ImgItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Image('newsletter.image')->name($this->nameImage, $this->interactsWithPageItem);
+        $item = _Image('newsletter.image')->name($this->nameImage, $this->interactsWithPageItem)
+            ->post('page-editor.get-image-size', ['default' => $this->pageItem->getStyleProperty('max_width_raw')])->inPanel(static::PANEL_MAX_WIDTH_ID);
 
         if ($this->valueImage) $item = $item->default($this->valueImage);
 
@@ -47,15 +49,35 @@ class ImgItem extends PageItemType
     protected function sizeStyles()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 100)),
-            _InputNumber('newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: 100)),
+            _InputNumber('newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200)),
+            _InputNumber('newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null)),
+            _Panel(
+                static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
+            )->id(static::PANEL_MAX_WIDTH_ID),
         );
+    }
+
+    public static function getDefaultMaxWidth($default = null)
+    {
+        $maxWidth = $default ?? request('default') ?: 100;
+
+        $image = request()->file('image');
+
+        if($image) {
+            $sizes = getimagesize($image->getRealPath());
+
+            $isPortrait = $sizes[0] < $sizes[1];
+
+            $maxWidth = (int) ($isPortrait ? 60 : 80);
+        }
+
+        return _InputNumber('newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) ($maxWidth));
     }
 
     protected function justifyStyles()
     {
         return _Rows(
-            _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('justify', false)->options([
+            _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('align-items', false)->options([
                 'start' => __('cms.left'),
                 'center' => __('cms.center'),
                 'end' => __('cms.right'),
