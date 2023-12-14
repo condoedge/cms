@@ -21,12 +21,7 @@ class ButtonItem extends PageItemType
             'href' => $pageItem->content,
         ];
     }
-
-    public function beforeSave($model = null)
-    {
-        parent::beforeSave($model);
-    }
-
+    
     public function blockTypeEditorElement()
     {
         $buttonTitleEl = _Translatable('newsletter.button-title')->name($this->nameTitle, $this->interactsWithPageItem);

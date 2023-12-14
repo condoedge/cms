@@ -26,6 +26,7 @@ return [
         \Anonimatrix\PageEditor\Items\ItemTypes\ButtonItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\BoxedContentItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\OtherPageItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
     ],
 

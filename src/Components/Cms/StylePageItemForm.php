@@ -49,7 +49,7 @@ class StylePageItemForm extends Form
                 ),
             )->class('mb-4'),
             _Rows(
-                _Html('translate.page-editor.custom-padding-and-styles')->class('text-sm font-semibold mb-4'),
+                _Html('translate.page-editor.custom-padding-and-styles')->class('font-semibold mb-4'),
                 _Html('translate.page-editor.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
                     _Input()->placeholder('translate.page-editor.top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
@@ -64,7 +64,7 @@ class StylePageItemForm extends Form
 
                 _Panel(
                     !$this->model?->getPageItemType()?->blockTypeEditorStylesElement() ? null : _Rows(
-                        _Html('translate.page-editor.styles-for-item')->class('text-sm font-semibold mb-1'),
+                        _Html('translate.page-editor.styles-for-item')->class('text font-semibold mb-1'),
                         $this->model?->getPageItemType()?->blockTypeEditorStylesElement(),
                     )->class('mt-2')
                 )->id(PageItemForm::ITEM_FORM_STYLES_ID),
