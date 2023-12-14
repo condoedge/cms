@@ -52,14 +52,21 @@ class StylePageItemForm extends Form
                 _Html('translate.page-editor.custom-padding-and-styles')->class('font-semibold mb-4'),
                 _Html('translate.page-editor.padding-px')->class('font-semibold text-sm mb-1'),
                 _Columns(
-                    _Input()->placeholder('translate.page-editor.top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
-                    _Input()->placeholder('translate.page-editor.left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.padding-top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.padding-right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.padding-bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.padding-left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
                 ),
-                _Input()->placeholder('translate.page-editor.styles')
-                    ->name('styles', false)
-                    ->class('whiteField'),
+                _Html('translate.page-editor.margin-px')->class('font-semibold text-sm mb-1'),
+                _Columns(
+                    _Input()->placeholder('translate.page-editor.margin-top')->name('margin-top', false)->default($this->model?->getStyleProperty('margin_top_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.margin-right')->name('margin-right', false)->default($this->model?->getStyleProperty('margin_right_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.margin-bottom')->name('margin-bottom', false)->default($this->model?->getStyleProperty('margin_bottom_raw'))->class('whiteField'),
+                    _Input()->placeholder('translate.page-editor.margin-left')->name('margin-left', false)->default($this->model?->getStyleProperty('margin_left_raw'))->class('whiteField'),
+                ),
+                // _Input()->placeholder('translate.page-editor.styles')
+                //     ->name('styles', false)
+                //     ->class('whiteField'),
                 _Input()->placeholder('translate.page-editor.classes')->name('classes')->class('whiteField'),
 
                 _Panel(

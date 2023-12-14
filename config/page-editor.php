@@ -51,6 +51,11 @@ return [
         'padding-left' => 'px',
         'padding-right' => 'px',
 
+        'margin-top' => 'px',
+        'margin-bottom' => 'px',
+        'margin-left' => 'px',
+        'margin-right' => 'px',
+
         'font-size' => 'px',
         'color' => '',
         'background-color' => '',
