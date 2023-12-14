@@ -143,7 +143,7 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/page-editor.php' => config_path('page-editor.php'),
             __DIR__ . '/../../database/migrations/' => database_path('migrations/page-editor'),
-            __DIR__ . '/../Models' => app_path('Models/PageEditor'),
+            // __DIR__ . '/../Models' => app_path('Models/PageEditor'),
             __DIR__ . '/../../resources/lang' => resource_path('lang/vendor/page-editor'),
         ], 'page-editor');
     }
