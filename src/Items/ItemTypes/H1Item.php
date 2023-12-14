@@ -38,6 +38,13 @@ class H1Item extends PageItemType
         return $this->openCloseTag();
     }
 
+    public function rules()
+    {
+        return [
+            'title' => 'required',
+        ];
+    }
+
     public function defaultClasses($pageItem): string
     {
         $classes = parent::defaultClasses($pageItem);

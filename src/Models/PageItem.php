@@ -194,6 +194,8 @@ class PageItem extends PageItemModel
     /* ACTIONS */
     public function save(array $options = [])
     {
+        $this->getPageItemType()?->validate();
+
         $this->getPageItemType()?->beforeSave($this);
         $result = parent::save($options);
         $this->getPageItemType()?->afterSave($this);

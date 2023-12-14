@@ -51,4 +51,11 @@ class OtherPageItem extends PageItemType
     {
         return PageModel::findOrFail($this->content->page_id)->getHtmlContent();
     }
+
+    public function rules()
+    {
+        return [
+            'content' => 'required|exists:pages,id',
+        ];
+    }
 }

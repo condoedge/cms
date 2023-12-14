@@ -111,4 +111,11 @@ class BoxedContentItem extends PageItemType
 
         return $styles;
     }
+
+    public function rules()
+    {
+        return [
+            'content' => 'required',
+        ];
+    }
 }

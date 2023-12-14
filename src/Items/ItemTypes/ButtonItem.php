@@ -21,7 +21,7 @@ class ButtonItem extends PageItemType
             'href' => $pageItem->content,
         ];
     }
-    
+
     public function blockTypeEditorElement()
     {
         $buttonTitleEl = _Translatable('newsletter.button-title')->name($this->nameTitle, $this->interactsWithPageItem);
@@ -48,6 +48,14 @@ class ButtonItem extends PageItemType
         return !$this->content->href || !$this->content->title ? '' : $this->centerElement(
             '<a target="_blank" href="' . $this->content->href . '" style="' . $this->styles . '" class="'. $this->classes . '">' . $this->content->title . '</a>'
         );
+    }
+
+    public function rules()
+    {
+        return [
+            'title' => 'required',
+            'content' => 'required',
+        ];
     }
 
     public function defaultClasses($pageItem): string

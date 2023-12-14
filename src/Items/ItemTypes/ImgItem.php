@@ -123,6 +123,13 @@ class ImgItem extends PageItemType
         );
     }
 
+    public function rules()
+    {
+        return [
+            'image' => 'required',
+        ];
+    }
+
     protected function imgStyles()
     {
         $height = $this->styles->height;

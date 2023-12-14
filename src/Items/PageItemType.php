@@ -6,6 +6,7 @@ use Anonimatrix\PageEditor\Casts\Style;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 
 abstract class PageItemType
 {
@@ -378,6 +379,22 @@ abstract class PageItemType
             'authorized' => $can,
             'message' => $message,
         ];
+    }
+
+    public function validate()
+    {
+        $validator = Validator::make($this->pageItem->getAttributes(), $this->rules());
+
+        if ($validator->fails()) {
+            throw new \Exception("Validator error");
+        }
+
+        return $this;
+    }
+
+    public function rules()
+    {
+        return [];
     }
 
     /* SETTERS */

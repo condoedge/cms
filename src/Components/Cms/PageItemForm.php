@@ -84,6 +84,16 @@ class PageItemForm extends Form
         );
     }
 
+    public function rules()
+    {
+        $itemRules = !$this->model->block_type ? [] : $this->model->getPageItemType()->rules();
+
+        return [
+            'block_type' => 'required',
+            ...$itemRules,
+        ];
+    }
+
     public function getPagePreview()
     {
         return PageEditor::getPagePreviewComponent(

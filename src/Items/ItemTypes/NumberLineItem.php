@@ -68,4 +68,12 @@ class NumberLineItem extends PageItemType
             </div>
         ");
     }
+
+    public function rules()
+    {
+        return [
+            'title' => 'required',
+            'content' => 'required',
+        ];
+    }
 }

@@ -69,4 +69,11 @@ class VideoItem extends PageItemType
 
         return $styles;
     }
+
+    public function rules()
+    {
+        return [
+            'title' => 'required',
+        ];
+    }
 }
