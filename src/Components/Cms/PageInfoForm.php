@@ -11,6 +11,11 @@ class PageInfoForm extends Form
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
+    public function response()
+    {
+        return redirect()->route(request('route'), ['id' => $this->model->id]);
+    }
+
     public function render()
     {
         return _Card(
