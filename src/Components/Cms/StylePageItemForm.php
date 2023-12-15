@@ -14,6 +14,8 @@ class StylePageItemForm extends Form
     protected $pageId;
     protected $blockType;
 
+    protected $prefixGroup = "";
+
     public function created()
     {
         $this->model(PageItemModel::find($this->modelKey()) ?? PageItemModel::make());
@@ -94,7 +96,7 @@ class StylePageItemForm extends Form
             $this->styleModel->save();
         }
 
-        return PageEditor::getItemStylesFormComponent($this->model->id, [
+        return PageEditor::getItemStylesFormComponent($this->prefixGroup, $this->model->id, [
             'page_id' => $this->pageId,
             'block_type' => $this->blockType,
         ]);

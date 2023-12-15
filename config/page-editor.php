@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'default_page_group_type' => 'newsletter',
+    
     'models' => [
         'page' => \Anonimatrix\PageEditor\Models\Page::class,
         'page_item' => \Anonimatrix\PageEditor\Models\PageItem::class,

@@ -9,6 +9,7 @@ use Kompo\Form;
 class PageDesignForm extends Form
 {
     public $id = 'page_design_form';
+    protected $prefixGroup = "";
 
     public const PREVIEW_PAGE_PANEL = 'preview_page_panel';
     public const PAGE_ITEM_PANEL = 'page_item_panel';
@@ -22,7 +23,7 @@ class PageDesignForm extends Form
         return _Rows(
             _Div(
                 _Panel(
-                    PageEditor::getPagePreviewComponent([
+                    PageEditor::getPagePreviewComponent($this->prefixGroup, [
                         'page_id' => $this->model?->id,
                         'panel_id' => static::PAGE_ITEM_PANEL,
                         'with_editor' => true
@@ -30,7 +31,7 @@ class PageDesignForm extends Form
                 )->id(static::PREVIEW_PAGE_PANEL)->class('w-1/2 mt-4'),
                 _Card(
                     _Panel(
-                        $this->getPageItemForm()
+                        $this->model->id ? $this->getPageItemForm() : null,
                     )->id(static::PAGE_ITEM_PANEL),
                 )->class('px-8 py-6 mt-4 w-1/2 bg-gray-100'),
             )->class('vlFlex gap-4 w-full items-start ' . ($this->model?->id ? '' : 'p-6')),
@@ -40,7 +41,7 @@ class PageDesignForm extends Form
 
     public function getPageItemForm()
     {
-        return PageEditor::getPageItemFormComponent(null, [
+        return PageEditor::getPageItemFormComponent($this->prefixGroup, null, [
             'page_id' => $this->model?->id,
             'update_order' => true
         ]);

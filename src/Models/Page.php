@@ -32,6 +32,10 @@ class Page extends PageModel
         if (Features::hasFeature('teams')) {
             $this->team_id = auth()->user()->current_team_id;
         }
+
+        if(!$this->group_type){
+            $this->group_type = config('page-editor.default_page_group_type');
+        }
     }
 
     public function afterSave() {}

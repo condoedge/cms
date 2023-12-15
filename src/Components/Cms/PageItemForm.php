@@ -16,6 +16,8 @@ class PageItemForm extends Form
     public const ITEM_FORM_PANEL_ID = 'itemFormPanel';
     public const ITEM_FORM_STYLES_ID = 'itemFormStyles';
 
+    protected $prefixGroup = "";
+
     public function created()
     {
         $this->model(PageItemModel::find($this->modelKey()) ?? PageItemModel::make());
@@ -97,6 +99,7 @@ class PageItemForm extends Form
     public function getPagePreview()
     {
         return PageEditor::getPagePreviewComponent(
+            $this->prefixGroup,
             [
                 'page_id' => $this->pageId,
                 'panel_id' => PageDesignForm::PAGE_ITEM_PANEL,
@@ -107,7 +110,7 @@ class PageItemForm extends Form
 
     public function getStyleFormComponent()
     {
-        return PageEditor::getItemStylesFormComponent($this->model->id, [
+        return PageEditor::getItemStylesFormComponent($this->prefixGroup, $this->model->id, [
             'page_id' => $this->pageId,
             'block_type' => request('block_type') ?? $this->model->block_type,
         ]);

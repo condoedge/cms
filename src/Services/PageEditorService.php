@@ -26,33 +26,42 @@ class PageEditorService
         Route::get($route, \Anonimatrix\PageEditor\Components\Cms\PagePreview::class)->name('page.preview');
     }
 
+    public function getComponent($name, $default, $args = [])
+    {
+        $prefixComponent = (!is_numeric($args[0]) && !is_array($args[0])) ? ($args[0] ? ($args[0] . '.') : '') : '';
+
+        $otherArgs = array_slice($args, 1);
+
+        return new (config('page-editor.components.' . $prefixComponent . $name, $default))(...$otherArgs);
+    }
+
     public function getPageItemFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-item-form', \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class))(...$args);
+        return $this->getComponent('page-item-form', \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class, $args);
     }
 
     public function getPageStyleFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-style-form', \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class))(...$args);
+        return $this->getComponent('page-style-form', \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class, $args);
     }
 
     public function getPagePreviewComponent(...$args)
     {
-        return new (config('page-editor.components.page-preview', \Anonimatrix\PageEditor\Components\Cms\PagePreview::class))(...$args);
+        return $this->getComponent('page-preview', \Anonimatrix\PageEditor\Components\Cms\PagePreview::class, $args);
     }
 
     public function getPageFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class))(...$args);
+        return $this->getComponent('page-content-form', \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class, $args);
     }
 
     public function getPageDesignFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class))(...$args);
+        return $this->getComponent('page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class, $args);
     }
 
     public function getItemStylesFormComponent(...$args)
     {
-        return new (config('page-editor.components.page-item-styles-form', \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class))(...$args);
+        return $this->getComponent('page-item-styles-form', \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class, $args);
     }
 }

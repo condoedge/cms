@@ -23,6 +23,8 @@ class PagePreview extends Query
     public $orderable = 'order';
 	public $dragHandle = '.cursor-move';
 
+    protected $prefixGroup = "";
+
     public function created()
     {
         $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : PageModel::make();
@@ -72,7 +74,7 @@ class PagePreview extends Query
         $pageId = $this?->page?->id ?? request('page_id');
 
         return _Rows(
-            PageEditor::getPageItemFormComponent($itemId, [
+            PageEditor::getPageItemFormComponent($this->prefixGroup, $itemId, [
                 'page_id' => $pageId,
                 'update_order' => !$itemId,
             ]),

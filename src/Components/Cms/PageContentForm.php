@@ -13,6 +13,7 @@ class PageContentForm extends Form
     protected $routeName;
 
     protected $withDesign = true;
+    protected $prefixGroup = "";
 
     public function created(){
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
@@ -32,7 +33,7 @@ class PageContentForm extends Form
                 $this->extraInputs(),
                 $this->submitMethod(),
             ),
-            !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->model?->id),
+            !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->prefixGroup, $this->model?->id),
         );
     }
 

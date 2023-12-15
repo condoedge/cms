@@ -26,6 +26,8 @@ class CreatePagesTable extends Migration
             $table->string('exterior_background_color')->nullable();
 
             $table->foreignId('team_id')->nullable()->constrained();
+
+            $table->string('group_type')->nullable();
             
             $table->timestamps();
             $table->softDeletes();
