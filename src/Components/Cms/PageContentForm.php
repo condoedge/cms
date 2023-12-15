@@ -27,30 +27,8 @@ class PageContentForm extends Form
     public function render()
     {
         return _Rows(
-            _Card(
-                _Hidden()->name('route', false)->value(Route::currentRouteName()),
-                _Rows($this->inputs()),
-                $this->extraInputs(),
-                $this->submitMethod(),
-            ),
+            PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
             !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->prefixGroup, $this->model?->id),
         );
-    }
-
-    protected function extraInputs()
-    {
-        return _Rows();
-    }
-
-    protected function inputs()
-    {
-        return [
-            _Translatable('translate.page-editor.title')->name('title')->class('mb-2'),
-        ];
-    }
-
-    protected function submitMethod()
-    {
-        return _SubmitButton('translate.page-editor.save')->class('mt-4');
     }
 }

@@ -35,6 +35,11 @@ class PageEditorService
         return new (config('page-editor.components.' . $prefixComponent . $name, $default))(...$otherArgs);
     }
 
+    public function getPageInfoFormComponent(...$args)
+    {
+        return $this->getComponent('page-info-form', \Anonimatrix\PageEditor\Components\Cms\PageInfoForm::class, $args);
+    }
+
     public function getPageItemFormComponent(...$args)
     {
         return $this->getComponent('page-item-form', \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class, $args);

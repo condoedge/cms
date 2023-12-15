@@ -12,6 +12,7 @@ return [
     'components' => [
         'page-item-styles-form' => \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class,
         'page-content-form' => \Anonimatrix\PageEditor\Components\Cms\PageContentForm::class,
+        'page-info-form' => \Anonimatrix\PageEditor\Components\Cms\PageInfoForm::class,
         'page-design-form' => \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class,
         'page-item-form' => \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class,
         'page-preview' => \Anonimatrix\PageEditor\Components\Cms\PagePreview::class,

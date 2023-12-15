@@ -31,7 +31,7 @@ class PageDesignForm extends Form
                 )->id(static::PREVIEW_PAGE_PANEL)->class('w-1/2 mt-4'),
                 _Card(
                     _Panel(
-                        $this->model->id ? $this->getPageItemForm() : null,
+                        $this->getPageItemForm(),
                     )->id(static::PAGE_ITEM_PANEL),
                 )->class('px-8 py-6 mt-4 w-1/2 bg-gray-100'),
             )->class('vlFlex gap-4 w-full items-start ' . ($this->model?->id ? '' : 'p-6')),
