@@ -29,14 +29,14 @@ class Tag extends Model
 
 	public function scopeCategories($query)
 	{
-		return $query->whereNull('tag_id');
+		return $query->whereNull('tags.tag_id');
 	}
 
 	public function scopeSubcategories($query, $tagId = null)
 	{
-		return $query->when($tagId && is_array($tagId), fn($q) => $q->whereIn('tag_id', $tagId))
-			->when($tagId && !is_array($tagId), fn($q) => $q->where('tag_id', $tagId))
-			->whereNotNull('tag_id');
+		return $query->when($tagId && is_array($tagId), fn($q) => $q->whereIn('tags.tag_id', $tagId))
+			->when($tagId && !is_array($tagId), fn($q) => $q->where('tags.tag_id', $tagId))
+			->whereNotNull('tags.tag_id');
 	}
 
 	/* ELEMENTS */
