@@ -28,9 +28,9 @@ class PageEditorService
 
     public function getComponent($name, $default, $args = [])
     {
-        $prefixComponent = (!is_numeric($args[0]) && !is_array($args[0])) ? ($args[0] ? ($args[0] . '.') : '') : '';
+        $prefixComponent = (count($args) > 0 && !is_numeric($args[0]) && !is_array($args[0])) ? ($args[0] . '.') : '';
 
-        $otherArgs = array_slice($args, 1);
+        $otherArgs = count($args) > 0 ? array_slice($args, 1) : [];
 
         return new (config('page-editor.components.' . $prefixComponent . $name, $default))(...$otherArgs);
     }
