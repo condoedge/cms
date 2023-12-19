@@ -22,9 +22,9 @@ class Tag extends Model
 	}
 
 	/* SCOPES */
-	public function scopeForPage()
+	public function scopeForPage($query)
 	{
-		return $this->where('type', self::TAG_TYPE_PAGE);
+		return $query->where('type', self::TAG_TYPE_PAGE);
 	}
 
 	public function scopeCategories($query)
