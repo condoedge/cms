@@ -34,7 +34,8 @@ class Tag extends Model
 
 	public function scopeSubcategories($query, $tagId = null)
 	{
-		return $query->when($tagId, fn($q) => $q->where('tag_id', $tagId))
+		return $query->when($tagId && is_array($tagId), fn($q) => $q->whereIn('tag_id', $tagId))
+			->when($tagId && !is_array($tagId), fn($q) => $q->where('tag_id', $tagId))
 			->whereNotNull('tag_id');
 	}
 
