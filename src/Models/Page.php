@@ -14,6 +14,7 @@ class Page extends PageModel
     use \Illuminate\Database\Eloquent\SoftDeletes;
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Models\Traits\PageCopyTrait;
+    use \Anonimatrix\PageEditor\Models\Traits\MorphToManyTagsTrait;
 
     protected $casts = [
         'published_at' => 'datetime',
