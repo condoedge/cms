@@ -20,8 +20,8 @@ class CreateTagsTable extends Migration
             $table->foreignId('user_id')->nullable()->constrained();
             $table->string('name');
             $table->string('description', 500)->nullable();
-            $table->string('type');
-            $table->string('context')->default(Tag::TAG_CONTEXT_ALL);
+            $table->string('tag_type');
+            $table->string('tag_context')->default(Tag::TAG_CONTEXT_ALL);
             $table->foreignId('tag_id')->nullable()->constrained('tags');
             $table->timestamps();
         });

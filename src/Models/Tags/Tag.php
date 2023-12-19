@@ -24,7 +24,7 @@ class Tag extends Model
 	/* SCOPES */
 	public function scopeForPage($query)
 	{
-		return $query->where('type', self::TAG_TYPE_PAGE);
+		return $query->where('tag_type', self::TAG_TYPE_PAGE);
 	}
 
 	public function scopeCategories($query)
@@ -63,7 +63,7 @@ class Tag extends Model
 
 	public function save(array $options = [])
 	{
-		$this->type = self::TAG_TYPE_PAGE;
+		$this->tag_type = self::TAG_TYPE_PAGE;
 
 		parent::save($options);
 	}
