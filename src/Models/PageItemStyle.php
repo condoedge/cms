@@ -9,6 +9,8 @@ class PageItemStyle extends PageItemStyleModel
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
 
+    protected $table = 'page_item_styles';
+
     protected $casts = [
         'content' => \Anonimatrix\PageEditor\Casts\StylesCast::class,
     ];

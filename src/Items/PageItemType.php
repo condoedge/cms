@@ -383,7 +383,15 @@ abstract class PageItemType
 
     public function validate()
     {
-        $validator = Validator::make($this->pageItem->getAttributes(), $this->rules());
+        $attrs = $this->pageItem->getAttributes();
+
+        $formattedAttrs = [
+            'image' => $attrs['image'] ?? null,
+            'title' => $attrs['title'] ?? null,
+            'content' => collect(json_decode($attrs['content']))->first(), // Temporary
+        ];
+
+        $validator = Validator::make($formattedAttrs, $this->rules());
 
         if ($validator->fails()) {
             throw new \Exception("Validator error");

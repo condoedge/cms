@@ -31,6 +31,7 @@ class OtherPageItem extends PageItemType
             ->options(PageModel::when(Features::hasFeature('teams'), 
                 fn($q) => $q->where('team_id', auth()->user()->current_team_id))
                     ->where('id', '!=', $this->pageItem->page_id)
+                    ->where('group_type', $this->pageItem->page->group_type)
                     ->get()->pluck('title', 'id')
             )
             ->name($this->nameContent, $this->interactsWithPageItem);

@@ -16,6 +16,8 @@ class Page extends PageModel
     use \Anonimatrix\PageEditor\Models\Traits\PageCopyTrait;
     use \Anonimatrix\PageEditor\Models\Traits\MorphToManyTagsTrait;
 
+    protected $table = 'pages';
+
     protected $casts = [
         'published_at' => 'datetime',
         'sent_at' => 'datetime',

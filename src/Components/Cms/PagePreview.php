@@ -13,7 +13,7 @@ class PagePreview extends Query
     public $page;
 
     public $containerClass = 'flex flex-col items-center';
-    public $style = 'max-height: 100vh; max-width: 600px; width: 100%;';
+    public $style = 'max-height: 100vh; width: 100%;';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-8 overflow-x-auto overflow-y-auto mini-scroll';
 
@@ -31,7 +31,7 @@ class PagePreview extends Query
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
 
-        if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
+        // if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
     }
 
     public function top()

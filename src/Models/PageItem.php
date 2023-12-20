@@ -15,6 +15,8 @@ class PageItem extends PageItemModel
     use \Kompo\Database\HasTranslations;
     use \Anonimatrix\PageEditor\Models\Traits\HasImageTrait;
 
+    protected $table = 'page_items';
+
     protected $casts = [
         'image' => 'array',
     ];

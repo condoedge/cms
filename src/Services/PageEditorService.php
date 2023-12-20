@@ -30,7 +30,7 @@ class PageEditorService
     {
         $prefixComponent = (count($args) > 0 && !is_numeric($args[0]) && !is_array($args[0])) ? ($args[0] . '.') : '';
 
-        $otherArgs = count($args) > 0 ? array_slice($args, 1) : [];
+        $otherArgs = (count($args) > 0 && $prefixComponent) ? array_slice($args, 1) : $args;
 
         return new (config('page-editor.components.' . $prefixComponent . $name, $default))(...$otherArgs);
     }
