@@ -44,7 +44,10 @@ class OtherPageItem extends PageItemType
     protected function toElement()
     {
         return _Rows(
-            PageModel::findOrFail($this->content->page_id)->getPreview()
+            _Html()->class('w-full border border-gray-200 my-4'),
+            _Rows(
+                PageModel::findOrFail($this->content->page_id)->getPreview()
+            ),
         );
     }
 

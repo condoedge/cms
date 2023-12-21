@@ -22,8 +22,14 @@ class PageContentForm extends Form
     public function render()
     {
         return _Rows(
+            $this->top(),
             PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
             !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->prefixGroup, $this->model?->id),
         );
+    }
+
+    protected function top()
+    {
+        return _Rows();
     }
 }

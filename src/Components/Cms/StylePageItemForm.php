@@ -36,7 +36,20 @@ class StylePageItemForm extends Form
             $this->model->getPageItemType() && $this->model->getPageItemType()::ONLY_CUSTOM_STYLES ? null : 
             _Rows(
                 _InputNumber('translate.page-editor.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('mb-2 whiteField'),
-                _Input('translate.page-editor.background-color')->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
+                _Rows(
+                    _Html('translate.page-editor.background-color')->class('font-semibold mb-1 text-sm'),
+                    _ButtonGroup()
+                        ->optionClass('px-4 py-2 text-center cursor-pointer')
+                        ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
+                        ->class('mb-1')->options([
+                            'transparent' => 'translate.page-editor.transparent',
+                            'color' => 'translate.page-editor.color',
+                        ])->name('background-color-type', false)->selfGet('getBackgroundInputs')->inPanel('background_inputs'),
+                    _Panel(
+                        $this->model->getBackgroundColor() == 'transparent' ? null : 
+                            _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
+                    )->id('background_inputs')
+                ),
                 _Columns(
                     _Input('translate.page-editor.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('mb-2 whiteField'),
                 )->class('!mb-0'),
@@ -87,6 +100,13 @@ class StylePageItemForm extends Form
     protected function extraInputs()
     {
         return [];
+    }
+
+    public function getBackgroundInputs()
+    {
+        $type = request('background-color-type');
+        
+        return $type == 'transparent' ? _Hidden()->name('background-color', false)->value('transparent') : _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField');
     }
 
     public function clearStyles()

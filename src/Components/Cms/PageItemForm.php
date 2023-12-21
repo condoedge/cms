@@ -67,8 +67,12 @@ class PageItemForm extends Form
                     _Panel(
                         $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : _Html(''),
                     )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
-                    _SubmitButton('translate.page-editor.save-zone')->class('ml-auto mt-3')
-                        ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
+                    _FlexBetween(
+                        _SubmitButton('translate.page-editor.save-zone-and-new')->class('ml-auto mt-3')
+                            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
+                        _SubmitButton('translate.page-editor.save-zone')->class('ml-auto mt-3')
+                            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
+                    )->class('gap-4'),
                 )
             )->label('translate.page-editor.zone-content'),
             _Tab(
@@ -94,6 +98,13 @@ class PageItemForm extends Form
             'block_type' => 'required',
             ...$itemRules,
         ];
+    }
+
+    public function refreshItemForm()
+    {
+        return PageEditor::getPageItemFormComponent($this->prefixGroup, null, [
+            'update_order' => true
+        ]);
     }
 
     public function getPagePreview()

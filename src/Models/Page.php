@@ -6,7 +6,6 @@ use Anonimatrix\PageEditor\Models\Abstracts\PageModel;
 use Anonimatrix\PageEditor\Models\Traits\HasPackageFactory;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Features\Teams;
-use App\Models\User;
 
 class Page extends PageModel
 {
@@ -46,7 +45,7 @@ class Page extends PageModel
 	/* RELATIONS */
     public function user() //the author
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(config('auth.providers.users.model'));
     }
 
     public function team()

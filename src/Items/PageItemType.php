@@ -122,8 +122,8 @@ abstract class PageItemType
             _Rows($el)
                 ->class('border-2 border-dashed box-content border-gray-300 hover:border-blue-600 w-full py-1 px-2')
                 ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
-                ->inPanel($this->editPanelId)
-                ->run('() => {if(document.querySelector(".kompoScrollableContent")) { document.querySelector(".kompoScrollableContent").scrollTop = 0;} }'),
+                ->inPanel($this->editPanelId),
+                // ->run('() => {if(document.querySelector(".kompoScrollableContent")) { document.querySelector(".kompoScrollableContent").scrollTop = 0;} }'),
         )->class('group relative mb-3 mt-10')->style('flex-grow: 1');
     }
 
