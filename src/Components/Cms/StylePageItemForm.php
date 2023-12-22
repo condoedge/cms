@@ -44,7 +44,7 @@ class StylePageItemForm extends Form
                         ->class('mb-1')->options([
                             'transparent' => 'translate.page-editor.transparent',
                             'color' => 'translate.page-editor.color',
-                        ])->default(trim($this->model->getBackgroundColor()))->name('background-color-type', false)->selfGet('getBackgroundInputs')->inPanel('background_inputs'),
+                        ])->default($this->model->getBackgroundColor() == 'transparent' ? 'transparent' : 'color')->name('background-color-type', false)->selfGet('getBackgroundInputs')->inPanel('background_inputs'),
                     _Panel(
                         $this->model->getBackgroundColor() == 'transparent' ? null : 
                             _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField'),
