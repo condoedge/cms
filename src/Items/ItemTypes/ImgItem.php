@@ -141,7 +141,7 @@ class ImgItem extends PageItemType
         $backgroundSize = $this->styles->background_size;
         $backgroundPosition = $this->styles->background_position;
 
-        $this->styles->removeProperties(['height', 'width', 'border-radius', 'max-width', 'min-height', 'background-repeat', 'background-size']);
+        $this->styles->removeProperties(['height', 'width', 'max-width', 'min-height', 'background-repeat', 'background-size']);
 
         return "width: {$width};height:{$height};border-radius: {$borderRadius}; min-height: {$minHeight}; max-width: {$maxWidth}; background-repeat: {$backgroundRepeat}; background-size: {$backgroundSize}; background-position: {$backgroundPosition};";
     }

@@ -298,22 +298,22 @@ abstract class PageItemType
 
     public static function getDefaultBackgroundColor($teamId = null, $page = null)
     {
-        return static::defaultGenericStyles($teamId)?->background_color ?? $page->getContentBackgroundColor() ?? '#ffffff';
+        return static::defaultGenericStyles($teamId)?->background_color ?? $page?->getContentBackgroundColor() ?? '#ffffff';
     }
 
     public static function getDefaultTextColor($teamId = null, $page = null)
     {
-        return static::defaultGenericStyles($teamId)?->color ?? $page->getTextColor() ??  '#000000';
+        return static::defaultGenericStyles($teamId)?->color ?? $page?->getTextColor() ??  '#000000';
     }
 
     public static function getDefaultFontSize($teamId = null, $page = null)
     {
-        return static::defaultGenericStyles($teamId)?->font_size_raw ?? $page->getFontSize() ?? 12;
+        return static::defaultGenericStyles($teamId)?->font_size_raw ?? $page?->getFontSize() ?? 12;
     }
 
     public static function getDefaultLinkColor($teamId = null, $page = null)
     {
-        return static::defaultGenericStyles($teamId)?->link_color ?? $page->getLinkColor() ?? '#2443e0';
+        return static::defaultGenericStyles($teamId)?->link_color ?? $page?->getLinkColor() ?? '#2443e0';
     }
 
     /* STYLES ELEMENTS */
