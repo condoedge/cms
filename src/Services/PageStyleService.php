@@ -11,6 +11,13 @@ class PageStyleService
         $this->automaticStyles = $autoStyles;
     }
 
+    /**
+     * Set styles to model.
+     *
+     * @param mixed $model
+     * @param array $otherStyles
+     * @return void
+     */
     public function setStylesToModel($model, $otherStyles = [])
     {
         $stylesToMap = array_merge($this->automaticStyles, $otherStyles);
