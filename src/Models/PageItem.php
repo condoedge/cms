@@ -117,7 +117,7 @@ class PageItem extends PageItemModel
 
     public function getTextColor()
     {
-        return $this->styles?->content?->text_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page?->team_id, $this->page) : '#000000');
+        return $this->styles?->content?->color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page?->team_id, $this->page) : '#000000');
     }
 
     public function getFontSize()

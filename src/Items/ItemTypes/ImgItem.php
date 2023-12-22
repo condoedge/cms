@@ -57,7 +57,7 @@ class ImgItem extends PageItemType
         );
     }
 
-    public static function getDefaultMaxWidth($default = null)
+    public static function getDefaultMaxWidth($default = null, $nameProperty = 'max-width')
     {
         $maxWidth = $default ?? request('default') ?: 100;
 
@@ -71,7 +71,7 @@ class ImgItem extends PageItemType
             $maxWidth = (int) ($isPortrait ? 60 : 80);
         }
 
-        return _InputNumber('newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) ($maxWidth))->class('whiteField');
+        return _InputNumber('newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
     }
 
     protected function cornerRadiusStyle()

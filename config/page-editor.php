@@ -71,6 +71,10 @@ return [
         'width' => 'px',
         'max-width' => '%',
 
+        'img-height' => 'px',
+        'img-width' => 'px',
+        'img-max-width' => '%',
+
         'align-items' => '',
 
         'bg-number-color' => '',
@@ -80,6 +84,8 @@ return [
         'preset-color' => '',
 
         'border-radius' => 'px',
+        'img-border-radius' => 'px',
+
         'border-color' => '',
         'border-top-width' => 'px',
         'border-bottom-width' => 'px',
