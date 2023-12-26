@@ -10,4 +10,9 @@ class ImageMethods extends Form
     {
         return ImgItem::getDefaultMaxWidth();
     }
+
+    public function getFullView()
+    {
+        return ImgItem::getFullView();
+    }
 }

@@ -101,7 +101,14 @@ class ImgItem extends PageItemType
         return !$this->content?->image ? null : _Rows(
             _Img()->src(\Storage::url($this->content->image['path']))
                 ->style($styles)
-        )->class('w-full');
+        )->class('w-full')->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+    }
+
+    public static function getFullView()
+    {
+        return _Rows(
+            _Img()->src(\Storage::url(request('path'))),
+        )->class('w-full overflow-y-auto mini-scroll')->style('max-height: 95vh');
     }
 
     public function toHtml(): string
