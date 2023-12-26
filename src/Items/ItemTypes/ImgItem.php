@@ -28,6 +28,8 @@ class ImgItem extends PageItemType
     public function blockTypeEditorElement()
     {
         $item = _Image('newsletter.image')->name($this->nameImage, $this->interactsWithPageItem)
+            ->id('newsletter-image')
+            ->pasteListener('newsletter-image')
             ->post('page-editor.get-image-size', ['default' => $this->pageItem->getStyleProperty('max_width_raw')])->inPanel(static::PANEL_MAX_WIDTH_ID);
 
         if ($this->valueImage) $item = $item->default($this->valueImage);

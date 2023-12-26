@@ -10,4 +10,19 @@ class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
             return collect(config('page-editor.types'));
         });
     }
+
+    public function boot()
+    {
+        \Kompo\Image::macro('pasteListener', function($id) {
+            return $this->onLoad->run('() => {
+                document.addEventListener("paste", function(event) {
+                    const input = document.getElementById("' . $id . '");
+                    input.files = event.clipboardData.files;
+
+                    const changeImgEvent = new Event("change");
+                    input.dispatchEvent(changeImgEvent);
+                });
+            }');
+        });
+    }
 }
