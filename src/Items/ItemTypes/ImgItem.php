@@ -99,11 +99,9 @@ class ImgItem extends PageItemType
         $styles = $this->imgStyles();
 
         return !$this->content?->image ? null : _Rows(
-            _Rows( // Wrapping in a row to allow interaction with the image
-                _Img()->src(\Storage::url($this->content->image['path']))
-                    ->style($styles)
-            )->class('max-w-max')->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal())
-        )->class('w-full');
+            _Img()->src(\Storage::url($this->content->image['path']))
+                ->style($styles)
+        )->class('w-full')->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
     }
 
     public static function getFullView()
