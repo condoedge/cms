@@ -3,13 +3,13 @@
 namespace Anonimatrix\PageEditor\Models\Traits;
 
 use Kompo\Model;
-use Kompo\Core\FileHandler;
+use Kompo\Core\ImageHandler;
 
 trait HasImageTrait
 {
     public function manualUploadImage($uploadedFile)
     {
-        $fileHandler = new FileHandler();
+        $fileHandler = new ImageHandler();
 
         $fileHandler->setDisk('public');
 
