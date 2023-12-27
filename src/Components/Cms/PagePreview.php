@@ -30,7 +30,7 @@ class PagePreview extends Query
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
 
-        $this->perPage = $this->withEditor ? 5 : $this->page->orderedMainPageItems()->count();
+        $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
         $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
         // if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
     }
