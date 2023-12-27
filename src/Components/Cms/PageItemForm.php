@@ -103,7 +103,8 @@ class PageItemForm extends Form
     public function refreshItemForm()
     {
         return PageEditor::getPageItemFormComponent($this->prefixGroup, null, [
-            'update_order' => true
+            'update_order' => true,
+            'page_id' => $this->pageId,
         ]);
     }
 
