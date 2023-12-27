@@ -48,7 +48,7 @@ class VideoItem extends PageItemType
         return "border-radius: {$borderRadius}; max-width: {$maxWidth};";
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return _Html($this->toHtml());
     }

@@ -79,19 +79,20 @@ abstract class PageItemType
      * Convert the item to a kompo element.
      * @return \Kompo\Elements\Element
      */
-    abstract protected function toElement();
+    abstract protected function toElement($withEditor = null);
 
-    final protected function toElementWithStyles()
+    final protected function toElementWithStyles($withEditor = null)
     {
-        if(static::DISABLE_AUTO_STYLES) return $this->toElement();
+        if(static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
 
-        return $this->toElement()?->style((string) $this->styles)?->class($this->classes);
+        return $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes);
     }
 
-    final public function toElementWrap()
+    final public function toElementWrap($withEditor = null)
     {
         return $this->getGridSteblingsElement(
-            $this->toElementWithStyles()
+            $this->toElementWithStyles($withEditor),
+            $withEditor,
         );
     }
 
@@ -115,7 +116,7 @@ abstract class PageItemType
 
     protected function toPreviewSinglePageItem($item, $withEditor = false)
     {
-        $el = $item->getPageItemType()?->toElementWithStyles();
+        $el = $item->getPageItemType()?->toElementWithStyles($withEditor);
 
         return !$withEditor ? $el : _Flex(
             $item->getPageItemType()?->adminPreviewOptions($this->editPanelId),
@@ -231,7 +232,7 @@ abstract class PageItemType
         return '<' . $this::ITEM_TAG . ' class="' . $this->classes . '" style="' . $this->styles . '">' . ($content ?: $this->content) . '</' . $this::ITEM_TAG . '>';
     }
 
-    protected function getGridSteblingsElement($el)
+    protected function getGridSteblingsElement($el, $withEditor = null)
     {
         $gridSteblings = $this->pageItem->pageItems()->count() > 0 ? $this->pageItem->pageItems : null;
 
@@ -242,7 +243,7 @@ abstract class PageItemType
         return _Flex(
             $el->style('flex-grow: 1'),
             ...$gridSteblings->map(function ($el) {
-                return $el->getPageItemType()?->toElementWrap()?->style('flex-grow: 1');
+                return $el->getPageItemType()?->toElementWrap($withEditor)?->style('flex-grow: 1');
             }),
         );
     }

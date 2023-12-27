@@ -104,10 +104,10 @@ class GroupPageItemType extends PageItemType
         );
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return _Rows(
-            collect($this->groupItems)->map(function($groupItem, $i){
+            collect($this->groupItems)->map(function($groupItem, $i) use ($withEditor){
                 $itemType = $groupItem->getPageItemType();
 
                 $styles = $this->childItemTypeStyles($groupItem, $itemType);
@@ -115,7 +115,7 @@ class GroupPageItemType extends PageItemType
                 $itemType->overrideStyles($styles, true);
                 $itemType->beforeMountInGroup($this->pageItem);
 
-                return $itemType?->toElementWithStyles();
+                return $itemType?->toElementWithStyles($withEditor);
             }),
         );
     }

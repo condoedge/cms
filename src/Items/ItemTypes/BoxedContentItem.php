@@ -69,7 +69,7 @@ class BoxedContentItem extends PageItemType
     }
 
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return _Html($this->content)->replaceCKEditorContent($this->variables)
             ->class('ckEditorContent');

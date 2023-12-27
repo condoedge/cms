@@ -5,6 +5,7 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
+use Illuminate\Support\Facades\Storage;
 
 class ImgItem extends PageItemType
 {
@@ -20,14 +21,16 @@ class ImgItem extends PageItemType
         parent::__construct($pageItem, $interactsWithPageItem);
 
         $this->content = (object) [
-            'image' => $pageItem->image,
+            'image' => $pageItem->image ?? $pageItem->image_preview,
+            'image_preview' => $pageItem->image_preview ?? $pageItem->image,
             'title' => $pageItem->title,
         ];
     }
 
     public function blockTypeEditorElement()
     {
-        $item = _Image('newsletter.image')->name($this->nameImage, $this->interactsWithPageItem)
+        $item = _Image('newsletter.image')->name($this->nameImage, false)
+            ->default($this->pageItem->image)
             ->id('newsletter-image')
             ->pasteListener('newsletter-image')
             ->post('page-editor.get-image-size', ['default' => $this->pageItem->getStyleProperty('max_width_raw')])->inPanel(static::PANEL_MAX_WIDTH_ID);
@@ -83,6 +86,13 @@ class ImgItem extends PageItemType
         );
     }
 
+    public function beforeSave($model = null)
+    {      
+        $model->manualUploadImage(request()->file('image'), 'image_preview', 800);
+        $model->manualUploadImage(request()->file('image'), 'image', 1600);
+  
+    }
+
     public function afterSave($model = null)
     {
         parent::afterSave($model);
@@ -94,14 +104,20 @@ class ImgItem extends PageItemType
         $styleModel->save();
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         $styles = $this->imgStyles();
 
-        return !$this->content?->image ? null : _Rows(
-            _Img()->src(\Storage::url($this->content->image['path']))
+        $el = !$this->content?->image ? null : _Rows(
+            _Img()->src(\Storage::url($this->content->image_preview['path']))
                 ->style($styles)
-        )->class('w-full')->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+        )->class('w-full');
+
+        if(!$withEditor) {
+            $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+        }
+
+        return $el;
     }
 
     public static function getFullView()

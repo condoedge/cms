@@ -36,7 +36,7 @@ class ButtonItem extends PageItemType
         );
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return !$this->content->href || !$this->content->title ? null : _Link($this->content->title)
             ->target('_blank')

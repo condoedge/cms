@@ -48,7 +48,7 @@ class NumberLineItem extends PageItemType
         );
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         $numberElStyles = 'background-color: ' . $this->pageItem->getStyleProperty('bg_number_color') . ';' . 'font-size: ' . $this->pageItem->getStyleProperty('font_size_number') . ';' .
             'width:' . $this->pageItem->getStyleProperty('bg_size_number') . ';' . 'height:' . $this->pageItem->getStyleProperty('bg_size_number') . ';';

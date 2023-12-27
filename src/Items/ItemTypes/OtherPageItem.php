@@ -41,7 +41,7 @@ class OtherPageItem extends PageItemType
         return $item;
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return _Rows(
             _Html()->class('w-full border border-gray-200 my-4'),

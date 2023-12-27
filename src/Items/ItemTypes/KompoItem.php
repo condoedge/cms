@@ -25,7 +25,7 @@ class KompoItem extends PageItemType
         );
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
        return _Rows(
             _Flex(_Badge('Component'))->class('mb-2'),

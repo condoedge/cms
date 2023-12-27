@@ -19,6 +19,7 @@ class PageItem extends PageItemModel
 
     protected $casts = [
         'image' => 'array',
+        'image_preview' => 'array',
     ];
 
     protected $translatable = [
@@ -198,6 +199,8 @@ class PageItem extends PageItemModel
     /* ACTIONS */
     public function save(array $options = [])
     {
+        $this->getPageItemType()?->beforeSave($this);
+        
         try{
             $this->getPageItemType()?->validate();
         } catch (\Exception $e) {
@@ -210,7 +213,6 @@ class PageItem extends PageItemModel
             throw $e;
         }
 
-        $this->getPageItemType()?->beforeSave($this);
         $result = parent::save($options);
         $this->getPageItemType()?->afterSave($this);
 

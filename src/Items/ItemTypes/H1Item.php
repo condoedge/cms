@@ -28,7 +28,7 @@ class H1Item extends PageItemType
        return $item;
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
         return _Html($this->content);
     }

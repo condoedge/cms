@@ -39,7 +39,7 @@ class HeaderItem extends PageItemType
         );
     }
 
-    protected function toElement()
+    protected function toElement($withEditor = null)
     {
       return _Rows(
         !$this->content->image ? null :
