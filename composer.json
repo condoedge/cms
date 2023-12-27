@@ -1,5 +1,5 @@
 {
-    "name": "anonimatrix/kompo-page-editor",
+    "name": "condoedge/cms",
     "description": "A package to implement page editor inside your kompo application",
     "type": "library",
     "license": "MIT",
