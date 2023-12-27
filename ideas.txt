@@ -1,4 +1,0 @@
-We need to use some PageEditor::setRoutes() to set preview and form settings
-We need to create PageEditor::beforeSave to add custom fields to page items and pages. Something like team_id, user_id, etc.
-PageItemType shouldn't be extended directly, we need to add some intermediate injected class to create custom logic for all page item types. this class should be used in Kernel or config.
-Features class or something similar to add and remove features from the system. Something like PageEditor::addFeature('items_groups')
