@@ -21,7 +21,7 @@ class H1Item extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Translatable('translate.page-editor.title')->name($this->nameTitle, $this->interactsWithPageItem);
+        $item = _Translatable('cms.title')->name($this->nameTitle, $this->interactsWithPageItem);
 
         if($this->valueTitle) $item = $item->default(json_decode($this->valueTitle));
 

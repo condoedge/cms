@@ -33,7 +33,7 @@ class ElementType1Item extends GroupPageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('translate.page-editor.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+            _Input('cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
         );
     }
 

@@ -27,7 +27,7 @@ class OtherPageItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Select('translate.page-editor.page')
+        $item = _Select('cms.page')
             ->options(PageModel::when(Features::hasFeature('teams'), 
                 fn($q) => $q->where('team_id', auth()->user()->current_team_id))
                     ->where('id', '!=', $this->pageItem->page_id)

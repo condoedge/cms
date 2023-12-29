@@ -27,7 +27,7 @@ class NumberLineItem extends PageItemType
         $numberEl = _InputNumber('newsletter.number')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
-        $contentEl = _Translatable('translate.page-editor.content')
+        $contentEl = _Translatable('cms.content')
             ->name($this->nameContent, $this->interactsWithPageItem);
 
         if($this->valueTitle) $numberEl = $numberEl->default(json_decode($this->valueTitle));
@@ -42,9 +42,9 @@ class NumberLineItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('translate.page-editor.bg-number-color')->type('color')->default($this->pageItem->getStyleProperty('bg_number_color') ?: '#000000')->name('bg-number-color', false)->class('mb-2 whiteField'),
-            _InputNumber('translate.page-editor.font-size-number')->min(0)->default($this->pageItem->getStyleProperty('font_size_number_raw') ?: 18)->name('font-size-number', false)->class('mb-2 whiteField'),
-            _InputNumber('translate.page-editor.bg-size-number')->min(0)->default($this->pageItem->getStyleProperty('bg_size_number_raw') ?: 32)->name('bg-size-number', false)->class('mb-2 whiteField'),
+            _Input('cms.bg-number-color')->type('color')->default($this->pageItem->getStyleProperty('bg_number_color') ?: '#000000')->name('bg-number-color', false)->class('mb-2 whiteField'),
+            _InputNumber('cms.font-size-number')->min(0)->default($this->pageItem->getStyleProperty('font_size_number_raw') ?: 18)->name('font-size-number', false)->class('mb-2 whiteField'),
+            _InputNumber('cms.bg-size-number')->min(0)->default($this->pageItem->getStyleProperty('bg_size_number_raw') ?: 32)->name('bg-size-number', false)->class('mb-2 whiteField'),
         );
     }
 

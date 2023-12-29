@@ -58,35 +58,35 @@ class PageItemForm extends Form
             _Tab(
                 _Rows(
                     _Columns(
-                        _Select('translate.page-editor.zone-type')->options(
+                        _Select('cms.zone-type')->options(
                             $types,
                         )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form') && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
-                        $this->model->id ? _DeleteButton('translate.page-editor.clear')->byKey($this->model)->refresh('page_design_form')->col('col-md-4') : null,
+                        $this->model->id ? _DeleteButton('cms.clear')->byKey($this->model)->refresh('page_design_form')->col('col-md-4') : null,
                     )->class('items-center'),
-                    _Input('translate.page-editor.zone-name')->name('name_pi'),
+                    _Input('cms.zone-name')->name('name_pi'),
                     _Panel(
                         $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : _Html(''),
                     )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
                     _FlexBetween(
-                        _SubmitButton('translate.page-editor.save-zone-and-new')->class('ml-auto mt-3')
+                        _SubmitButton('cms.save-zone-and-new')->class('ml-auto mt-3')
                             ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                        _SubmitButton('translate.page-editor.save-zone')->class('ml-auto mt-3')
+                        _SubmitButton('cms.save-zone')->class('ml-auto mt-3')
                             ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
                     )->class('gap-4'),
                 )
-            )->label('translate.page-editor.zone-content'),
+            )->label('cms.zone-content'),
             _Tab(
                 _Rows(
                     _Panel(
                         $this->getStyleFormComponent(),
                     )->id('item_styles_form'),
                     _FlexBetween(
-                        _Button('translate.page-editor.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
-                        _SubmitButton('translate.page-editor.save')->class('ml-auto')
+                        _Button('cms.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
+                        _SubmitButton('cms.save')->class('ml-auto')
                             ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
                     )->class('gap-4 mt-3'),
                 )->class('!mb-2')
-            )->label('translate.page-editor.zone-styles'),
+            )->label('cms.zone-styles'),
         );
     }
 
@@ -161,7 +161,7 @@ class PageItemForm extends Form
         $item = new $item($this->model);
 
         return !$item->blockTypeEditorStylesElement() ? null : _Rows(
-            _Html('translate.page-editor.styles-for-item')->class('text-sm font-semibold mb-1'),
+            _Html('cms.styles-for-item')->class('text-sm font-semibold mb-1'),
             $item->blockTypeEditorStylesElement(),
         );
     }

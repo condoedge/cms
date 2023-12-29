@@ -38,8 +38,8 @@ class PagePreview extends Query
     public function top()
     {
         return $this->withEditor ? _Rows(
-            !$this->page->id ? null : _Link('translate.page-editor.preview-in-browser')->class('w-full bg-blue-100 p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
-            _Button('translate.page-editor.add-zone')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
+            !$this->page->id ? null : _Link('cms.preview-in-browser')->class('w-full bg-blue-100 p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
+            _Button('cms.add-zone')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
         ) : _Html('');
     }
 

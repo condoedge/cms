@@ -27,7 +27,7 @@ class HeaderItem extends PageItemType
         $imgEl = _Image('newsletter.image')
             ->name($this->nameImage, $this->interactsWithPageItem);
 
-        $inputEl = _Translatable('translate.page-editor.title-optional')
+        $inputEl = _Translatable('cms.title-optional')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
         if($this->valueTitle) $inputEl = $inputEl->default(json_decode($this->valueTitle));
