@@ -13,7 +13,7 @@ class ArticlePageContentForm extends PageContentForm
     {
         return _FlexBetween(
             _Link('cms::wiki.back-to-articles')->icon('arrow-left')->href('knowledge.list')->class('mb-4'),
-            !$this->model->id ? null : _Link('cms::wiki..article-in-list')->href('knowledge.articles', ['id' => $this->model->id])->class('mb-4'),
+            !$this->model->id ? null : _Link('cms::wiki.article-in-list')->href('knowledge.articles', ['id' => $this->model->id])->class('mb-4'),
         );
     }
 }

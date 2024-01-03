@@ -142,7 +142,7 @@ class PageEditorServiceProvider extends ServiceProvider
 
     protected function loadTranslations(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang/*', 'cms');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'cms');
     }
 
     protected function loadPublishes(): void
