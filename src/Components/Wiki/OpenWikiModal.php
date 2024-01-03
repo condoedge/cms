@@ -11,7 +11,7 @@ class OpenWikiModal extends Form
 
     public function created()
     {
-        $this->model(\Anonimatrix\Knowledge\Services\KnowledgeService::getCurrentRouteArticle());
+        $this->model(\Anonimatrix\PageEditor\Services\KnowledgeService::getCurrentRouteArticle());
     }
 
     public function render()
