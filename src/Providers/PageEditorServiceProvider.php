@@ -26,6 +26,8 @@ class PageEditorServiceProvider extends ServiceProvider
 
         $this->loadRoutes();
 
+        $this->loadViews();
+
         PageModel::creating(function ($page) {
             $page->beforeSave();
         });
@@ -125,7 +127,7 @@ class PageEditorServiceProvider extends ServiceProvider
 
     protected function loadConfig(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/page-editor.php', 'page-editor');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/page-editor.php', 'cms');
     }
 
     protected function loadRoutes()
@@ -133,9 +135,14 @@ class PageEditorServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../../routes/page-editor.php');
     }
 
+    protected function loadViews()
+    {
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'cms');
+    }
+
     protected function loadTranslations(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang/*', 'page-editor');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang/*', 'cms');
     }
 
     protected function loadPublishes(): void
@@ -145,6 +152,6 @@ class PageEditorServiceProvider extends ServiceProvider
             __DIR__ . '/../../database/migrations/' => database_path('migrations/page-editor'),
             // __DIR__ . '/../Models' => app_path('Models/PageEditor'),
             __DIR__ . '/../../resources/lang' => resource_path('lang/vendor/page-editor'),
-        ], 'page-editor');
+        ], 'cms');
     }
 }

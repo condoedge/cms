@@ -15,7 +15,7 @@ class WhatsNewQuery extends Query
     public function top()
     {
         return _Rows(
-            _Html('wiki.whats-new-title')->class('text-3xl text-center mb-6'),
+            _Html('cms::wiki.whats-new-title')->class('text-3xl text-center mb-6'),
         );
     }
 
@@ -36,7 +36,7 @@ class WhatsNewQuery extends Query
                     $this->readLessArticle($article->id),
                 )->id('preview_panel' . $article->id),
                 !auth()->user()?->isAdmin() ? null : _FlexEnd(
-                    _Link('wiki.edit-article')->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id]),
+                    _Link('cms::wiki.edit-article')->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id]),
                 ),
             )->class('w-full bg-gray-50 px-8 py-4 mb-4 rounded-xl'),
         )->class('mb-4');
@@ -58,7 +58,7 @@ class WhatsNewQuery extends Query
                 'page_id' => $page->id,
             ]),
             _FlexEnd(
-                _Link('wiki.read-less')->class('mt-4')->selfGet('readLessArticle', ['id' => $page->id])->inPanel('preview_panel' . $page->id),
+                _Link('cms::wiki.read-less')->class('mt-4')->selfGet('readLessArticle', ['id' => $page->id])->inPanel('preview_panel' . $page->id),
             ),
         );
     }
@@ -70,7 +70,7 @@ class WhatsNewQuery extends Query
         return _Rows(
             $page->pageItems()->orderBy('order')->first()?->getPageItemType()->toPreviewElement(),
             _FlexEnd(
-                _Link('wiki.read-more')->class('mt-4')->selfGet('readFullArticle', ['id' => $page->id])->inPanel('preview_panel' . $page->id),
+                _Link('cms::wiki.read-more')->class('mt-4')->selfGet('readFullArticle', ['id' => $page->id])->inPanel('preview_panel' . $page->id),
             ),
         )->class('w-full bg-gray-50 px-8 py-4 mb-4 rounded-xl');
     }

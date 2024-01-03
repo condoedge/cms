@@ -322,9 +322,9 @@ abstract class PageItemType
     {
         return _Rows(
             _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('align-items', false)->options([
-                'start' => __('cms.left'),
-                'center' => __('cms.center'),
-                'end' => __('cms.right'),
+                'start' => __('cms::cms.left'),
+                'center' => __('cms::cms.center'),
+                'end' => __('cms::cms.right'),
             ])->optionClass('px-4 py-2 text-center cursor-pointer')
             ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
             ->value($this->styles->align_items ?: 'center'),
@@ -334,10 +334,10 @@ abstract class PageItemType
     protected function borderWidthsStylesEls()
     {
         return _Columns(
-            _Input()->placeholder('cms.border-top')->name('border-top-width', false)->default($this->styles?->border_top_width_raw)->class('whiteField'),
-            _Input()->placeholder('cms.border-right')->name('border-right-width', false)->default($this->styles?->border_right_width_raw)->class('whiteField'),
-            _Input()->placeholder('cms.border-bottom')->name('border-bottom-width', false)->default($this->styles?->border_bottom_width_raw)->class('whiteField'),
-            _Input()->placeholder('cms.border-left')->name('border-left-width', false)->default($this->styles?->border_left_width_raw)->class('whiteField'),
+            _Input()->placeholder('cms::cms.border-top')->name('border-top-width', false)->default($this->styles?->border_top_width_raw)->class('whiteField'),
+            _Input()->placeholder('cms::cms.border-right')->name('border-right-width', false)->default($this->styles?->border_right_width_raw)->class('whiteField'),
+            _Input()->placeholder('cms::cms.border-bottom')->name('border-bottom-width', false)->default($this->styles?->border_bottom_width_raw)->class('whiteField'),
+            _Input()->placeholder('cms::cms.border-left')->name('border-left-width', false)->default($this->styles?->border_left_width_raw)->class('whiteField'),
         );
     }
 

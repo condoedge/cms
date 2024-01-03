@@ -9,8 +9,8 @@ class VideoItem extends PageItemType
 {
     public const ITEM_TAG = 'video';
     public const ITEM_NAME = 'video';
-    public const ITEM_TITLE = 'newsletter.video';
-    public const ITEM_DESCRIPTION = 'newsletter.full-screen-top-of-page-video';
+    public const ITEM_TITLE = 'cms::cms.items.video';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-video';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

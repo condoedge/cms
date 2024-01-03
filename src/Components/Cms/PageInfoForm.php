@@ -34,12 +34,12 @@ class PageInfoForm extends Form
     protected function inputs()
     {
         return [
-            _Translatable('cms.title')->name('title')->class('mb-2'),
+            _Translatable('cms::cms.title')->name('title')->class('mb-2'),
         ];
     }
 
     protected function submitMethod()
     {
-        return _SubmitButton('cms.save')->class('mt-4');
+        return _SubmitButton('cms::cms.save')->class('mt-4');
     }
 }

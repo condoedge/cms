@@ -9,8 +9,8 @@ class H1Item extends PageItemType
 {
     public const ITEM_TAG = 'h1';
     public const ITEM_NAME = 'h1';
-    public const ITEM_TITLE = 'newsletter.page-title-h1';
-    public const ITEM_DESCRIPTION = 'newsletter.there-should-be-only-one-per-page!';
+    public const ITEM_TITLE = 'cms::cms.items.page-title-h1';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.there-should-be-only-one-per-page!';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -21,7 +21,7 @@ class H1Item extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Translatable('cms.title')->name($this->nameTitle, $this->interactsWithPageItem);
+        $item = _Translatable('cms::cms.title')->name($this->nameTitle, $this->interactsWithPageItem);
 
         if($this->valueTitle) $item = $item->default(json_decode($this->valueTitle));
 

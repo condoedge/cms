@@ -12,8 +12,8 @@ class ArticlePageContentForm extends PageContentForm
     protected function top()
     {
         return _FlexBetween(
-            _Link('wiki.back-to-articles')->icon('arrow-left')->href('knowledge.list')->class('mb-4'),
-            !$this->model->id ? null : _Link('knowledge.article-in-list')->href('knowledge.articles', ['id' => $this->model->id])->class('mb-4'),
+            _Link('cms::wiki.back-to-articles')->icon('arrow-left')->href('knowledge.list')->class('mb-4'),
+            !$this->model->id ? null : _Link('cms::wiki..article-in-list')->href('knowledge.articles', ['id' => $this->model->id])->class('mb-4'),
         );
     }
 }

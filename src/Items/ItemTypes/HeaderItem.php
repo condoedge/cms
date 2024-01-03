@@ -9,8 +9,8 @@ class HeaderItem extends PageItemType
 {
     public const ITEM_TAG = 'div';
     public const ITEM_NAME = 'header';
-    public const ITEM_TITLE = 'newsletter.image-header';
-    public const ITEM_DESCRIPTION = 'newsletter.full-screen-top-of-page-image';
+    public const ITEM_TITLE = 'cms::cms.items.image-header';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-image';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -27,7 +27,7 @@ class HeaderItem extends PageItemType
         $imgEl = _Image('newsletter.image')
             ->name($this->nameImage, $this->interactsWithPageItem);
 
-        $inputEl = _Translatable('cms.title-optional')
+        $inputEl = _Translatable('cms::cms.title-optional')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
         if($this->valueTitle) $inputEl = $inputEl->default(json_decode($this->valueTitle));

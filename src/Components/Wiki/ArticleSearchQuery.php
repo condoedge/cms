@@ -23,7 +23,7 @@ class ArticleSearchQuery extends Query
     public function top()
     {
         return _Rows(
-            _Html('wiki.search-results-subtitle')->class('text-3xl text-center mb-6'),
+            _Html('cms::wiki.search-results-subtitle')->class('text-3xl text-center mb-6'),
         );
     }
 

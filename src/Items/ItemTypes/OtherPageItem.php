@@ -11,8 +11,8 @@ class OtherPageItem extends PageItemType
 {
     public const ITEM_TAG = 'article';
     public const ITEM_NAME = 'article';
-    public const ITEM_TITLE = 'newsletter.article';
-    public const ITEM_DESCRIPTION = 'newsletter.article';
+    public const ITEM_TITLE = 'cms::cms.items.article';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.article';
 
     public const ONLY_CUSTOM_STYLES = true;
 
@@ -27,7 +27,7 @@ class OtherPageItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Select('cms.page')
+        $item = _Select('cms::cms.page')
             ->options(PageModel::when(Features::hasFeature('teams'), 
                 fn($q) => $q->where('team_id', auth()->user()->current_team_id))
                     ->where('id', '!=', $this->pageItem->page_id)

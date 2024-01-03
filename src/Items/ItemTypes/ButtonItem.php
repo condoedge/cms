@@ -9,8 +9,8 @@ class ButtonItem extends PageItemType
 {
     public const ITEM_TAG = 'a';
     public const ITEM_NAME = 'button';
-    public const ITEM_TITLE = 'newsletter.button';
-    public const ITEM_DESCRIPTION = 'newsletter.button';
+    public const ITEM_TITLE = 'cms::cms.items.button';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.button';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

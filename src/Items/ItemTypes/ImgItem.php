@@ -5,7 +5,6 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
-use Illuminate\Support\Facades\Storage;
 
 class ImgItem extends PageItemType
 {
@@ -13,8 +12,8 @@ class ImgItem extends PageItemType
 
     public const ITEM_TAG = 'div';
     public const ITEM_NAME = 'img';
-    public const ITEM_TITLE = 'newsletter.image';
-    public const ITEM_DESCRIPTION = 'newsletter.add-an-image-to-the-block';
+    public const ITEM_TITLE = 'cms::cms.items.image';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.add-an-image-to-the-block';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

@@ -18,7 +18,7 @@ class ArticlesTagsQuery extends Grid
     public function top()
     {
         return _Rows(
-            _Html('wiki.tags')->class('font-semibold text-xl mb-4'),
+            _Html('cms::wiki.tags')->class('font-semibold text-xl mb-4'),
         );
     }
 

@@ -3,13 +3,12 @@
 namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use Anonimatrix\PageEditor\Items\PageItemType;
-use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 
 class BoxedContentItem extends PageItemType
 {
     public const ITEM_NAME = 'boxed_content';
-    public const ITEM_TITLE = 'newsletter.boxed-content';
-    public const ITEM_DESCRIPTION = 'newsletter.boxed-content-desc';
+    public const ITEM_TITLE = 'cms::cms.items.boxed-content';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.boxed-content-desc';
 
     public const ONLY_CUSTOM_STYLES = true;
 
@@ -38,20 +37,20 @@ class BoxedContentItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         $colorOptions = collect($this->presetsColors)->mapWithKeys(function($values, $color) {
-            return [$color => $values['label'] ?? 'cms.' . $color];
+            return [$color => $values['label'] ?? 'cms::cms.' . $color];
         })->toArray();
 
         return _Rows(
-            _InputNumber('cms.font-size')->name('font-size', false)->default($this->pageItem->getFontSize())->class('mb-2 whiteField'),
-            _Select('cms.preset-color')
+            _InputNumber('cms::cms.font-size')->name('font-size', false)->default($this->pageItem->getFontSize())->class('mb-2 whiteField'),
+            _Select('cms::cms.preset-color')
                 ->options($colorOptions)
                 ->default($this->styles->preset_color ?? collect($colorOptions)->keys()->first())
                 ->name('preset-color', false)
                 ->class('whiteField'),
-            _Input('cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
             _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('mb-2 whiteField'),
             _Rows(
-                _Html('cms.border-widths')->class('text-sm font-semibold mb-4'),
+                _Html('cms::cms.border-widths')->class('text-sm font-semibold mb-4'),
                 $this->borderWidthsStylesEls(),
             )->class('mt-1'),
         );

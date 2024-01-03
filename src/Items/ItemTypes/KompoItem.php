@@ -8,8 +8,8 @@ use Anonimatrix\PageEditor\Items\PageItemType;
 class KompoItem extends PageItemType
 {
     public const ITEM_NAME = 'komponent';
-    public const ITEM_TITLE = 'newsletter.component';
-    public const ITEM_DESCRIPTION = 'newsletter.internal-pre-built-components';
+    public const ITEM_TITLE = 'cms::cms.items.component';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.internal-pre-built-components';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

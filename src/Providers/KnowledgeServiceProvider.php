@@ -9,12 +9,9 @@ class KnowledgeServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'knowledge');
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'knowledge');
-
         $this->publishes([
-            __DIR__ . '/../../migrations/' => database_path('migrations/knowledge'),
-        ], 'knowledge');
+            __DIR__ . '/../../migrations/' => database_path('migrations/wiki'),
+        ], 'wiki');
 
         // Config settings. Used to get components like this: PageEditor::getPageContentComponent('knowledge');
         Config::set('page-editor.components.knowledge.page-content-form', \Anonimatrix\PageEditor\Components\Wiki\Forms\ArticlePageContentForm::class);

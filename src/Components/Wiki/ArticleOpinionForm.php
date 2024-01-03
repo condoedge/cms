@@ -19,7 +19,7 @@ class ArticleOpinionForm extends Form
         $userDislike = $userActualOpinion && $userActualOpinion->type === KnowledgeOpinion::OPINION_DISLIKE;
 
         return _FlexBetween(
-            _Html('wiki.like-question')->class('text-lg'),
+            _Html('cms::wiki.like-question')->class('text-lg'),
             _FlexBetween(
                 _Link()->icon('thumb-up')->class('text-gray-300 text-4xl hover:text-green-600 ' . ($userLike ? 'text-green-600' : ''))
                     ->selfPost('likeArticle')->refresh(),

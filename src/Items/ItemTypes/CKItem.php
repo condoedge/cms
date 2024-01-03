@@ -7,8 +7,8 @@ use Anonimatrix\PageEditor\Items\PageItemType;
 class CKItem extends PageItemType
 {
     public const ITEM_NAME = 'ck';
-    public const ITEM_TITLE = 'newsletter.text-editor';
-    public const ITEM_DESCRIPTION = 'newsletter.text-subtitles-lists-and-more';
+    public const ITEM_TITLE = 'cms::cms.items.text-editor';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.text-subtitles-lists-and-more';
     public const CUSTOM_CLASSES = false;
 
     public function __construct(\Anonimatrix\PageEditor\Models\PageItem $pageItem, $interactsWithPageItem = true)
@@ -32,7 +32,7 @@ class CKItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
         );
     }
 

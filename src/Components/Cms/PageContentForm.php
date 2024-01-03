@@ -4,7 +4,6 @@ namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
-use Illuminate\Support\Facades\Route;
 use Kompo\Form;
 
 class PageContentForm extends Form

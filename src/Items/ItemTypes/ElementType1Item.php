@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ElementType1Item extends GroupPageItemType
 {
     public const ITEM_NAME = 'newsletter.group';
-    public const ITEM_TITLE = 'newsletter.element-type-1';
-    public const ITEM_DESCRIPTION = 'newsletter.element-type-1-desc';
+    public const ITEM_TITLE = 'cms::cms.items.element-type-1';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.element-type-1-desc';
 
     const GROUP_ITEMS_TYPES = [
         H2Item::class,
@@ -33,7 +33,7 @@ class ElementType1Item extends GroupPageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
         );
     }
 

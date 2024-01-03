@@ -27,22 +27,22 @@ class PageStylingForm extends Form
     public function render()
     {
         return _Rows(
-            _Html('campaign.style')->miniTitle()->class('mb-4'),
+            _Html('cms::cms.style')->miniTitle()->class('mb-4'),
             _Rows(
-                _InputNumber('campaign.font-size')->value($this->model->getFontSize())->name('font-size', false),
+                _InputNumber('cms::cms.font-size')->value($this->model->getFontSize())->name('font-size', false),
                 _Columns(
-                    _Input('campaign.content-background-color')->type('color')->value($this->model->getContentBackgroundColor())->name('background-color', false),
-                    _Input('campaign.exterior-background-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color'),
+                    _Input('cms::cms.content-background-color')->type('color')->value($this->model->getContentBackgroundColor())->name('background-color', false),
+                    _Input('cms::cms.exterior-background-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color'),
                 ),
                 _Columns(
-                    _Input('campaign.text-color')->type('color')->value($this->model->getTextColor())->name('color', false),
+                    _Input('cms::cms.text-color')->type('color')->value($this->model->getTextColor())->name('color', false),
                 ),
                 _Columns(
-                    _Input('campaign.link-color')->type('color')->value($this->model->getLinkColor())->name('link-color', false),
+                    _Input('cms::cms.link-color')->type('color')->value($this->model->getLinkColor())->name('link-color', false),
                 ),
             ),
             _FlexEnd(
-                _SubmitButton('translate.save')->class('mt-4'),
+                _SubmitButton('cms::cms.save')->class('mt-4'),
             ),
         );
     }

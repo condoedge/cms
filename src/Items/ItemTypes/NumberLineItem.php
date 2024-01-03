@@ -9,8 +9,8 @@ class NumberLineItem extends PageItemType
 {
     public const ITEM_TAG = 'div';
     public const ITEM_NAME = 'number_line';
-    public const ITEM_TITLE = 'newsletter.number-line';
-    public const ITEM_DESCRIPTION = 'newsletter.number-line-description';
+    public const ITEM_TITLE = 'cms::cms.items.number-line';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.number-line-description';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -27,7 +27,7 @@ class NumberLineItem extends PageItemType
         $numberEl = _InputNumber('newsletter.number')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
-        $contentEl = _Translatable('cms.content')
+        $contentEl = _Translatable('cms::cms.content')
             ->name($this->nameContent, $this->interactsWithPageItem);
 
         if($this->valueTitle) $numberEl = $numberEl->default(json_decode($this->valueTitle));
@@ -42,9 +42,9 @@ class NumberLineItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('cms.bg-number-color')->type('color')->default($this->pageItem->getStyleProperty('bg_number_color') ?: '#000000')->name('bg-number-color', false)->class('mb-2 whiteField'),
-            _InputNumber('cms.font-size-number')->min(0)->default($this->pageItem->getStyleProperty('font_size_number_raw') ?: 18)->name('font-size-number', false)->class('mb-2 whiteField'),
-            _InputNumber('cms.bg-size-number')->min(0)->default($this->pageItem->getStyleProperty('bg_size_number_raw') ?: 32)->name('bg-size-number', false)->class('mb-2 whiteField'),
+            _Input('cms::cms.bg-number-color')->type('color')->default($this->pageItem->getStyleProperty('bg_number_color') ?: '#000000')->name('bg-number-color', false)->class('mb-2 whiteField'),
+            _InputNumber('cms::cms.font-size-number')->min(0)->default($this->pageItem->getStyleProperty('font_size_number_raw') ?: 18)->name('font-size-number', false)->class('mb-2 whiteField'),
+            _InputNumber('cms::cms.bg-size-number')->min(0)->default($this->pageItem->getStyleProperty('bg_size_number_raw') ?: 32)->name('bg-size-number', false)->class('mb-2 whiteField'),
         );
     }
 
