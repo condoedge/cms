@@ -1,6 +1,6 @@
 <?php
 
-use Anonimatrix\Knowledge\Models\KnowledgeOpinion;
+use Anonimatrix\PageEditor\Models\Wiki\KnowledgeOpinion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

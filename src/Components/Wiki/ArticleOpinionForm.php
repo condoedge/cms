@@ -2,8 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Components\Wiki;
 
-use Anonimatrix\Knowledge\Models\KnowledgeOpinion;
-use Anonimatrix\Knowledge\Models\KnowledgePage;
+use Anonimatrix\PageEditor\Models\Wiki\KnowledgeOpinion;
+use Anonimatrix\PageEditor\Models\Wiki\KnowledgePage;
 use Kompo\Form;
 
 class ArticleOpinionForm extends Form

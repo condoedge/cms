@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Wiki;
 
-use Anonimatrix\Knowledge\Models\KnowledgePage;
+use Anonimatrix\PageEditor\Models\Wiki\KnowledgePage;
 use Kompo\Form;
 
 class OpenWikiModal extends Form

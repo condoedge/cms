@@ -1,6 +1,6 @@
 <?php
 
-namespace Anonimatrix\PageEditor\Models\Wiki;
+namespace Anonimatrix\PageEditor\Models\Wiki\;
 
 use Anonimatrix\PageEditor\Models\Page;
 

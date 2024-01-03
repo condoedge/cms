@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Wiki;
 
-use Anonimatrix\Knowledge\Models\KnowledgeView;
+use Anonimatrix\PageEditor\Models\Wiki\KnowledgeView;
 use Anonimatrix\PageEditor\Models\Page;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Query;
