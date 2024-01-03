@@ -28,7 +28,8 @@
         "laravel": {
             "providers": [
                 "Anonimatrix\\PageEditor\\Providers\\PageEditorServiceProvider",
-                "Anonimatrix\\PageEditor\\Providers\\PageItemServiceProvider"
+                "Anonimatrix\\PageEditor\\Providers\\PageItemServiceProvider",
+                "Anonimatrix\\PageEditor\\Providers\\KnowledgeServiceProvider"
             ]
         }
     },
