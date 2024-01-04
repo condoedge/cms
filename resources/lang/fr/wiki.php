@@ -1,6 +1,7 @@
 <?php
 return [
     "actions" => "Actions",
+    "article-in-list" => "Liste des articles",
     "articles" => "Articles",
     "back-to-all-articles" => "Retour à tous les articles",
     "back-to-articles" => "Retour aux articles",
