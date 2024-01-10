@@ -112,7 +112,7 @@ class ImgItem extends PageItemType
                 ->style($styles)
         )->class('w-full');
 
-        if(!$withEditor) {
+        if(!$withEditor && $el) {
             $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
         }
 
