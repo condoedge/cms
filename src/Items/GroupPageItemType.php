@@ -62,7 +62,8 @@ class GroupPageItemType extends PageItemType
             // $item->styles = (static::GROUP_ITEMS_STYLES[$groupItemType] ?? '') . ';';
 
             if($image && $image instanceof UploadedFile) {
-                $item->manualUploadImage($image);
+                $item->manualUploadImage($image, 'image_preview', 800);
+                $item->manualUploadImage($image, 'image', 1600);
             }
 
             $instance->setPrefixFormNames($i . '_');

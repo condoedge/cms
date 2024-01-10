@@ -7,6 +7,7 @@ use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 abstract class PageItemType
 {
@@ -382,6 +383,9 @@ abstract class PageItemType
         ];
     }
 
+    /**
+     * Works like second validation before saving the page item. PageItemForm validation is the first one.
+     */
     public function validate()
     {
         $attrs = $this->pageItem->getAttributes();
@@ -395,7 +399,9 @@ abstract class PageItemType
         $validator = Validator::make($formattedAttrs, $this->rules());
 
         if ($validator->fails()) {
-            throw new \Exception("Validator error");
+            $element = collect($validator->errors()->getMessages())->take(1);
+            throwValidationError($element->keys()->first(), $element->first()[0]);
+            throw new HttpException(500, "Validation error", null, $validator->errors()->getMessages()); // Logging the error
         }
 
         return $this;
