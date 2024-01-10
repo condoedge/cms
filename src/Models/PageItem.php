@@ -167,7 +167,7 @@ class PageItem extends PageItemModel
     	$pageItem->page_id = $this->page_id;
     	$pageItem->page_item_id = $this->id;
         $pageItem->block_type = config('page-editor.types')[0]::ITEM_NAME;
-    	$pageItem->save();
+    	$pageItem->save(['skip_validation' => true]);
 
         return $pageItem;
     }
@@ -202,7 +202,7 @@ class PageItem extends PageItemModel
         $this->getPageItemType()?->beforeSave($this);
         
         try{
-            $this->getPageItemType()?->validate();
+            if(!isset($options['skip_validation'])) $this->getPageItemType()?->validate();
         } catch (\Exception $e) {
             if($this->group_page_item_id) {
                 $this->delete();
