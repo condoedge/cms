@@ -2,6 +2,9 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
+use Anonimatrix\PageEditor\Observers\PageItemObserver;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
+
 class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     public function register(): void
@@ -24,5 +27,7 @@ class PageItemServiceProvider extends \Illuminate\Support\ServiceProvider
                 });
             }');
         });
+
+        PageItemModel::observe(PageItemObserver::class);
     }
 }
