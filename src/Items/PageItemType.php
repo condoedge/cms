@@ -117,10 +117,12 @@ abstract class PageItemType
 
     protected function toPreviewSinglePageItem($item, $withEditor = false)
     {
-        $el = $item->getPageItemType()?->toElementWithStyles($withEditor);
+        $itemType = $item->getPageItemType();
+        $itemType->setVariables($this->variables);
+        $el = $itemType?->toElementWithStyles($withEditor);
 
         return !$withEditor ? $el : _Flex(
-            $item->getPageItemType()?->adminPreviewOptions($this->editPanelId),
+            $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
                 ->class('border-2 border-dashed box-content border-gray-300 hover:border-blue-600 w-full py-1 px-2')
                 ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
@@ -243,7 +245,7 @@ abstract class PageItemType
 
         return _Flex(
             $el->style('flex-grow: 1'),
-            ...$gridSteblings->map(function ($el) {
+            ...$gridSteblings->map(function ($el) use ($withEditor) {
                 return $el->getPageItemType()?->toElementWrap($withEditor)?->style('flex-grow: 1');
             }),
         );

@@ -60,6 +60,7 @@ class PagePreview extends Query
                 'team_name' => $team?->name,
                 'team_logo' => $team?->emailLogoHtml(),
                 'subscribe_to_newsletter' => $team?->getLinkHtmlToSubscribe(),
+                'contact_name' => $team?->owner?->name,
             ]);
         }
 
