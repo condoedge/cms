@@ -31,7 +31,7 @@ class GroupPageItemType extends PageItemType
     {
         parent::__construct($pageItem);
 
-        $this->groupItems = $this->pageItem->groupPageItems;
+        $this->groupItems = $this->pageItem->groupPageItems()->get();
 
         $this->groupItemsStyles = collect(static::GROUP_ITEMS_TYPES)->mapWithKeys(function($groupItemType){
             return [$groupItemType => $this->defaultParentStylesConstructor()];
@@ -90,9 +90,9 @@ class GroupPageItemType extends PageItemType
        return _Rows(
             collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i){
                 $instance = new $groupItemType($this->pageItem, false);
-
                 $instance->setPrefixFormNames($i . '_');
-                $actualItem = $this->groupItems[$i] ?? null;
+                
+                $actualItem = $this->groupItems->first(fn($item) => $item->order == $i) ?? null;
 
                 if($actualItem) {
                     $attrs = $actualItem?->getAttributes();
