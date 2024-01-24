@@ -34,6 +34,11 @@ class KnowledgeService
         Route::get('knowledge-articles/{id?}', \Anonimatrix\PageEditor\Components\Wiki\ArticlePage::class)->name('knowledge.articles');
     }
 
+    public static function setRenderDrawerRoute()
+    {
+        Route::get('knowledge-render-component/{component}', \Anonimatrix\PageEditor\Components\Wiki\DynamicComponentRender::class)->name('knowledge.render-component');
+    }
+
     public static function getCurrentRouteArticle()
     {
         $route = request()->route()->getName();

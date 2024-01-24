@@ -39,15 +39,15 @@ class ArticleSearchQuery extends Query
     {
         return _FlexBetween(
             _Rows(
-                _Link($article->title)->class('text-2xl')->href('knowledge.articles', ['id' => $article->id]),
+                _Link($article->title)->class('text-2xl')->knowledgeDrawer(ArticlePage::class, ['id' => $article->id]),
                 $article->tags->count() > 0 ? _Columns(
                     $article->tags->map(function ($tag) {
-                        return _Link($tag->name)->class('bg-blue-200 bg-opacity-50 text-blue-500 rounded-lg px-2 py-1 mr-2 max-w-max')->href('knowledge.articles', ['tags_ids' => [$tag->id]]);
+                        return _Link($tag->name)->class('bg-blue-200 bg-opacity-50 text-blue-500 rounded-lg px-2 py-1 mr-2 max-w-max')->knowledgeDrawer(ArticlePage::class, ['tags_ids' => [$tag->id]]);
                     }),
                 )->class('mt-2') : null,
             ),
             auth()->user()?->isAdmin() ? _FlexEnd(
-                _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id]),
+                _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
             ) : null,
             true ? null : PageEditor::getPagePreviewComponent(),
         )->class('w-full bg-gray-50 px-8 py-4 mb-4 rounded-xl');

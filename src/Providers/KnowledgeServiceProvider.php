@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Providers;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Kompo\Link;
 
 class KnowledgeServiceProvider extends ServiceProvider
 {
@@ -17,5 +18,23 @@ class KnowledgeServiceProvider extends ServiceProvider
         Config::set('page-editor.components.knowledge.page-content-form', \Anonimatrix\PageEditor\Components\Wiki\Forms\ArticlePageContentForm::class);
         Config::set('page-editor.components.knowledge.page-info-form', \Anonimatrix\PageEditor\Components\Wiki\Forms\ArticleInfoForm::class);
         Config::set('page-editor.components.knowledge.page-design-form', \Anonimatrix\PageEditor\Components\Cms\PageDesignForm::class);
+    
+        $this->setMacros();
+
+        $this->loadRoutes();
+    }
+
+    public function setMacros()
+    {
+        Link::macro('knowledgeDrawer', function ($component, $props = []) {
+            $props['component'] = $component;
+
+            return $this->get(route('knowledge.render-component', $props))->inDrawer()->closeDrawer();
+        });
+    }
+
+    public function loadRoutes()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../../routes/knowledge.php');
     }
 }
