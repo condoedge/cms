@@ -27,7 +27,8 @@ class KnowledgeServiceProvider extends ServiceProvider
     public function setMacros()
     {
         Link::macro('knowledgeDrawer', function ($component, $props = []) {
-            $props['component'] = $component;
+            $props['know_component'] = $component;
+            $props['know_locale'] = session('kompo_locale');
 
             return $this->get(route('knowledge.render-component', $props))->inDrawer()->closeDrawer();
         });

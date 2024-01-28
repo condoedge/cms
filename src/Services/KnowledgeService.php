@@ -36,7 +36,7 @@ class KnowledgeService
 
     public static function setRenderDrawerRoute()
     {
-        Route::get('knowledge-render-component/{component}', \Anonimatrix\PageEditor\Components\Wiki\DynamicComponentRender::class)->name('knowledge.render-component');
+        Route::get('knowledge-render-component/{know_component}/{know_locale}', \Anonimatrix\PageEditor\Components\Wiki\DynamicComponentRender::class)->name('knowledge.render-component');
     }
 
     public static function getCurrentRouteArticle()

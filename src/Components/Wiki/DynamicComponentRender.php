@@ -14,13 +14,17 @@ class DynamicComponentRender extends Form
 
     public function created()
     {
-        $component = request()->route('component');
+        $component = request()->route('know_component');
+        $locale = request()->route('know_locale');
 
         if (!in_array($component, self::AVAILABLE_COMPONENTS)) {
             abort(404);
         }
 
         $this->component = $component;
+
+        session()->put('kompo_locale', $locale);
+        app()->setLocale($locale);
     }
 
     public function render()
