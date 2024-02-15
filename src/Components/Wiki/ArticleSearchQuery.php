@@ -50,6 +50,6 @@ class ArticleSearchQuery extends Query
                 _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
             ) : null,
             true ? null : PageEditor::getPagePreviewComponent(),
-        )->class('w-full bg-gray-50 px-8 py-4 mb-4 rounded-xl');
+        )->class('w-full bg-gray-100 px-8 py-4 mb-4 rounded-xl');
     }
 }
