@@ -14,24 +14,28 @@ class CreateTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tags', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('team_id')->nullable()->constrained();
-            $table->foreignId('user_id')->nullable()->constrained();
-            $table->string('name');
-            $table->string('description', 500)->nullable();
-            $table->string('tag_type');
-            $table->string('tag_context')->default(Tag::TAG_CONTEXT_ALL);
-            $table->foreignId('tag_id')->nullable()->constrained('tags');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tags')) {
+            Schema::create('tags', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('team_id')->nullable()->constrained();
+                $table->foreignId('user_id')->nullable()->constrained();
+                $table->string('name');
+                $table->string('description', 500)->nullable();
+                $table->string('tag_type');
+                $table->string('tag_context')->default(Tag::TAG_CONTEXT_ALL);
+                $table->foreignId('tag_id')->nullable()->constrained('tags');
+                $table->timestamps();
+            });
+        }
 
-        Schema::create('taggable_tag', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('taggable');
-            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('taggable_tag')) {
+            Schema::create('taggable_tag', function (Blueprint $table) {
+                $table->id();
+                $table->morphs('taggable');
+                $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
