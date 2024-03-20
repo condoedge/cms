@@ -41,8 +41,8 @@ class StylePageItemForm extends Form
                         ->optionClass('px-4 py-2 text-center cursor-pointer')
                         ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
                         ->class('mb-1')->options([
-                            'transparent' => 'cms::cms.transparent',
-                            'color' => 'cms::cms.color',
+                            'transparent' => __('cms::cms.transparent'),
+                            'color' => __('cms::cms.color'),
                         ])->default($this->model->getBackgroundColor() == 'transparent' ? 'transparent' : 'color')->name('background-color-type', false)->selfGet('getBackgroundInputs')->inPanel('background_inputs'),
                     _Panel(
                         $this->model->getBackgroundColor() == 'transparent' ? null : 
@@ -54,9 +54,9 @@ class StylePageItemForm extends Form
                 )->class('!mb-0'),
                 _Select('cms::cms.text-align')->name('text-align', false)->default($this->model?->getStyleProperty('text_align') ?: 'center')
                     ->options([
-                        'left' => 'cms::cms.left',
-                        'center' => 'cms::cms.center',
-                        'right' => 'cms::cms.right',
+                        'left' => __('cms::cms.left'),
+                        'center' => __('cms::cms.center'),
+                        'right' => __('cms::cms.right'),
                     ])->class('mb-2 whiteField'),
                 _Rows(
                     $this->extraInputs(),

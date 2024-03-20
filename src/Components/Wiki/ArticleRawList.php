@@ -27,7 +27,7 @@ class ArticleRawList extends Table
 				_Link('cms::wiki.create-article')->button()->icon('icon-plus')->href('knowledge.editor'),
 			),
             _FlexEnd(
-                _Input()->placeholder('cms::wiki..search')->name('title')->class('mb-0 whiteField w-full')->filter()
+                _Input()->placeholder('cms::wiki.search')->name('title')->class('mb-0 whiteField w-full')->filter()
             ),
 		)->class('space-y-4 mb-4');
 	}

@@ -1,6 +1,7 @@
 <?php
 return [
     "actions" => "Actions",
+    "article-in-list" => "Liste des articles",
     "articles" => "Articles",
     "back-to-all-articles" => "Retour à tous les articles",
     "back-to-articles" => "Retour aux articles",
@@ -12,6 +13,9 @@ return [
     "create-article" => "Créer un article",
     "edit-article" => "Modifier l'article",
     "general-help" => "Aide générale",
+    "go-to-help-page" => "Aller à la page d'aide",
+    "help-title" => 'Avez-vous besoin d\'aide ?',
+    "help-message" => "",
     "like-question" => "Cet article a-t-il été utile ?",
     "linked-route" => "Route liée",
     "new-features" => "Nouveautés",

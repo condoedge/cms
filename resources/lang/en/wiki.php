@@ -1,6 +1,7 @@
 <?php
 return [
     "actions" => "Actions",
+    "article-in-list" => "List of articles",
     "articles" => "Articles",
     "back-to-all-articles" => "Back to all articles",
     "back-to-articles" => "Back to articles",
@@ -12,6 +13,9 @@ return [
     "create-article" => "Create article",
     "edit-article" => "Edit article",
     "general-help" => "General help",
+    "go-to-help-page" => "Go to help page",
+    "help-title" => 'Do you need help ?',
+    "help-message" => "",
     "like-question" => "Was this article useful ?",
     "linked-route" => "Linked route",
     "new-features" => "New features",

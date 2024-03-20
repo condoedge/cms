@@ -26,7 +26,7 @@ class ElementType1Item extends GroupPageItemType
             H2Item::class => fn($pageItem, $parent) => $this->h2ItemStyles($pageItem, $parent),
             ButtonItem::class => fn($pageItem, $parent) => $this->buttonItemStyles($pageItem, $parent),
             CKItem::class => fn($pageItem, $parent) => $this->ckItemStyles($pageItem, $parent),
-            ImgItem::class => 'width: 600px !important; height: auto !important; margin-bottom: 10px !important;',
+            ImgItem::class => 'width: 600px !important; height: auto !important; margin-bottom: 10px !important; align-items: center;',
         ];
     }
 

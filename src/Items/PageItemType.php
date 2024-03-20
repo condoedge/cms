@@ -7,6 +7,7 @@ use Anonimatrix\PageEditor\Models\PageItemStyle;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 abstract class PageItemType
 {
@@ -116,10 +117,12 @@ abstract class PageItemType
 
     protected function toPreviewSinglePageItem($item, $withEditor = false)
     {
-        $el = $item->getPageItemType()?->toElementWithStyles($withEditor);
+        $itemType = $item->getPageItemType();
+        $itemType->setVariables($this->variables);
+        $el = $itemType?->toElementWithStyles($withEditor);
 
         return !$withEditor ? $el : _Flex(
-            $item->getPageItemType()?->adminPreviewOptions($this->editPanelId),
+            $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
                 ->class('border-2 border-dashed box-content border-gray-300 hover:border-blue-600 w-full py-1 px-2')
                 ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
@@ -242,7 +245,7 @@ abstract class PageItemType
 
         return _Flex(
             $el->style('flex-grow: 1'),
-            ...$gridSteblings->map(function ($el) {
+            ...$gridSteblings->map(function ($el) use ($withEditor) {
                 return $el->getPageItemType()?->toElementWrap($withEditor)?->style('flex-grow: 1');
             }),
         );
@@ -382,6 +385,9 @@ abstract class PageItemType
         ];
     }
 
+    /**
+     * Works like second validation before saving the page item. PageItemForm validation is the first one.
+     */
     public function validate()
     {
         $attrs = $this->pageItem->getAttributes();
@@ -395,7 +401,9 @@ abstract class PageItemType
         $validator = Validator::make($formattedAttrs, $this->rules());
 
         if ($validator->fails()) {
-            throw new \Exception("Validator error");
+            $element = collect($validator->errors()->getMessages())->take(1);
+            throwValidationError($element->keys()->first(), $element->first()[0]);
+            throw new HttpException(500, "Validation error", null, $validator->errors()->getMessages()); // Logging the error
         }
 
         return $this;
