@@ -58,7 +58,7 @@ class ArticlePage extends Form
                     $this->mainLink('book','cms::wiki.general-help')->knowledgeDrawer(ArticlePage::class),
                     $this->mainLink('gps','cms::wiki.contextual-help')->knowledgeDrawer(ArticlePage::class),
                     _Rows(
-                        (!auth()->user() || !$newsCount) ? null : _Html($newsCount)->class('absolute top-12 right-10 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center z-20 text-xl font-semibold'),
+                        (!auth()->user() || !$newsCount) ? null : _Html($newsCount)->class('absolute top-8 right-10 bg-red-500 text-white rounded-full w-6 h-6 text-sm flex items-center justify-center z-20 font-semibold'),
                         $this->mainLink('lamp-charge','cms::wiki.new-features')->knowledgeDrawer(ArticlePage::class, ['whats-new' => 1]),
                     )->class('relative'),
                 )->class('absolute max-w-4xl w-full px-8 z-10 left-1/2 transform -translate-x-1/2'),
