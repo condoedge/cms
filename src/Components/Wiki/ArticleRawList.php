@@ -23,7 +23,7 @@ class ArticleRawList extends Table
 	{
 		return _Rows(
 			_Flexbetween(
-				_H1('cms::wiki.articles')->medTitle()->class('text-level3'),
+				_H1('cms::wiki.articles')->class('text-level3'),
 				_Link('cms::wiki.create-article')->button()->icon('icon-plus')->href('knowledge.editor'),
 			),
             _FlexEnd(
