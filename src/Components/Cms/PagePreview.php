@@ -38,7 +38,7 @@ class PagePreview extends Query
     public function top()
     {
         return $this->withEditor ? _Rows(
-            !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->class('w-full bg-blue-100 p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
+            !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->outlined()->class('w-full p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
             _Button('cms::cms.add-zone')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
         ) : _Html('');
     }
