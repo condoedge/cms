@@ -11,9 +11,16 @@ use Kompo\Form;
 class ArticlePage extends Form
 {
     public $class = "min-h-screen bg-white pb-8";
-    public $style = "min-width: 700px;";
+    public $style = "width: 700px;";
 
     public $model = KnowledgePage::class;
+
+    protected $tagsIds = [];
+
+    public function created()
+    {
+        $this->tagsIds = collect(request('tags_ids'))->map(fn($id) => preg_replace('/\D*/', '', $id))->toArray();
+    }
 
     public function render()
     {
@@ -48,7 +55,7 @@ class ArticlePage extends Form
                             Tag::forPage()->pluck('name','id'),
                         )
                         ->name('tags_ids', false)->placeholder('cms::wiki.tags-placeholder')
-                        ->default(request('tags_ids'))
+                        ->default($this->tagsIds)
                         ->class('border border-gray-300 rounded-lg whiteField')
                         ->selfPost('getArticlesContent')->withAllFormValues()->inPanel('articles_panel'),
                 )->class('gap-4'),
@@ -77,7 +84,7 @@ class ArticlePage extends Form
     protected function preview()
     {
         return _Rows(
-            !auth()->user()?->isAdmin() ? null : 
+            !auth()->user()?->isAdmin() ? null :
                 _Rows(
                     _Link('cms::wiki.edit-article')->target('_blank')->href('knowledge.editor', ['id' => $this->model->id]),
                 )->class('mb-4 items-center'),
@@ -102,7 +109,7 @@ class ArticlePage extends Form
             return new ArticleSearchQuery();
         }
 
-        if(!request('search') && !request('tags_ids')) {
+        if(!request('search') && !$this->tagsIds) {
             return $this->preview();
         }
 

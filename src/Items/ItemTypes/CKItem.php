@@ -38,12 +38,16 @@ class CKItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
+        $this->styles->removeProperties(['text-align']);
+
         return _Html($this->content)->replaceCKEditorContent($this->variables)
             ->class('ckEditorContent');
     }
 
     public function toHtml(): string
     {
+        $this->styles->removeProperties(['text-align']);
+
         $text = replaceAllMentions($this->content, $this->variables);
 
         return '<div style="' . $this->styles . '" class="'. $this->classes . ' ckEditor">' . $text . '</div>';
@@ -74,7 +78,6 @@ class CKItem extends PageItemType
     public function defaultStyles($pageItem): string
     {
         $styles = parent::defaultStyles($pageItem);
-        $styles .= 'text-align: ' . $pageItem->text_align . ';';
 
         return $styles;
     }
