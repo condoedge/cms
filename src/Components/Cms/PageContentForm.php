@@ -14,7 +14,8 @@ class PageContentForm extends Form
     protected $withDesign = true;
     protected $prefixGroup = "";
 
-    public function created(){
+    public function created()
+    {
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
