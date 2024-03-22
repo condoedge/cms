@@ -5,7 +5,7 @@ use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Illuminate\Support\Facades\Route;
 use Kompo\Form;
 
-class PageInfoForm extends Form 
+class PageInfoForm extends Form
 {
     public function created(){
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
@@ -34,7 +34,7 @@ class PageInfoForm extends Form
     protected function inputs()
     {
         return [
-            _Translatable('cms::cms.title')->name('title')->class('mb-2'),
+            _Translatable('cms::cms.title')->name('title')->class('mb-2 whiteField'),
         ];
     }
 

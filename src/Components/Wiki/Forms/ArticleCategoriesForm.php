@@ -19,7 +19,7 @@ class ArticleCategoriesForm extends Form
             _FlexBetween(
                 _MultiSelect('cms::wiki.categories')->class('w-full')->options(
                     Tag::forPage()->categories()->pluck('name','id'),
-                )->name('categories_ids', false)
+                )->name('categories_ids', false)->class('whiteField')
                     ->default($this->model->tags()->categories()->pluck('tags.id'))
                     ->selfGet('getSubcategoriesSubSelect')->inPanel('subcategories_select'),
                 _Button()->icon('view-list')->class('ml-4')->selfGet('getTagsList')->inModal(),
@@ -46,7 +46,7 @@ class ArticleCategoriesForm extends Form
         return _MultiSelect('cms::wiki.subcategories')
             ->options(
                 Tag::forPage()->subcategories(request('categories_ids'))->pluck('name','id'),
-            )->name('subcategories_ids', false)
+            )->name('subcategories_ids', false)->class('whiteField')
             ->default($this->model->tags()->subcategories()->pluck('tags.id'));
     }
 }
