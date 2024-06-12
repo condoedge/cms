@@ -37,6 +37,7 @@ class ArticleRawList extends Table
         return [
             _Th('#')->class('pl-14'),
             _Th('cms::wiki.title')->class('pl-4'),
+            _Th('translate.cmd::wiki.categories'),
             _Th('cms::wiki.actions')->class('pr-2 w-20'),
         ];
     }
@@ -46,7 +47,21 @@ class ArticleRawList extends Table
         return _TableRow(
             _Html(),
             _Link($page->title)->href('knowledge.editor', ['id'=> $page->id]),
-            _Link()->icon('pencil')->href('knowledge.editor', ['id'=> $page->id]),
+            _Rows(
+                $page->tags->map(fn($t) => _Html($t->name)->class('text-sm bg-info bg-opacity-20 text-blue-500 rounded-lg px-2 py-1 max-w-max')),
+            )->class('flex-wrap gap-2'),
+            _Flex4(
+                _Link()->icon('pencil')->href('knowledge.editor', ['id'=> $page->id]),
+                _Toggle()->class('!mb-0')->name('is_visible')->default($page->is_visible)->class('!mb-0')
+                    ->selfPost('changePageVisibility', ['id' => $page->id]),
+            ),
         );
+    }
+
+    public function changePageVisibility($id)
+    {
+        $page = Page::findOrFail($id);
+        $page->is_visible = request('is_visible');
+        $page->save();
     }
 }

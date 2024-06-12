@@ -52,7 +52,7 @@ class PageItemForm extends Form
 
     public function render()
     {
-        $types = PageEditor::getOptionsTypes();
+        $types = PageEditor::getOptionsTypes($this->prefixGroup);
 
         return _Tabs(
             _Tab(

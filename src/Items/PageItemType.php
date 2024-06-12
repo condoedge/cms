@@ -15,6 +15,7 @@ abstract class PageItemType
     public const ITEM_NAME = 'default';
     public const ITEM_TITLE = 'newsletter.default';
     public const ITEM_DESCRIPTION = 'newsletter.a-default-page-item';
+    public const SPECIFIC_GROUP = '';
 
     protected string | object $content;
     protected string $classes;

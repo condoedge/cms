@@ -11,10 +11,10 @@ class PageEditorService
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getAvailableTypes()
+    public function getAvailableTypes($prefixGroup = "")
     {
-        return collect(config('page-editor.types'))->filter(function ($item) {
-            return !in_array($item, config('page-editor.hidden_types'));
+        return collect(config('page-editor.types'))->filter(function ($item, $prefixGroup) {
+            return !in_array($item, config('page-editor.hidden_types')) && (!$item::SPECIFIC_GROUP || $item::SPECIFIC_GROUP == $prefixGroup);
         });
     }
 
@@ -23,9 +23,9 @@ class PageEditorService
      *
      * @return array
      */
-    public function getOptionsTypes()
+    public function getOptionsTypes($prefixGroup = "")
     {
-        return collect($this->getAvailableTypes())->mapWithKeys(function ($item) {
+        return collect($this->getAvailableTypes($prefixGroup))->mapWithKeys(function ($item) {
             return [$item::ITEM_NAME => __($item::ITEM_TITLE)];
         })->toArray();
     }

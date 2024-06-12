@@ -22,7 +22,8 @@ class WhatsNewQuery extends Query
     public function query()
     {
         return Page::where('group_type', 'knowledge')->where('associated_route', 'knowledge.whats-new')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc')
+            ->where('is_visible', 1);
     }
 
     public function render($article)

@@ -4,7 +4,6 @@ namespace Anonimatrix\PageEditor\Components\Wiki\Forms;
 
 use Anonimatrix\PageEditor\Components\Cms\PageContentForm;
 use Anonimatrix\PageEditor\Components\Wiki\ArticlePage;
-use Anonimatrix\PageEditor\Components\Wiki\ArticleRawList;
 
 class ArticlePageContentForm extends PageContentForm
 {
