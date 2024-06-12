@@ -12,8 +12,8 @@ class OtherPageLinkItem extends PageItemType
 {
     public const ITEM_TAG = 'article_link';
     public const ITEM_NAME = 'article_link';
-    public const ITEM_TITLE = 'translate.cms::cms.items.article-link';
-    public const ITEM_DESCRIPTION = 'translate.cms::cms.items.article-link';
+    public const ITEM_TITLE = 'cms::cms.items.article-link';
+    public const ITEM_DESCRIPTION = 'cms::cms.items.article-link';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

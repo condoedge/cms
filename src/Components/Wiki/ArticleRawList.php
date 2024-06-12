@@ -37,7 +37,7 @@ class ArticleRawList extends Table
         return [
             _Th('#')->class('pl-14'),
             _Th('cms::wiki.title')->class('pl-4'),
-            _Th('translate.cmd::wiki.categories'),
+            _Th('cms::wiki.categories'),
             _Th('cms::wiki.actions')->class('pr-2 w-20'),
         ];
     }

@@ -23,6 +23,8 @@ return [
     "green" => "Vert",
     "items" => [
         "article" => "Article",
+        "article-link" => "Lien vers un article",
+        "boxed-content" => "",
         "button" => "Bouton",
         "component" => "Composante",
         "element-type-1" => "Élément 1 (titre, image, texte, bouton)",
@@ -31,7 +33,7 @@ return [
         "page-title-h1" => "Titre de la page (h1)",
         "text-editor" => "Éditeur de texte",
         "video" => "Vidéo",
-        "whats-new-card" => "Carte de nouveauté",
+        "whats-new-card" => "Carte de nouveauté"
     ],
     "left" => "Gauche",
     "link-color" => "Couleur des liens",
@@ -53,6 +55,7 @@ return [
     "save-zone" => "Sauvegarder",
     "save-zone-and-new" => "Sauvegarder et nouveau",
     "set-generic-styles-to-block" => "Style générique de la zone",
+    "style" => "Style",
     "styles-for-item" => "Styles pour les items",
     "text-align" => "Alignement du texte",
     "text-color" => "Couleur du texte",
