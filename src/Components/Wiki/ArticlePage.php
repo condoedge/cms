@@ -29,7 +29,7 @@ class ArticlePage extends Form
         return _Rows(
             $this->searchTop(),
             _Rows(
-                _Rows()->class('h-10 bg-white'),
+                _Rows()->class('h-10 bg-'. $this->model->getExteriorBackgroundColor()),
                 _Panel(
                     $routeName === 'knowledge.whats-new' ? $this->getWhatsNewContent() : (
                         $this->model?->id ? $this->preview() :
@@ -46,9 +46,9 @@ class ArticlePage extends Form
 
         return _Rows(
             _Rows(
-                _Html('cms::wiki.search-subtitle')->class('text-lg text-center mb-6'),
+                _Html('cms::wiki.search-subtitle')->class('text-lg text-center mb-6 text-white'),
                 _FlexCenter(
-                    _Input()->icon('search')->name('search', false)->placeholder('cms::wiki.search-placeholder')->class('border border-gray-300 rounded-lg whiteField')
+                    _Input()->icon('search')->name('search', false)->placeholder('cms::wiki.search-placeholder')->class('rounded-lg whiteField')
                         ->selfPost('getArticlesContent')->withAllFormValues()->inPanel('articles_panel'),
                     _MultiSelect()->icon('tag')
                         ->options(
@@ -56,7 +56,7 @@ class ArticlePage extends Form
                         )
                         ->name('tags_ids', false)->placeholder('cms::wiki.tags-placeholder')
                         ->default($this->tagsIds)
-                        ->class('border border-gray-300 rounded-lg whiteField')
+                        ->class('rounded-lg whiteField')
                         ->selfPost('getArticlesContent')->withAllFormValues()->inPanel('articles_panel'),
                 )->class('gap-4'),
             )->class('max-w-4xl w-full mb-4'),
@@ -70,15 +70,15 @@ class ArticlePage extends Form
                     )->class('relative'),
                 )->class('absolute max-w-4xl w-full px-8 z-10 left-1/2 transform -translate-x-1/2'),
             )->class('relative h-4 w-full hidden md:flex items-center'),
-        )->class('bg-slate-200 p-8 items-center border-b border-gray-300');
+        )->class('bg-level1 p-8 items-center');
     }
 
     protected function mainLink($icon,$title)
     {
         return _Rows(
-            _Sax($icon, 40)->class('w-10 h-10 mx-auto text-gray-700'),
-            _Html($title)->class('text-sm text-center mt-2'),
-        )->class('h-24 justify-center bg-white rounded-lg px-4 border border-gray-200 z-10 py-4 hover:bg-gray-100 transition-all duration-200');
+            _Sax($icon, 36)->class('w-10 h-10 mx-auto text-level1 opacity-30'),
+            _Html($title)->class('text-sm text-center mt-2 texte-level1'),
+        )->class('h-24 justify-center bg-white rounded-xl px-4 border border-level1 z-10 py-4 hover:bg-gray-100 transition-all duration-200');
     }
 
     protected function preview()

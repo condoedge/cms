@@ -21,9 +21,9 @@ class ArticleOpinionForm extends Form
         return _FlexBetween(
             _Html('cms::wiki.like-question')->class('text-lg'),
             _FlexBetween(
-                _Link()->icon('thumb-up')->class('text-gray-300 text-4xl hover:text-green-600 ' . ($userLike ? 'text-green-600' : ''))
+                _Link()->icon('thumb-up')->class('text-gray-300 text-4xl hover:text-positive ' . ($userLike ? 'text-positive' : ''))
                     ->selfPost('likeArticle')->refresh(),
-                _Link()->icon('thumb-down')->class('text-gray-300 text-4xl hover:text-red-600 ' . ($userDislike ? 'text-red-600' : ''))
+                _Link()->icon('thumb-down')->class('text-gray-300 text-4xl hover:text-danger ' . ($userDislike ? 'text-danger' : ''))
                     ->selfPost('dislikeArticle')->refresh(),
             )->class('ml-4 gap-3'),
         )->class('bg-gray-100 rounded-lg px-8 py-4 mt-12 max-w-max gap-3 mx-auto');
