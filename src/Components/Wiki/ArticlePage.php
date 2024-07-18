@@ -77,8 +77,8 @@ class ArticlePage extends Form
     {
         return _Rows(
             _Sax($icon, 36)->class('w-10 h-10 mx-auto text-level1 opacity-30'),
-            _Html($title)->class('text-sm text-center mt-2 texte-level1'),
-        )->class('h-24 justify-center bg-white rounded-xl px-4 border border-level1 z-10 py-4 hover:bg-gray-100 transition-all duration-200');
+            _Html($title)->class('text-sm text-center mt-2 text-level1'),
+        )->class('h-24 justify-center bg-wikibg rounded-xl px-4 border border-level1 z-10 py-4 hover:bg-gray-100 transition-all duration-200');
     }
 
     protected function preview()

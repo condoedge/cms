@@ -161,9 +161,9 @@ abstract class PageItemType
                     _Link()->icon('columns')->balloon('newsletter.add-column', 'down-right')
                     ->selfPost('addPageItemColumn', ['id' => $this->pageItem->id])
                     ->refresh(),
-                /*_Link()->icon('pencil-alt')->balloon('Edit block', 'down-right')
+                _Link()->icon('pencil-alt')->balloon('Edit block', 'down-right')
                     ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
-                    ->inPanel($editPanelId),*/
+                    ->inPanel($editPanelId),
                 _DeleteLink()->icon('trash')->byKey($this->pageItem)->browse()->balloon('newsletter.delete', 'down-right'),
             ]
         );
