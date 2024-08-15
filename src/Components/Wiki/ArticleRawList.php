@@ -52,6 +52,7 @@ class ArticleRawList extends Table
             )->class('flex-wrap gap-2'),
             _Flex4(
                 _Link()->icon('pencil')->href('knowledge.editor', ['id'=> $page->id]),
+                _DeleteLink()->class('text-red-400')->byKey($page)->refresh(),
                 _Toggle()->class('!mb-0')->name('is_visible')->default($page->is_visible)->class('!mb-0')
                     ->selfPost('changePageVisibility', ['id' => $page->id]),
             ),

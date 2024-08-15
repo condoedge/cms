@@ -29,7 +29,8 @@ class ArticleSearchQuery extends Query
 
     public function query()
     {
-        return Page::where('group_type', 'knowledge')->where('associated_route', '!=', 'knowledge.whats-new')
+        return Page::where('group_type', 'knowledge')
+            ->where(fn($q) => $q->where('associated_route', '!=', 'knowledge.whats-new')->orWhereNull('associated_route'))
             ->where('is_visible', 1)
             ->where(fn($q) => $q->where('title', 'like', '%'.$this->search.'%')
                 ->orWhereHas('tags', fn($q) => $q->where('name', 'like', '%'.$this->search.'%'))
