@@ -186,11 +186,17 @@ class Page extends PageModel
 
     public function forceDelete()
     {
-        $this->pageItems()->get()->each->forceDelete();
+        $this->pageItems()->withTrashed()->get()->each->forceDelete();
 
-        $this->pages()->get()->each->forceDelete();
+        $this->pages()->withTrashed()->get()->each->forceDelete();
+        $this->styles()->withTrashed()->first()?->customForceDelete();
 
-        parent::forceDelete();
+        $this->customForceDelete();
+    }
+
+    public function customForceDelete() //forceDelete wasn't working properly for some reason
+    {
+        \DB::statement("DELETE FROM ".$this->getTable()." WHERE id=".$this->id);
     }
 
     public function deletable()

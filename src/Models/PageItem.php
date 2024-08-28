@@ -221,10 +221,15 @@ class PageItem extends PageItemModel
 
     public function forceDelete()
     {
-        $this->pageItems()->get()->each->forceDelete();
+        $this->pageItems()->withTrashed()->get()->each->forceDelete();
 
-        $this->styles?->forceDelete();
+        $this->styles()->withTrashed()->first()?->customForceDelete();
 
-        parent::forceDelete();
+        $this->customForceDelete();
+    }
+
+    public function customForceDelete() //forceDelete wasn't working properly for some reason
+    {
+        \DB::statement("DELETE FROM ".$this->getTable()." WHERE id=".$this->id);
     }
 }

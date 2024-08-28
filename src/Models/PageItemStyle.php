@@ -61,4 +61,9 @@ class PageItemStyle extends PageItemStyleModel
 
         return $result;
     }
+
+    public function customForceDelete() //forceDelete wasn't working properly for some reason
+    {
+        \DB::statement("DELETE FROM ".$this->getTable()." WHERE id=".parent::getAttribute('id'));
+    }
 }
