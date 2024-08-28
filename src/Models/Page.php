@@ -184,6 +184,15 @@ class Page extends PageModel
         parent::delete();
     }
 
+    public function forceDelete()
+    {
+        $this->pageItems()->get()->each->forceDelete();
+
+        $this->pages()->get()->each->forceDelete();
+
+        parent::forceDelete();
+    }
+
     public function deletable()
     {
         //return auth()->user()->isTeamOwner();

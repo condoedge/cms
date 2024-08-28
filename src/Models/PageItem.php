@@ -218,4 +218,13 @@ class PageItem extends PageItemModel
 
         return $result;
     }
+
+    public function forceDelete()
+    {
+        $this->pageItems()->get()->each->forceDelete();
+
+        $this->styles?->forceDelete();
+
+        parent::forceDelete();
+    }
 }
