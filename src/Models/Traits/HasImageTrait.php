@@ -31,7 +31,7 @@ trait HasImageTrait
         $image = Image::make($file)->resize($width, null, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();
-        })->encode($format)->__toString();
+        })->orientate()->encode($format)->__toString();
 
         return $image;
     }
