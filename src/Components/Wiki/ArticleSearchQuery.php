@@ -8,7 +8,7 @@ use Kompo\Query;
 
 class ArticleSearchQuery extends Query
 {
-    public $class = "bg-white py-8 px-4";
+    public $class = "py-8 px-4";
     public $itemsWrapperStyle = "max-width: 800px; margin: 0 auto; width: 100%;";
 
     protected $search;

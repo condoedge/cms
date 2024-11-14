@@ -20,6 +20,8 @@ class ArticlePage extends Form
     public function created()
     {
         $this->tagsIds = collect(request('tags_ids'))->map(fn($id) => preg_replace('/\D*/', '', $id))->toArray();
+
+        $this->style .= 'background-color: ' . $this->model->getExteriorBackgroundColor();
     }
 
     public function render()
@@ -29,15 +31,15 @@ class ArticlePage extends Form
         return _Rows(
             $this->searchTop(),
             _Rows(
-                _Rows()->class('h-10 bg-'. $this->model->getExteriorBackgroundColor()),
+                _Rows()->class('h-10'),
                 _Panel(
                     $routeName === 'knowledge.whats-new' ? $this->getWhatsNewContent() : (
                         $this->model?->id ? $this->preview() :
                         new ArticleSearchQuery()
                     ),
                 )->id('articles_panel'),
-            )->class('bg-white'),
-        )->style('background-color: ' . $this->model->getExteriorBackgroundColor());
+            ),
+        );
     }
 
     protected function searchTop()

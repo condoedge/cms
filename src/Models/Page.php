@@ -116,7 +116,7 @@ class Page extends PageModel
 
     public function getExteriorBackgroundColor()
     {
-        return $this->exterior_background_color ?: '#ECEEF2';
+        return $this->exterior_background_color ?: '#F8FAFC';
     }
 
     public function getStyleProperty($property)
