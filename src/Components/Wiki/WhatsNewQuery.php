@@ -36,7 +36,7 @@ class WhatsNewQuery extends Query
                 _Panel(
                     $this->readLessArticle($article->id),
                 )->id('preview_panel' . $article->id),
-                !auth()->user()?->isAdmin() ? null : _FlexEnd(
+                !auth()->user()?->isCmsAdmin() ? null : _FlexEnd(
                     _Link('cms::wiki.edit-article')->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
                 ),
             )->class('w-full bg-gray-50 px-8 py-4 mb-4 rounded-xl'),

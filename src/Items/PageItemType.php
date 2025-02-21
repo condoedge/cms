@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Items;
 
 use Anonimatrix\PageEditor\Casts\Style;
 use Anonimatrix\PageEditor\Models\PageItemStyle;
+use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\PageItem as PageItemFacade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -282,6 +283,10 @@ abstract class PageItemType
      */
     public function defaultStyles($pageItem): string
     {
+        if (!Features::hasFeature('teams')) {
+            return static::defaultGenericStyles() ?? '';
+        }
+
         return static::defaultGenericStyles($pageItem->page?->team?->id) ?? '';
     }
 

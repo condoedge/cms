@@ -53,7 +53,7 @@ class Tag extends Model
 
 	public function deletable()
 	{
-		return auth()->user()->isAdmin() || (Features::hasFeature('teams') && auth()->user() && $this->team_id == auth()->user()->current_team_id);
+		return auth()->user()->isCmsAdmin() || (Features::hasFeature('teams') && auth()->user() && $this->team_id == auth()->user()->current_team_id);
 	}
 
 	public function editable()

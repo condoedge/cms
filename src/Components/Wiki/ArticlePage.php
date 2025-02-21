@@ -86,7 +86,7 @@ class ArticlePage extends Form
     protected function preview()
     {
         return _Rows(
-            !auth()->user()?->isAdmin() ? null :
+            !auth()->user()?->isCmsAdmin() ? null :
                 _Rows(
                     _Link('cms::wiki.edit-article')->target('_blank')->href('knowledge.editor', ['id' => $this->model->id]),
                 )->class('mb-4 items-center'),

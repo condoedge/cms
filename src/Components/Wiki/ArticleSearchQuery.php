@@ -48,7 +48,7 @@ class ArticleSearchQuery extends Query
                     }),
                 )->class('mt-2') : null,
             ),
-            auth()->user()?->isAdmin() ? _FlexEnd(
+            auth()->user()?->isCmsAdmin() ? _FlexEnd(
                 _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
             ) : null,
             true ? null : PageEditor::getPagePreviewComponent(),
