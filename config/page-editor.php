@@ -39,12 +39,12 @@ return [
     ],
 
     'features' => [
-        'teams' => false,
+        'teams' => true,
         'editor_variables' => true,
     ],
 
     'teams' => [
-        // 'model' => \App\Models\Teams\Team::class,
+        'model' => \App\Models\Teams\Team::class,
     ],
 
     'default_font_family' => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
