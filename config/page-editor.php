@@ -32,6 +32,7 @@ return [
         \Anonimatrix\PageEditor\Items\ItemTypes\OtherPageItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\WhatsNewCardItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ScribeItem::class,
     ],
 
     'hidden_types' => [ // Won't be displayed, but it will work in groups
