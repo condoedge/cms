@@ -48,8 +48,8 @@ class ArticleSearchQuery extends Query
                     }),
                 )->class('mt-1') : null,
             ),
-            auth()->user()?->isAdmin() ? _FlexEnd(
-                _Link()->icon('pencil')->class('text-blue-800')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
+            auth()->user()?->isCmsAdmin() ? _FlexEnd(
+                _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
             ) : null,
             true ? null : PageEditor::getPagePreviewComponent(),
         )->class('w-full bg-gray-100 px-6 py-3 mb-2 rounded-xl');

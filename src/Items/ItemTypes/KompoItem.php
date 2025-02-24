@@ -37,7 +37,7 @@ class KompoItem extends PageItemType
     {
         return [
             'create' => true,
-            'update' => [auth()->user()->isAdmin(), 'newsletter.sorry-only-the-developpers-can-edit-this-type-of-block'],
+            'update' => [auth()->user()->isCmsAdmin(), 'newsletter.sorry-only-the-developpers-can-edit-this-type-of-block'],
             'delete' => true,
         ];
     }

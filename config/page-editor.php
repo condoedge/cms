@@ -32,6 +32,7 @@ return [
         \Anonimatrix\PageEditor\Items\ItemTypes\OtherPageItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\WhatsNewCardItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ScribeItem::class,
     ],
 
     'hidden_types' => [ // Won't be displayed, but it will work in groups
@@ -39,12 +40,12 @@ return [
     ],
 
     'features' => [
-        'teams' => false,
+        'teams' => true,
         'editor_variables' => true,
     ],
 
     'teams' => [
-        // 'model' => \App\Models\Teams\Team::class,
+        'model' => \App\Models\Teams\Team::class,
     ],
 
     'default_font_family' => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",

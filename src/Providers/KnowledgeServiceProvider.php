@@ -11,7 +11,7 @@ class KnowledgeServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../../migrations/' => database_path('migrations/wiki'),
+            __DIR__ . '/../../database/migrations/wiki' => database_path('migrations/wiki'),
         ], 'wiki');
 
         // Config settings. Used to get components like this: PageEditor::getPageContentComponent('knowledge');
