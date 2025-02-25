@@ -44,12 +44,12 @@ class ArticleSearchQuery extends Query
                 _Link($article->title)->class('text-black')->knowledgeDrawer(ArticlePage::class, ['id' => $article->id]),
                 $article->tags->count() > 0 ? _Columns(
                     $article->tags->map(function ($tag) {
-                        return _Link($tag->name)->class('text-xs bg-info bg-opacity-10 text-blue-800 rounded-lg px-3 py-1 mr-2 max-w-max')->knowledgeDrawer(ArticlePage::class, ['tags_ids' => [$tag->id]]);
+                        return _Link($tag->name)->class('text-xs bg-positive bg-opacity-10 text-positive rounded-full px-3 py-1 mr-2 max-w-max')->knowledgeDrawer(ArticlePage::class, ['tags_ids' => [$tag->id]]);
                     }),
                 )->class('mt-1') : null,
             ),
             auth()->user()?->isCmsAdmin() ? _FlexEnd(
-                _Link()->icon('pencil')->class('text-blue-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
+                _Link()->icon('pencil')->class('text-gray-500')->href('knowledge.editor', ['id' => $article->id])->target('_blank'),
             ) : null,
             true ? null : PageEditor::getPagePreviewComponent(),
         )->class('w-full bg-gray-100 px-6 py-3 mb-2 rounded-xl');
