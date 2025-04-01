@@ -8,14 +8,14 @@ class ScribeItem extends PageItemType
 {
     public const ITEM_TAG = 'iframe';
     public const ITEM_NAME = 'scribe';
-    public const ITEM_TITLE = 'newsletter.scribe-item-title';
-    public const ITEM_DESCRIPTION = 'newsletter.scribe-item-sub';
+    public const ITEM_TITLE = 'wiki.scribe-item-title';
+    public const ITEM_DESCRIPTION = 'wiki.scribe-item-sub';
 
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()
     {
-        return _Input('newsletter.scribe-code')
+        return _Input('wiki.scribe-code')
             ->name($this->nameContent, $this->interactsWithPageItem)
             ->default($this->valueContent);
     }

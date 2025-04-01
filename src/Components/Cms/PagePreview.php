@@ -14,7 +14,7 @@ class PagePreview extends Query
 
     public $containerClass = 'flex flex-col items-center';
     public $paginationType = 'Scroll';
-	public $itemsWrapperClass = 'px-8 overflow-x-auto overflow-y-auto mini-scroll';
+	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
 
     protected $panelId;
     protected $withEditor = false;

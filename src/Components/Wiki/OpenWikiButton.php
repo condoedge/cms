@@ -16,7 +16,7 @@ class OpenWikiButton extends Form
 
     public function render()
     {
-        return _Link()->icon('question-mark-circle')->selfGet('getArticleWiki')->inDrawer()->id('wiki-help-modal')->class('text-gray-800 text-2xl');
+        return _Link()->icon(_Sax('lifebuoy',30))->selfGet('getArticleWiki')->inDrawer()->id('wiki-help-modal')->class('text-gray-800 text-2xl');
     }
 
     public function getArticleWiki()
