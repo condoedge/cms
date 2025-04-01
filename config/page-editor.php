@@ -70,6 +70,8 @@ return [
 
         'height' => 'px',
         'width' => 'px',
+
+        'min-width' => 'px',
         'max-width' => '%',
 
         'img-height' => 'px',
