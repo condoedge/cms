@@ -66,10 +66,15 @@ class ButtonItem extends PageItemType
     public function defaultStyles($pageItem): string
     {
         $styles = parent::defaultStyles($pageItem);
-        $styles .= 'text-align: center !important; padding: 10px 0 !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: 30%;border-radius: 5px;';
+        $styles .= 'text-align: center !important; padding: 15px 4px !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: 30%;border-radius: 5px;';
 
         $styles .= 'background: ' . $pageItem->styles?->background_color . '!important;';
 
         return $styles;
+    }
+
+    public static function getDefaultFontSize($teamId = null, $page = null)
+    {
+        return static::defaultGenericStyles($teamId)?->font_size_raw ?? 14;
     }
 }
