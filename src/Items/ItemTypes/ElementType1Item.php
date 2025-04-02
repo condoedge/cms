@@ -60,7 +60,7 @@ class ElementType1Item extends GroupPageItemType
     {
         $styles = 'border-radius: 5px;';
         $styles .= 'background-color: ' . $parentPageItem->getLinkColor() . '!important;';
-        $styles .= 'color: white !important;';
+        $styles .= 'color: white !important; padding: 15px 4px !important; margin: 10px auto !important; display: inline-block; font-weight: 600; width: 30%; min-width: 200px;';
 
         return $styles;
     }
