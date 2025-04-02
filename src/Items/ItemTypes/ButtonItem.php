@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\PageItem;
+use function Laravel\Prompts\table;
 
 class ButtonItem extends PageItemType
 {
@@ -45,9 +46,15 @@ class ButtonItem extends PageItemType
 
     public function toHtml(): string
     {
-        return !$this->content->href || !$this->content->title ? '' : $this->centerElement(
-            '<a target="_blank" href="' . $this->content->href . '" style="' . $this->styles . '" class="'. $this->classes . '">' . $this->content->title . '</a>'
-        );
+        $originalStyles = $this->styles;
+        $tdStyles = collect($this->styles->getProperties(['color', 'background-color', 'border-color', 'text-decoration', 'width', 'max-width', 'border-radius', 'margin']))->map(function ($value, $key) {
+            return $key . ': ' . $value . ';';
+        })->implode(' ');
+        $originalStyles->removeProperties([ 'margin', 'width']);
+
+        return !$this->content->href || !$this->content->title ? '' : str_replace("\r\n", '', $this->centerElement($this->centerElement(
+            '<a target="_blank" href="' . $this->content->href . '" style="' . $originalStyles . 'width: 100% !important;" class="'. $this->classes . '">' . $this->content->title . '</a>'
+        , $tdStyles, "30%", tableStyles: 'width:' . '30% !important;'), tableStyles: 'padding: 10px 0 !important;'));
     }
 
     public function rules()
@@ -66,7 +73,7 @@ class ButtonItem extends PageItemType
     public function defaultStyles($pageItem): string
     {
         $styles = parent::defaultStyles($pageItem);
-        $styles .= 'text-align: center !important; padding: 15px 4px !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: 30%;border-radius: 5px; min-width: 200px;';
+        $styles .= 'text-align: center !important; padding: 15px 4px !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: 30%;border-radius: 5px; min-width: 200px; text-decoration: none;';
 
         $styles .= 'background: ' . $pageItem->styles?->background_color . '!important;';
 

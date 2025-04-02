@@ -44,10 +44,14 @@ class Style {
      * Get the value of all styles as a collection.
      * @return \Illuminate\Support\Collection<array-key, string>
      */
-    public function getProperties()
+    public function getProperties($properties = [])
     {
-        $styles = collect(explode(';', $this->rawStyle))->filter()->mapWithKeys(function ($style) {
+        $styles = collect(explode(';', $this->rawStyle))->filter()->mapWithKeys(function ($style) use ($properties){
             $style = explode(':', $style);
+
+            if (count($properties) && !in_array(trim($style[0]), $properties)) {
+                return [];
+            }
 
             return [trim($style[0]) => trim($style[1])];
         });

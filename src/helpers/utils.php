@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('getMentionHtml')) {
+if (!function_exists('getMentionHtmlCms')) {
 	function getMentionHtmlCms($type)
 	{
 		return '<span class="mention" data-mention="'.$type.'">';
@@ -10,9 +10,27 @@ if (!function_exists('getMentionHtml')) {
 if (!function_exists('replaceMentionCms')) {
 	function replaceMentionCms($subject, $type, $replaceWith)
 	{
-        $pattern = '/<span\s+class="mention"\s+data-mention="' . preg_quote($type, '/') . '"[^>]*>.*?<\/span>/';
+		$mentionHtml = '<span class="mention" data-mention="' . $type . '"';
+        $start = strpos($subject, $mentionHtml);
 
-        return preg_replace($pattern, $replaceWith, $subject);
+        while ($start !== false) {
+            // Encuentra el final del span
+            $end = strpos($subject, '</span>', $start);
+            if ($end === false) {
+                break; // Si no se encuentra el cierre, salimos del bucle
+            }
+
+            // Calcula la longitud del contenido a reemplazar
+            $length = $end + strlen('</span>') - $start;
+
+            // Reemplaza el contenido
+            $subject = substr_replace($subject, $replaceWith, $start, $length);
+
+            // Busca la siguiente ocurrencia
+            $start = strpos($subject, $mentionHtml, $start + strlen($replaceWith));
+        }
+
+        return $subject;
 	}
 }
 

@@ -62,7 +62,7 @@ return [
         'margin-right' => 'px',
 
         'font-size' => 'px',
-        'color' => '',
+        'color' => ' !important',
         'background-color' => '',
         'text-align' => '',
 

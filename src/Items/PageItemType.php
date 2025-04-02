@@ -450,9 +450,9 @@ abstract class PageItemType
     public function beforeMountInGroup($groupItem) {}
 
     /* TABLES HTML HELPERS */
-    protected function alignElement($el, $align = 'center', $styles = '')
+    protected function alignElement($el, $align = 'center', $styles = '', $width = '100%', $tableStyles = '')
     {
-        return '<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        return '<table width="'.$width.'" border="0" cellspacing="0" cellpadding="0" style="'.$tableStyles.'">
             <tr>
                 <td align="' . $align . '" style="'. $styles .'">
                     ' . $el . '
@@ -461,9 +461,9 @@ abstract class PageItemType
         </table>';
     }
 
-    protected function centerElement($el)
+    protected function centerElement($el, $styles = '', $width = '100%', $tableStyles = '')
     {
-        return $this->alignElement($el, 'center');
+        return $this->alignElement($el, 'center', $styles, $width, $tableStyles);
     }
 
     /* FORM ATTRIBUTES */
