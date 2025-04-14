@@ -54,7 +54,7 @@ class ButtonItem extends PageItemType
 
         return !$this->content->href || !$this->content->title ? '' : str_replace("\r\n", '', $this->centerElement($this->centerElement(
             '<a target="_blank" href="' . $this->content->href . '" style="' . $originalStyles . 'width: 100% !important;" class="'. $this->classes . '">' . $this->content->title . '</a>'
-        , $tdStyles, "30%", tableStyles: 'width:' . '30% !important;'), tableStyles: 'padding: 10px 0 !important;'));
+        , $tdStyles, "30%", tableStyles: 'width:' . '30% !important;'), tableStyles: 'padding: 10px 0 !important; table-layout:fixed;'));
     }
 
     public function rules()

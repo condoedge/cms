@@ -452,9 +452,13 @@ abstract class PageItemType
     /* TABLES HTML HELPERS */
     protected function alignElement($el, $align = 'center', $styles = '', $width = '100%', $tableStyles = '')
     {
+        $backgroundPattern = "/background-color: (.*?);/i";
+        $matches = [];
+        $bgColor = preg_match($backgroundPattern, $styles, $matches) ? $matches[1] : null;
+        
         return '<table width="'.$width.'" border="0" cellspacing="0" cellpadding="0" style="'.$tableStyles.'">
             <tr>
-                <td align="' . $align . '" style="'. $styles .'">
+                <td align="' . $align . '" style="'. $styles .'" bgcolor="'.$bgColor.'">
                     ' . $el . '
                 </td>
             </tr>
