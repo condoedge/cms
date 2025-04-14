@@ -44,7 +44,7 @@ class ArticleSearchQuery extends Query
                 _Link($article->title)->class('text-black')->knowledgeDrawer(ArticlePage::class, ['id' => $article->id]),
                 $article->tags->count() > 0 ? _Columns(
                     $article->tags->map(function ($tag) {
-                        return _Link($tag->name)->class('text-xs bg-positive bg-opacity-10 text-positive rounded-full px-3 py-1 mr-2 max-w-max')->knowledgeDrawer(ArticlePage::class, ['tags_ids' => [$tag->id]]);
+                        return _Link($tag->name)->class('text-xs bg-info text-white rounded-full px-3 py-1 mr-2 max-w-max')->knowledgeDrawer(ArticlePage::class, ['tags_ids' => [$tag->id]]);
                     }),
                 )->class('mt-1') : null,
             ),
