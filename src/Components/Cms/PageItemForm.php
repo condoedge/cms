@@ -130,6 +130,8 @@ class PageItemForm extends Form
 
     public function setGenericStyles()
     {
+        if (!$this->model->getPageItemType()) return;
+
         $styleModel = PageItemStyleModel::getGenericStylesOfType($this->model->getPageItemType()::class, $this->model->page?->team_id) ?? PageItemStyleModel::make();
         PageStyle::setStylesToModel($styleModel);
         
