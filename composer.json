@@ -23,7 +23,8 @@
     "require": {
         "php": "^7.3|^8.0",
         "laravel/framework": ">=5.6.0",
-        "kompo/kompo": "^3.0"
+        "kompo/kompo": "^3.0",
+        "condoedge/utils": "*"
     },
     "extra": {
         "laravel": {

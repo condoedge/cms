@@ -39,9 +39,9 @@ class KnowledgeService
         Route::get('knowledge-render-component/{know_component}/{know_locale}', \Anonimatrix\PageEditor\Components\Wiki\DynamicComponentRender::class)->name('knowledge.render-component');
     }
 
-    public static function getCurrentRouteArticle()
+    public static function getCurrentRouteArticle($route = null)
     {
-        $route = request()->route()->getName();
+        $route = $route ?? request()->route()->getName();
 
         return PageModel::where('associated_route', $route)->where('associated_route', '!=', 'knowledge.whats-new')->where('group_type', 'knowledge')->first();
     }

@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Components\Wiki;
 
 use Anonimatrix\PageEditor\Models\Wiki\KnowledgePage;
 use Anonimatrix\PageEditor\Models\Tags\Tag;
+use Anonimatrix\PageEditor\Services\KnowledgeService;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Illuminate\Support\Facades\Route;
 use Kompo\Form;
@@ -45,6 +46,7 @@ class ArticlePage extends Form
     protected function searchTop()
     {
         $newsCount = KnowledgePage::whatsNewUnreadedCount();
+        $currentRouteArticle = KnowledgeService::getCurrentRouteArticle(getReferrerRoute());
 
         return _Rows(
             _Rows(
@@ -65,7 +67,9 @@ class ArticlePage extends Form
             _Rows(
                 _Columns(
                     $this->mainLink('book','cms::wiki.general-help')->knowledgeDrawer(ArticlePage::class),
-                    $this->mainLink('gps','cms::wiki.contextual-help')->knowledgeDrawer(ArticlePage::class),
+                    $this->mainLink('gps','cms::wiki.contextual-help')
+                        ->when(!$currentRouteArticle, fn($link) => $link->class('opacity-40 user-select-none'))
+                        ->when($currentRouteArticle, fn($link) => $link->knowledgeDrawer(ArticlePage::class, ['id' => $currentRouteArticle->id])),
                     _Rows(
                         (!auth()->user() || !$newsCount) ? null : _Html($newsCount)->class('absolute top-8 right-10 bg-danger text-white rounded-full w-6 h-6 text-sm flex items-center justify-center z-20 font-semibold'),
                         $this->mainLink('lamp-charge','cms::wiki.new-features')->knowledgeDrawer(ArticlePage::class, ['whats-new' => 1]),

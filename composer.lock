@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc7325e657e124067d3780ebb495f085",
+    "content-hash": "cea7a883fda690cc36db2eb42d888e10",
     "packages": [
         {
             "name": "brick/math",
@@ -134,6 +134,51 @@
                 }
             ],
             "time": "2023-12-11T17:09:12+00:00"
+        },
+        {
+            "name": "condoedge/utils",
+            "version": "v0.1.31",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/condoedge/utils.git",
+                "reference": "97eb12b02dc14e5c349330878c07125d061ba18d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/condoedge/utils/zipball/97eb12b02dc14e5c349330878c07125d061ba18d",
+                "reference": "97eb12b02dc14e5c349330878c07125d061ba18d",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=5.6.0",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Condoedge\\Utils\\CondoedgeUtilsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Helpers/loader.php"
+                ],
+                "psr-4": {
+                    "Condoedge\\Utils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Utils helpers module to your kompo application",
+            "support": {
+                "issues": "https://github.com/condoedge/utils/issues",
+                "source": "https://github.com/condoedge/utils/tree/v0.1.31"
+            },
+            "time": "2025-05-20T21:23:12+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -5320,5 +5365,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
