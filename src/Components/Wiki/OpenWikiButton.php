@@ -3,6 +3,7 @@
 namespace Anonimatrix\PageEditor\Components\Wiki;
 
 use Anonimatrix\PageEditor\Models\Wiki\KnowledgePage;
+use Anonimatrix\PageEditor\Services\KnowledgeService;
 use Kompo\Form;
 
 class OpenWikiButton extends Form
@@ -21,6 +22,12 @@ class OpenWikiButton extends Form
 
     public function getArticleWiki()
     {
+        if (KnowledgeService::getCountCurrentRouteArticles(getReferrerRoute()) > 1) {
+            return new \Anonimatrix\PageEditor\Components\Wiki\ArticlePage(null, [
+                'just_related_to_route' => getReferrerRoute(),
+            ]);
+        }
+
         return new \Anonimatrix\PageEditor\Components\Wiki\ArticlePage($this->model->id);
     }
 }

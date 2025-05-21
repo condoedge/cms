@@ -43,6 +43,13 @@ class KnowledgeService
     {
         $route = $route ?? request()->route()->getName();
 
-        return PageModel::where('associated_route', $route)->where('associated_route', '!=', 'knowledge.whats-new')->where('group_type', 'knowledge')->first();
+        return PageModel::knowledgeAssociatedToRoute($route)->where('is_visible', 1)->first();
+    }
+
+    public static function getCountCurrentRouteArticles($route = null)
+    {
+        $route = $route ?? request()->route()->getName();
+
+        return PageModel::knowledgeAssociatedToRoute($route)->where('is_visible', 1)->count();
     }
 }

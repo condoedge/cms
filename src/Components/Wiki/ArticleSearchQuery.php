@@ -13,11 +13,15 @@ class ArticleSearchQuery extends Query
 
     protected $search;
     protected $tags;
+    protected $justRelatedToRoute;
 
     public function created()
     {
         $this->search = $this->prop("search") ?? request('search');
         $this->tags = ($this->prop('tags_ids') ? explode(',', $this->prop('tags_ids')) : null) ?? request('tags_ids');
+
+        // We get sometimes ? at the final of the route when we pass it as a prop
+        $this->justRelatedToRoute = str_replace('?', '', $this->prop('just_related_to_route'));
     }
 
     public function top()
@@ -31,6 +35,7 @@ class ArticleSearchQuery extends Query
     {
         return Page::where('group_type', 'knowledge')
             ->where(fn($q) => $q->where('associated_route', '!=', 'knowledge.whats-new')->orWhereNull('associated_route'))
+            ->when($this->justRelatedToRoute, fn($q) => $q->where('associated_route', $this->justRelatedToRoute))
             ->where('is_visible', 1)
             ->where(fn($q) => $q->where('title', 'like', '%'.$this->search.'%')
                 ->orWhereHas('tags', fn($q) => $q->where('name', 'like', '%'.$this->search.'%'))

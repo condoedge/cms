@@ -144,6 +144,12 @@ class Page extends PageModel
         return $this->getStyleProperty('font_size_raw') ?: 12;
     }
 
+    /* SCOPES */
+    public function scopeKnowledgeAssociatedToRoute($query, $route)
+    {
+        return $query->where('associated_route', $route)->where('associated_route', '!=', 'knowledge.whats-new')->where('group_type', 'knowledge');
+    }
+
     /* ELEMENTS */
     public function adminBlock($refreshId = '')
     {

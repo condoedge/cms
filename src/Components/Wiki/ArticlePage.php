@@ -18,11 +18,15 @@ class ArticlePage extends Form
 
     protected $tagsIds = [];
 
+    protected $justRelatedToRoute;
+
     public function created()
     {
         $this->tagsIds = collect(request('tags_ids'))->map(fn($id) => preg_replace('/\D*/', '', $id))->toArray();
 
         $this->style .= 'background-color: ' . $this->model->getExteriorBackgroundColor();
+
+        $this->justRelatedToRoute = str_replace('?', '', $this->prop('just_related_to_route'));
     }
 
     public function render()
@@ -36,7 +40,9 @@ class ArticlePage extends Form
                 _Panel(
                     $routeName === 'knowledge.whats-new' ? $this->getWhatsNewContent() : (
                         $this->model?->id ? $this->preview() :
-                        new ArticleSearchQuery()
+                        new ArticleSearchQuery([
+                            'just_related_to_route' => $this->justRelatedToRoute
+                        ])
                     ),
                 )->id('articles_panel'),
             ),
@@ -47,6 +53,7 @@ class ArticlePage extends Form
     {
         $newsCount = KnowledgePage::whatsNewUnreadedCount();
         $currentRouteArticle = KnowledgeService::getCurrentRouteArticle(getReferrerRoute());
+        $qtyCurrentRouteArticles = KnowledgeService::getCountCurrentRouteArticles(getReferrerRoute());
 
         return _Rows(
             _Rows(
@@ -68,8 +75,9 @@ class ArticlePage extends Form
                 _Columns(
                     $this->mainLink('book','cms::wiki.general-help')->knowledgeDrawer(ArticlePage::class),
                     $this->mainLink('gps','cms::wiki.contextual-help')
-                        ->when(!$currentRouteArticle, fn($link) => $link->class('opacity-40 user-select-none'))
-                        ->when($currentRouteArticle, fn($link) => $link->knowledgeDrawer(ArticlePage::class, ['id' => $currentRouteArticle->id])),
+                        ->when(!$qtyCurrentRouteArticles, fn($link) => $link->class('opacity-40 user-select-none'))
+                        ->when($qtyCurrentRouteArticles == 1, fn($link) => $link->knowledgeDrawer(ArticlePage::class, ['id' => $currentRouteArticle->id]))
+                        ->when($qtyCurrentRouteArticles > 1, fn($link) => $link->knowledgeDrawer(ArticlePage::class, ['just_related_to_route' => getReferrerRoute()])),
                     _Rows(
                         (!auth()->user() || !$newsCount) ? null : _Html($newsCount)->class('absolute top-8 right-10 bg-danger text-white rounded-full w-6 h-6 text-sm flex items-center justify-center z-20 font-semibold'),
                         $this->mainLink('lamp-charge','cms::wiki.new-features')->knowledgeDrawer(ArticlePage::class, ['whats-new' => 1]),
