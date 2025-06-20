@@ -7,15 +7,15 @@ use Kompo\Table;
 
 class ArticleRawList extends Table
 {
-    public $orderable = 'order';
-	public $dragHandle = '.dragHandle';
-	public $browseAfterOrder = true;
+    // public $orderable = 'order';
+	// public $dragHandle = '.dragHandle';
+	// public $browseAfterOrder = true;
 
 	public $id = 'pages-orderable-list';
 
 	public function query()
 	{
-		return Page::whereNull('page_id')->orderBy('order')
+		return Page::whereNull('page_id')
             ->where('group_type', 'knowledge');
 	}
 
