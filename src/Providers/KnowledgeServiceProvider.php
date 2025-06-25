@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Providers;
 
+use Anonimatrix\PageEditor\Components\Wiki\DynamicComponentRender;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Kompo\Link;
@@ -27,7 +28,9 @@ class KnowledgeServiceProvider extends ServiceProvider
     public function setMacros()
     {
         Link::macro('knowledgeDrawer', function ($component, $props = []) {
-            $props['know_component'] = $component;
+            $componentKey = array_search($component, DynamicComponentRender::AVAILABLE_COMPONENTS);
+
+            $props['know_component'] = $componentKey;
             $props['know_locale'] = session('kompo_locale');
 
             return $this->get(route('knowledge.render-component', $props))->inDrawer()->closeDrawer();

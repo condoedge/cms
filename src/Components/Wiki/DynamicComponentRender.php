@@ -7,7 +7,7 @@ use Kompo\Form;
 class DynamicComponentRender extends Form
 {
     public const AVAILABLE_COMPONENTS = [
-        ArticlePage::class,
+        'article-page' => ArticlePage::class,
     ];
 
     protected $component;
@@ -17,11 +17,11 @@ class DynamicComponentRender extends Form
         $component = request()->route('know_component');
         $locale = request()->route('know_locale');
 
-        if (!in_array($component, self::AVAILABLE_COMPONENTS)) {
+        if (!array_key_exists($component, self::AVAILABLE_COMPONENTS)) {
             abort(404);
         }
 
-        $this->component = $component;
+        $this->component = self::AVAILABLE_COMPONENTS[$component];
 
         session()->put('kompo_locale', $locale);
         app()->setLocale($locale);

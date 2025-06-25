@@ -26,7 +26,7 @@ class ScribeItem extends PageItemType
         if ($withEditor) {
             return _Html(
                 '<div style="position: absolute; height: 100%; width: 92%; min-height: 740px;"></div>' .
-                $this->toHtml(),
+                    $this->toHtml(),
             );
         }
 
@@ -35,9 +35,22 @@ class ScribeItem extends PageItemType
 
     public function toHtml(): string
     {
-        return '<iframe src="https://scribehow.com/embed/' .
-                $this->content .
-        '?as=scrollable&skipIntro=true&removeLogo=true" width="100%" height="740" frameborder="0"></iframe>';
+        $height = $this->pageItem?->styles?->content?->height_raw ?? 740;
+        $uniqueId = uniqid('scribe-item-');
+
+        return '<div>
+            <div id="loading-'.$uniqueId.'" style="display: flex; justify-content:center; margin-top: 50px;">' . _Spinner('w-16 h-16')->__toHtml() . '</div>
+            <iframe onload="$(\'#loading-'.$uniqueId.'\').fadeOut()" src="https://scribehow.com/embed/' .
+            $this->content .
+            '?as=scrollable&skipIntro=true&removeLogo=true" width="100%" frameborder="0" height="' . $height . '"></iframe>
+        </div>';
+    }
+
+    public function blockTypeEditorStylesElement()
+    {
+        return _Rows(
+            _InputNumber('cms::cms.height-px')->name('height', false)->default($this->pageItem?->styles?->content->height_raw)->class('mb-2 whiteField'),
+        );
     }
 
     public function rules()
@@ -46,5 +59,4 @@ class ScribeItem extends PageItemType
             'content' => 'required',
         ];
     }
-
 }
