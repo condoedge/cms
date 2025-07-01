@@ -41,6 +41,6 @@ class EditorVariablesService
      */
     public function getVariables($section = 'default')
     {
-        return $this->variables[$section];
+        return $this->variables[$section] ?? [];
     }
 }
