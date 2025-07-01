@@ -29,7 +29,7 @@ class ButtonItem extends PageItemType
         $buttonHrefEl = _Input('newsletter.button-href')->name($this->nameContent, $this->interactsWithPageItem);
 
         if($this->valueTitle) $buttonTitleEl = $buttonTitleEl->default(json_decode($this->valueTitle));
-        if($this->valueContent) $buttonHrefEl = $buttonHrefEl->default(collect(json_decode($this->valueContent))->first());
+        if($this->valueContent) $buttonHrefEl = $buttonHrefEl->default(json_decode($this->valueContent));
 
         return _Columns(
             $buttonTitleEl,

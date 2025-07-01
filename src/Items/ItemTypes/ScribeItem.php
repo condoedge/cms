@@ -15,9 +15,9 @@ class ScribeItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        return _Input('wiki.scribe-code')
+        return _Translatable('wiki.scribe-code')
             ->name($this->nameContent, $this->interactsWithPageItem)
-            ->default($this->valueContent);
+            ->default(json_decode($this->valueContent));
     }
 
 
