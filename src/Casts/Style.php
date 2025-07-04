@@ -88,6 +88,38 @@ class Style {
         return $this->getProperty($property, self::FILTERS);
     }
 
+    public function getMobileStyles()
+    {
+        $mobileStyles = [];
+        $styleSuffix = '-mobile';
+
+        foreach ($this->getProperties() as $styleName => $styleValue) {
+            if (str_ends_with($styleName, $styleSuffix)) {
+                $mobileStyles[$styleName] = $styleValue;
+            }
+        }
+
+        return $mobileStyles;
+    }
+
+    public function getMobileStringStyles()
+    {
+        $mobileStyles = $this->getMobileStyles();
+
+        if (empty($mobileStyles)) {
+            return '';
+        }
+
+        $mobileStringStyles = '';
+
+        foreach ($mobileStyles as $styleName => $styleValue) {
+            $styleName = str_replace('-mobile', '', $styleName);
+            $mobileStringStyles .= "{$styleName}: {$styleValue} !important;";
+        }
+
+        return $mobileStringStyles;
+    }
+
 
     /* REMOVES */
 

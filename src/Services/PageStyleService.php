@@ -23,7 +23,7 @@ class PageStyleService
         $stylesToMap = array_merge($this->automaticStyles, $otherStyles);
 
         foreach ($stylesToMap as $styleName => $styleSuffix) {
-            if(!request($styleName)) {
+            if(is_null(request($styleName))) {
                 $model->content->removeProperty($styleName);
                 continue;
             }

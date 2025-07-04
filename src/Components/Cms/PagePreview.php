@@ -14,7 +14,7 @@ class PagePreview extends Query
 
     public $containerClass = 'flex flex-col items-center external-container';
     public $paginationType = 'Scroll';
-	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll vlQueryWrapperPagePreview';
+	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
 
     protected $panelId;
     protected $withEditor = false;
@@ -33,6 +33,8 @@ class PagePreview extends Query
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
         $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
         // if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
+
+        $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
             $this->onLoad(fn($e) => $e->run('() => {$(".external-container").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));

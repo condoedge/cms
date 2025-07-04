@@ -75,7 +75,43 @@ abstract class PageItemType
     abstract public function toHtml(): string;
 
     final public function toHtmlWrap(): string {
-        return $this->getGridSteblingsHtml($this->toHtml());
+        $html = $this->toHtml();
+        $uniqueId = uniqid('page-item-type-');
+
+        $html = $this->addIdToRootTag($html, $uniqueId);
+        $mobileStringStyles = $this->responsiveStyles($uniqueId);
+
+        return $this->getGridSteblingsHtml(
+            $mobileStringStyles . $html,
+        );
+    }
+
+        /**
+     * Adds an ID attribute to the root HTML tag
+     * @param string $html The HTML string
+     * @param string $id The ID to add
+     * @return string The modified HTML
+     */
+    protected function addIdToRootTag(string $html, string $id): string
+    {
+        // Pattern to match the first opening tag
+        $pattern = '/^(\s*<[^>\s]+)(\s[^>]*)?>/';
+        
+        return preg_replace_callback($pattern, function($matches) use ($id) {
+            $tagStart = $matches[1]; // e.g., "<div"
+            $attributes = $matches[2] ?? ''; // existing attributes if any
+            
+            // Check if id attribute already exists
+            if (preg_match('/\sid\s*=/', $attributes)) {
+                // Replace existing id
+                $attributes = preg_replace('/\sid\s*=\s*["\'][^"\']*["\']/', ' id="' . $id . '"', $attributes);
+            } else {
+                // Add new id attribute
+                $attributes = ' id="' . $id . '"' . $attributes;
+            }
+            
+            return $tagStart . $attributes . '>';
+        }, $html);
     }
 
     /**
@@ -88,7 +124,27 @@ abstract class PageItemType
     {
         if(static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
 
-        return $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes);
+        $uniqueId = uniqid('page-item-type-');
+
+        return _Rows(
+            _Html($this->responsiveStyles($uniqueId)), // TODO WE MUST ADD A BETTER WAY TO ADD THIS. It's just a quick fix to add margin differents into desktop and mobile
+            $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes)->id($uniqueId),
+        );
+    }
+
+    protected function responsiveStyles($uniqueId)
+    {
+        $mobileStringStyles = $this->styles->getMobileStringStyles();
+
+        return "
+            <style>
+                @media (max-width: 768px) {
+                    #$uniqueId {
+                        $mobileStringStyles
+                    }
+                }
+            </style>
+        ";
     }
 
     final public function toElementWrap($withEditor = null)

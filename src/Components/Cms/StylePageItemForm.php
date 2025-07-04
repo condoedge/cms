@@ -64,20 +64,42 @@ class StylePageItemForm extends Form
             )->class('mb-4'),
             _Rows(
                 _Html('cms::cms.custom-padding-and-styles')->class('font-semibold mb-4'),
-                _Html('cms::cms.padding-px')->class('font-semibold text-sm mb-1'),
-                _Columns(
-                    _Input()->placeholder('cms::cms.padding-top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.padding-right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.padding-bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.padding-left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
+
+                _Tabs(
+                    _Tab(
+                        _Html('cms::cms.padding-px')->class('font-semibold text-sm mb-1'),
+                        _Columns(
+                            _Input()->placeholder('cms::cms.padding-top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
+                        ),
+                        _Html('cms::cms.margin-px')->class('font-semibold text-sm mb-1'),
+                        _Columns(
+                            _Input()->placeholder('cms::cms.margin-top')->name('margin-top', false)->default($this->model?->getStyleProperty('margin_top_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-right')->name('margin-right', false)->default($this->model?->getStyleProperty('margin_right_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-bottom')->name('margin-bottom', false)->default($this->model?->getStyleProperty('margin_bottom_raw'))->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-left')->name('margin-left', false)->default($this->model?->getStyleProperty('margin_left_raw'))->class('whiteField'),
+                        ),
+                    )->label('cms::cms-desktop')->class('mb-4'),
+                    _Tab(
+                        _Html('cms::cms.padding-px')->class('font-semibold text-sm mb-1'),
+                        _Columns(
+                            _Input()->placeholder('cms::cms.padding-top')->name('padding-top-mobile', false)->default($this->model?->getStyleProperty('padding_top_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-right')->name('padding-right-mobile', false)->default($this->model?->getStyleProperty('padding_right_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-bottom')->name('padding-bottom-mobile', false)->default($this->model?->getStyleProperty('padding_bottom_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.padding-left')->name('padding-left-mobile', false)->default($this->model?->getStyleProperty('padding_left_mobile_raw') ?? 0)->class('whiteField'),
+                        ),
+                        _Html('cms::cms.margin-px')->class('font-semibold text-sm mb-1'),
+                        _Columns(
+                            _Input()->placeholder('cms::cms.margin-top')->name('margin-top-mobile', false)->default($this->model?->getStyleProperty('margin_top_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-right')->name('margin-right-mobile', false)->default($this->model?->getStyleProperty('margin_right_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-bottom')->name('margin-bottom-mobile', false)->default($this->model?->getStyleProperty('margin_bottom_mobile_raw') ?? 0)->class('whiteField'),
+                            _Input()->placeholder('cms::cms.margin-left')->name('margin-left-mobile', false)->default($this->model?->getStyleProperty('margin_left_mobile_raw') ?? 0)->class('whiteField'),
+                        ),
+                    )->label('cms::cms-mobile')->class('mb-4'),
                 ),
-                _Html('cms::cms.margin-px')->class('font-semibold text-sm mb-1'),
-                _Columns(
-                    _Input()->placeholder('cms::cms.margin-top')->name('margin-top', false)->default($this->model?->getStyleProperty('margin_top_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.margin-right')->name('margin-right', false)->default($this->model?->getStyleProperty('margin_right_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.margin-bottom')->name('margin-bottom', false)->default($this->model?->getStyleProperty('margin_bottom_raw'))->class('whiteField'),
-                    _Input()->placeholder('cms::cms.margin-left')->name('margin-left', false)->default($this->model?->getStyleProperty('margin_left_raw'))->class('whiteField'),
-                ),
+
                 // _Input()->placeholder('cms::cms.styles')
                 //     ->name('styles', false)
                 //     ->class('whiteField'),
@@ -92,7 +114,7 @@ class StylePageItemForm extends Form
 
                 _Input('cms::cms.constructed-styles')->class('disabled mt-2')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
 
-            )->class('bg-gray-100 px-4 pb-4'),
+            )->class('bg-gray-100 p-4 rounded-lg'),
         );
     }
 

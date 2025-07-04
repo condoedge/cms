@@ -60,6 +60,16 @@ return [
         'margin-bottom' => 'px',
         'margin-left' => 'px',
         'margin-right' => 'px',
+        
+        'padding-top-mobile' => 'px',
+        'padding-bottom-mobile' => 'px',
+        'padding-left-mobile' => 'px',
+        'padding-right-mobile' => 'px',
+
+        'margin-top-mobile' => 'px',
+        'margin-bottom-mobile' => 'px',
+        'margin-left-mobile' => 'px',
+        'margin-right-mobile' => 'px',
 
         'font-size' => 'px',
         'color' => ' !important',
