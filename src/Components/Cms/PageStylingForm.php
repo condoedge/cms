@@ -22,6 +22,9 @@ class PageStylingForm extends Form
         PageStyle::setStylesToModel($styleModel);
 
         $this->model->styles()->save($styleModel);
+        
+        $this->model->exterior_background_color = request('exterior_background_color', $this->model->getExteriorBackgroundColor());
+        $this->model->save();
     }
 
     public function render()

@@ -53,7 +53,11 @@ class ImgItem extends PageItemType
     protected function sizeStyles()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField'),
+            _Toggle('newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?: false))->class('whiteField')
+                ->toggleId('item-height-px-input', $this?->styles->height_auto_raw),
+                
+            _InputNumber('newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
+            
             _InputNumber('newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField'),
             _Panel(
                 static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
@@ -74,6 +78,9 @@ class ImgItem extends PageItemType
 
             $maxWidth = (int) ($isPortrait ? 60 : 80);
         }
+
+        // TODO CHECK IF we remove the function beacuse for now we'll override it
+        $maxWidth = $default && !$image ? $default : $maxWidth;
 
         return _InputNumber('newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
     }
@@ -116,6 +123,8 @@ class ImgItem extends PageItemType
             $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
         }
 
+        $this->styles->removeProperties(['border-radius']);
+
         return $el;
     }
 
@@ -156,7 +165,7 @@ class ImgItem extends PageItemType
 
     protected function imgStyles()
     {
-        $height = $this->styles->height;
+        $height = $this->styles->height_auto_raw ? 'auto' : $this->styles->height;
         $width = $this->styles->width;
         $borderRadius = $this->styles->border_radius;
         $minHeight = $this->styles->min_height;

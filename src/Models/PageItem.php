@@ -113,12 +113,12 @@ class PageItem extends PageItemModel
 
     public function getBackgroundColor()
     {
-        return $this->styles?->content?->background_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor($this->page?->team_id, $this->page) : '#ffffff');
+        return $this->styles?->content?->background_color_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultBackgroundColor($this->page?->team_id, $this->page) : '#ffffff');
     }
 
     public function getTextColor()
     {
-        return $this->styles?->content?->color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page?->team_id, $this->page) : '#000000');
+        return $this->styles?->content?->color_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultTextColor($this->page?->team_id, $this->page) : '#000000');
     }
 
     public function getFontSize()
@@ -128,7 +128,7 @@ class PageItem extends PageItemModel
 
     public function getLinkColor()
     {
-        return $this->styles?->content?->link_color ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor($this->page?->team_id, $this->page) : '#0000ff');
+        return $this->styles?->content?->link_color_raw ?: ($this->getPageItemTypeStatic() ? $this->getPageItemTypeStatic()::getDefaultLinkColor($this->page?->team_id, $this->page) : '#0000ff');
     }
 
     public function getFontFamily()

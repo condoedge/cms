@@ -71,6 +71,8 @@ return [
         'height' => 'px',
         'width' => 'px',
 
+        'height-auto' => '',
+
         'min-width' => 'px',
         'max-width' => '%',
 
