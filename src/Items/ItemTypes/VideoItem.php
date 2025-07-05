@@ -32,7 +32,7 @@ class VideoItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 80)->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 80)->class('whiteField'),
             _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
             $this->justifyStylesEls(),
         );

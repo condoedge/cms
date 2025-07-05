@@ -53,12 +53,12 @@ class ImgItem extends PageItemType
     protected function sizeStyles()
     {
         return _Rows(
-            _Toggle('newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?: false))->class('whiteField')
+            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?: false))->class('whiteField')
                 ->toggleId('item-height-px-input', $this?->styles->height_auto_raw),
                 
-            _InputNumber('newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
+            _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
             
-            _InputNumber('newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField'),
             _Panel(
                 static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
             )->id(static::PANEL_MAX_WIDTH_ID),
@@ -82,7 +82,7 @@ class ImgItem extends PageItemType
         // TODO CHECK IF we remove the function beacuse for now we'll override it
         $maxWidth = $default && !$image ? $default : $maxWidth;
 
-        return _InputNumber('newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
+        return _InputNumber('cms::newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
     }
 
     protected function cornerRadiusStyle()
