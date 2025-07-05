@@ -80,29 +80,6 @@ class ButtonItem extends PageItemType
         return $styles;
     }
 
-    public function blockTypeEditorStylesElement()
-    {
-        $colorOptions = collect($this->presetsColors)->mapWithKeys(function($values, $color) {
-            return [$color => $values['label'] ?? 'cms::cms.' . $color];
-        })->toArray();
-
-        return _Rows(
-            _InputNumber('cms::cms.font-size')->name('font-size', false)->default($this->pageItem->getFontSize())->class('mb-2 whiteField'),
-            _Select('cms::cms.preset-color')
-                ->options($colorOptions)
-                ->default($this->styles->preset_color ?? collect($colorOptions)->keys()->first())
-                ->name('preset-color', false)
-                ->class('whiteField'),
-            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('mb-2 whiteField'),
-            _Rows(
-                _Html('cms::cms.border-widths')->class('text-sm font-semibold mb-4'),
-                $this->borderWidthsStylesEls(),
-            )->class('mt-1'),
-        );
-    }
-
-
     public static function getDefaultFontSize($teamId = null, $page = null)
     {
         return static::defaultGenericStyles($teamId)?->font_size_raw ?? 14;
