@@ -164,7 +164,7 @@ class ImgItem extends PageItemType
     protected function imgStyles()
     {
         $height = $this->styles->height_auto_raw ? 'auto' : $this->styles->height;
-        $width = $this->styles->width;
+        $width = $this->styles->width_raw ? $this->styles->width : '100%';
         $borderRadius = $this->styles->border_radius;
         $minHeight = $this->styles->min_height;
         $maxWidth = $this->styles->max_width;
