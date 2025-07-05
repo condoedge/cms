@@ -24,7 +24,7 @@ class NumberLineItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $numberEl = _InputNumber('newsletter.number')
+        $numberEl = _InputNumber('cms::newsletter.number')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
         $contentEl = _Translatable('cms::cms.content')

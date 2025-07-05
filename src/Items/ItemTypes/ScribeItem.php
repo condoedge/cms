@@ -8,14 +8,14 @@ class ScribeItem extends PageItemType
 {
     public const ITEM_TAG = 'iframe';
     public const ITEM_NAME = 'scribe';
-    public const ITEM_TITLE = 'wiki.scribe-item-title';
-    public const ITEM_DESCRIPTION = 'wiki.scribe-item-sub';
+    public const ITEM_TITLE = 'cms::cms.scribe-item-title';
+    public const ITEM_DESCRIPTION = 'cms::cms.scribe-item-sub';
 
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()
     {
-        return _Translatable('wiki.scribe-code')
+        return _Translatable('cms::cms.scribe-code')
             ->name($this->nameContent, $this->interactsWithPageItem)
             ->default(json_decode($this->valueContent));
     }
