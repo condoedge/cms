@@ -35,9 +35,9 @@ class ScribeItem extends PageItemType
 
     public function toHtml(): string
     {
-        $height = $this->pageItem?->styles?->content?->height_raw ?? 740;
+        $height = $this->pageItem?->styles?->content?->height_raw ?: 740;
         $uniqueId = uniqid('scribe-item-');
-
+        
         return '<div>
             <div id="loading-'.$uniqueId.'" style="display: flex; justify-content:center; margin-top: 50px;">' . _Spinner('w-16 h-16')->__toHtml() . '</div>
             <iframe onload="$(\'#loading-'.$uniqueId.'\').fadeOut()" src="https://scribehow.com/embed/' .
