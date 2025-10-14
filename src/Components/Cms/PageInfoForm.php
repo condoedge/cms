@@ -34,7 +34,7 @@ class PageInfoForm extends Form
     protected function inputs()
     {
         return [
-            _Translatable('cms::cms.title')->name('title')->class('mb-2 whiteField'),
+            _Translatable('cms::cms.title')->name('title')->required()->class('mb-2 whiteField'),
         ];
     }
 
