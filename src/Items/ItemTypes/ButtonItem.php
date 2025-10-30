@@ -26,7 +26,7 @@ class ButtonItem extends PageItemType
     public function blockTypeEditorElement()
     {
         $buttonTitleEl = _Translatable('newsletter.button-title')->name($this->nameTitle, $this->interactsWithPageItem);
-        $buttonHrefEl = _Input('newsletter.button-href')->name($this->nameContent, $this->interactsWithPageItem);
+        $buttonHrefEl = _Translatable('newsletter.button-href')->name($this->nameContent, $this->interactsWithPageItem);
 
         if($this->valueTitle) $buttonTitleEl = $buttonTitleEl->default(json_decode($this->valueTitle));
         if($this->valueContent) $buttonHrefEl = $buttonHrefEl->default(json_decode($this->valueContent));
