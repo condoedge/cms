@@ -4,7 +4,6 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\PageItem;
-use function Laravel\Prompts\table;
 
 class ButtonItem extends PageItemType
 {
