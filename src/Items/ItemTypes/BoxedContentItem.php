@@ -84,6 +84,7 @@ class BoxedContentItem extends PageItemType
     public function beforeMountInGroup($groupItem)
     {
         $this->setHtmlElementsStyles('a', 'color: ' . $groupItem->getLinkColor() . '!important;');
+        $this->setHtmlElementsStyles('p', 'text-align: ' . ($groupItem->getStyleProperty('text-align') ?? 'center') . '!important ;');
     }
 
     public function setHtmlElementsStyles($tag, $styles)

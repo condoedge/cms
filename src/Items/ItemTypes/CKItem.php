@@ -38,7 +38,7 @@ class CKItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        $this->styles->removeProperties(['text-align']);
+        // $this->styles->removeProperties(['text-align']);
 
         return _Html($this->content)->replaceCKEditorContent($this->variables)
             ->class('ckEditorContent');
@@ -46,7 +46,7 @@ class CKItem extends PageItemType
 
     public function toHtml(): string
     {
-        $this->styles->removeProperties(['text-align']);
+        // $this->styles->removeProperties(['text-align']);
 
         $text = replaceAllMentionsCms($this->content, $this->variables);
 
@@ -56,6 +56,7 @@ class CKItem extends PageItemType
     public function beforeMountInGroup($groupItem)
     {
         $this->setHtmlElementsStyles('a', 'color: ' . $groupItem->getLinkColor() . '!important;');
+        $this->setHtmlElementsStyles('p', 'text-align: ' . ($groupItem->getStyleProperty('text-align') ?? 'center') . '!important ;');
     }
 
     public function setHtmlElementsStyles($tag, $styles)
