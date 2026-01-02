@@ -38,7 +38,7 @@ class CKItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        // $this->styles->removeProperties(['text-align']);
+        $this->styles->removeProperties(['text-align']);
 
         return _Html($this->content)->replaceCKEditorContent($this->variables)
             ->class('ckEditorContent');
@@ -46,7 +46,7 @@ class CKItem extends PageItemType
 
     public function toHtml(): string
     {
-        // $this->styles->removeProperties(['text-align']);
+        $this->styles->removeProperties(['text-align']);
 
         $text = replaceAllMentionsCms($this->content, $this->variables);
 
@@ -55,17 +55,35 @@ class CKItem extends PageItemType
 
     public function beforeMountInGroup($groupItem)
     {
-        $this->setHtmlElementsStyles('a', 'color: ' . $groupItem->getLinkColor() . '!important;');
-        $this->setHtmlElementsStyles('p', 'text-align: ' . ($groupItem->getStyleProperty('text-align') ?? 'center') . '!important ;');
+        $this->setHtmlElementsStyles('a', 'color: ' . $groupItem->getLinkColor() . '!important;', true);
+
+        // By default the editor doesn't set left align, because it assumes left is default. But we have different settings in the wrappers
+        // So we need to explicitly set it here. But i created the concept of override so it doesn't set it if it's specifically set to something else
+        $this->setHtmlElementsStyles('p', 'text-align: left;', false);
     }
 
-    public function setHtmlElementsStyles($tag, $styles)
+    public function setHtmlElementsStyles($tag, $styles, $override = false)
     {
-        $this->content = preg_replace_callback('/<'.$tag.'(.*?)>/', function($matches) use ($styles) {
+        $this->content = preg_replace_callback('/<'.$tag.'(.*?)>/', function($matches) use ($styles, $override) {
             $element = $matches[0];
+            $separatedStatments = explode(';', $styles);
 
             if(strpos($element, 'style="') === false) $element = str_replace('>', ' style="' . $styles . '">', $element);
-            else $element = preg_replace('/style="(.*?)"/', 'style="$1;' . $styles . '"', $element);
+            else {
+                foreach($separatedStatments as $statment) {
+                    $statment = trim($statment);
+                    if($statment === '') continue;
+
+                    $styleHasProperty = preg_match('/'.$statment.'\s*:\s*([^;"]+);?/', $element);
+
+                    if ($override && $styleHasProperty) {
+                        $element = preg_replace('/'.$statment.'\s*:\s*([^;"]+);?/', $statment . ': ' . trim(explode(':', $statment)[1]) . ';', $element);
+                    } elseif (!$styleHasProperty) {
+                        $stylePosition = strpos($element, 'style="') + 7;
+                        $element = substr_replace($element, $statment . ';', $stylePosition, 0);
+                    }
+                }
+            }
 
             return $element;
         }, $this->content);

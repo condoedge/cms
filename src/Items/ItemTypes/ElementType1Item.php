@@ -43,7 +43,6 @@ class ElementType1Item extends GroupPageItemType
 
         $styles .= 'font-size: ' . $parentPageItem->getFontSize() . '!important ;';
         $styles .= 'color: ' . $parentPageItem->getTextColor(). '!important ;';
-        $styles .= 'text-align: ' . ($parentPageItem->getStyleProperty('text-align') ?? 'center') . '!important ;';
 
         return $styles;
     }
