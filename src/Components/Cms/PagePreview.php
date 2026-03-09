@@ -40,15 +40,31 @@ class PagePreview extends Query
             $this->onLoad(fn($e) => $e->run('() => {$(".external-container").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
         }
 
-        $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css("background-color", "'. $this->page->getContentBackgroundColor() .'")}'));
+        $contentMaxWidth = $this->page->getContentMaxWidth();
+        $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
     }
 
     public function top()
     {
-        return $this->withEditor ? _Rows(
-            !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->outlined()->class('w-full p-4 flex justify-center mb-2')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
-            _Button('cms::cms.add-zone')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
-        ) : _Html('');
+        if (!$this->withEditor) return _Html('');
+
+        return _Rows(
+            _FlexBetween(
+                !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->icon('eye')->outlined()->class('p-2 flex items-center gap-1 text-sm')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
+                _Flex(
+                    _Link()->icon('device-mobile')->balloon('cms::cms.preview-mobile', 'down')
+                        ->class('p-2 text-gray-500 hover:text-gray-800')
+                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "375px" ? "100%" : "375px"; el.style.margin = "0 auto"; }'),
+                    _Link()->icon('device-tablet')->balloon('cms::cms.preview-tablet', 'down')
+                        ->class('p-2 text-gray-500 hover:text-gray-800')
+                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "768px" ? "100%" : "768px"; el.style.margin = "0 auto"; }'),
+                    _Link()->icon('desktop-computer')->balloon('cms::cms.preview-desktop', 'down')
+                        ->class('p-2 text-gray-500 hover:text-gray-800')
+                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = "100%"; }'),
+                )->class('gap-1'),
+            )->class('mb-2'),
+            _Button('cms::cms.add-zone')->icon('plus')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
+        );
     }
 
     public function query()
@@ -103,5 +119,30 @@ class PagePreview extends Query
     	$secondPageItem = PageItemModel::findOrFail($id);
 
         $secondPageItem->switchColumnOrder();
+    }
+
+    public function duplicatePageItem()
+    {
+        $pageItem = PageItemModel::findOrFail(request('item_id'));
+
+        $newItem = $pageItem->replicate();
+        $newItem->order = $pageItem->page->pageItems()->count();
+        $newItem->save(['skip_validation' => true]);
+
+        if ($pageItem->styles) {
+            $newStyles = $pageItem->styles->replicate();
+            $newItem->styles()->save($newStyles);
+        }
+
+        $pageItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
+            $newGroupItem = $groupItem->replicate();
+            $newGroupItem->group_page_item_id = $newItem->id;
+            $newGroupItem->save(['skip_validation' => true]);
+
+            if ($groupItem->styles) {
+                $newGroupStyles = $groupItem->styles->replicate();
+                $newGroupItem->styles()->save($newGroupStyles);
+            }
+        });
     }
 }

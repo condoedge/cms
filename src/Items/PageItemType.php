@@ -195,7 +195,10 @@ abstract class PageItemType
     public function adminPreviewOptions($editPanelId = '')
     {
         return _Flex(
-            $this->moveOrderButton($editPanelId),
+            _Flex(
+                $this->moveOrderButton($editPanelId),
+                _Html(__(static::ITEM_TITLE))->class('text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded'),
+            )->class('gap-2 items-center'),
             $this->actionsButtons($editPanelId),
         )->class('px-1 hidden -top-[34px] -z-index-1 group-hover:flex absolute align-between justify-between gap-2');
     }
@@ -218,7 +221,10 @@ abstract class PageItemType
                     _Link()->icon('columns')->balloon('newsletter.add-column', 'down-right')
                     ->selfPost('addPageItemColumn', ['id' => $this->pageItem->id])
                     ->refresh(),
-                _Link()->icon('pencil-alt')->balloon('Edit block', 'down-right')
+                _Link()->icon('duplicate')->balloon('cms::cms.duplicate-zone', 'down-right')
+                    ->selfPost('duplicatePageItem', ['item_id' => $this->pageItem->id])
+                    ->refresh(),
+                _Link()->icon('pencil-alt')->balloon('cms::cms.edit-zone', 'down-right')
                     ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
                     ->inPanel($editPanelId),
                 _DeleteLink()->icon('trash')->byKey($this->pageItem)->browse()->balloon('newsletter.delete', 'down-right'),

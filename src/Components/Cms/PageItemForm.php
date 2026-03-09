@@ -61,7 +61,7 @@ class PageItemForm extends Form
                         _Select('cms::cms.zone-type')->options(
                             $types,
                         )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form') && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
-                        $this->model->id ? _DeleteButton('cms::cms.clear')->byKey($this->model)->refresh('page_design_form')->col('col-md-4') : null,
+                        $this->model->id ? _DeleteButton('cms::cms.clear')->byKey($this->model)->refresh('page_design_form')->class('align-right')->col('col-md-4') : null,
                     )->class('items-center'),
                     _Input('cms::cms.zone-name')->name('name_pi'),
                     _Panel(
