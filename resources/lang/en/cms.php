@@ -121,5 +121,10 @@ return [
     "zone-content" => "Zone content",
     "zone-name" => "Zone name",
     "zone-styles" => "Zone styles",
-    "zone-type" => "Zone type"
+    "zone-type" => "Zone type",
+
+    "copy-block-from-newsletter" => "Copy a block from another newsletter",
+    "select-newsletter" => "Select a newsletter",
+    "select-block" => "Select a block",
+    "copy-this-block" => "Copy this block",
 ];
