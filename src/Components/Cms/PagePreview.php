@@ -12,7 +12,7 @@ class PagePreview extends Query
 {
     public $page;
 
-    public $containerClass = 'flex flex-col items-center external-container';
+    public $containerClass = 'flex flex-col external-container';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
 
@@ -41,14 +41,19 @@ class PagePreview extends Query
         }
 
         $contentMaxWidth = $this->page->getContentMaxWidth();
-        $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
+        if ($this->withEditor) {
+            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "width": "100%"})}'));
+        } else {
+            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
+        }
     }
 
     public function top()
     {
-        if (!$this->withEditor) return _Html('');
+        if (!$this->withEditor) return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
 
         return _Rows(
+            _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
             _FlexBetween(
                 !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->icon('eye')->outlined()->class('p-2 flex items-center gap-1 text-sm')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
                 _Flex(

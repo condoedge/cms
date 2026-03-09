@@ -37,7 +37,25 @@ class HeaderItem extends PageItemType
        return _Rows(
             $imgEl,
             $inputEl,
+            $this->backgroundSizeStyle(),
         );
+    }
+
+    protected function backgroundSizeStyle()
+    {
+        return _Select('cms::cms.object-fit')->name($this->formPrefix . 'object-fit', false)
+            ->options(static::getBackgroundSizeOptions())
+            ->default($this->styles->object_fit ?: 'cover')
+            ->class('whiteField');
+    }
+
+    public static function getBackgroundSizeOptions(): array
+    {
+        return [
+            'cover' => __('cms::cms.object-fit-cover'),
+            'contain' => __('cms::cms.object-fit-contain'),
+            'auto' => __('cms::cms.object-fit-none'),
+        ];
     }
 
     public function blockTypeEditorStylesElement()
@@ -90,13 +108,14 @@ class HeaderItem extends PageItemType
         $height = $this->styles->height_raw ?: 300;
         $textColor = $this->styles->header_text_color ?: '#ffffff';
         $textPosition = $this->styles->header_text_position ?: 'center';
+        $bgSize = $this->styles->object_fit ?: 'cover';
         $overlayStyle = $this->buildOverlayStyle();
 
         $bgStyle = !$this->content->image ? '' : "background-image: url('" . \Storage::url($this->content->image['path']) . "');";
 
         return _Rows(
             _Html('
-                <div style="position: relative; width: 100%; height: ' . $height . 'px; ' . $bgStyle . ' background-size: cover; background-position: center; display: flex; align-items: ' . $textPosition . '; justify-content: center;">
+                <div style="position: relative; width: 100%; height: ' . $height . 'px; ' . $bgStyle . ' background-size: ' . $bgSize . '; background-position: center; background-repeat: no-repeat; display: flex; align-items: ' . $textPosition . '; justify-content: center;">
                     ' . $overlayStyle . '
                     <div style="position: relative; z-index: 1; color: ' . $textColor . '; text-align: center; font-size: 1.5rem; padding: 20px;">' . ($this->content->title ?: '') . '</div>
                 </div>
@@ -114,13 +133,33 @@ class HeaderItem extends PageItemType
         $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
         $height = $this->styles->height_raw ?: 300;
         $textColor = $this->styles->header_text_color ?: '#ffffff';
+        $title = $this->content->title ?: '';
         $textPosition = $this->styles->header_text_position ?: 'center';
-        $overlayHtml = $this->buildOverlayStyle();
+        $verticalAlign = match($textPosition) {
+            'flex-start' => 'top',
+            'flex-end' => 'bottom',
+            default => 'middle',
+        };
 
-        return '<div class="' . $this->classes . '" style="' . $this->styles . ' position: relative; width: 100%; height: ' . $height . 'px; background-image: url(\'' . $imageUrl . '\'); background-size: cover; background-position: center; display: flex; align-items: ' . $textPosition . '; justify-content: center;">
-            ' . $overlayHtml . '
-            <div style="position: relative; z-index: 1; color: ' . $textColor . '; text-align: center; font-size: 1.5rem; padding: 20px;">' . ($this->content->title ?: '') . '</div>
-        </div>';
+        $overlayBg = $this->getOverlayRgba();
+
+        // VML fallback for Outlook + standard background-image for other clients
+        return '<!--[if mso]>
+        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' . $height . 'px;">
+            <v:fill type="frame" src="' . $imageUrl . '" />
+            <v:textbox inset="0,0,0,0" style="mso-fit-shape-to-text:false">
+        <![endif]-->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image: url(\'' . $imageUrl . '\'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <tr>
+                <td height="' . $height . '" align="center" valign="' . $verticalAlign . '" style="padding: 20px; color: ' . $textColor . '; font-size: 1.5rem; text-align: center;' . ($overlayBg ? ' background-color: ' . $overlayBg . ';' : '') . '">
+                    ' . $title . '
+                </td>
+            </tr>
+        </table>
+        <!--[if mso]>
+            </v:textbox>
+        </v:rect>
+        <![endif]-->';
     }
 
     protected function buildOverlayStyle(): string
@@ -135,6 +174,31 @@ class HeaderItem extends PageItemType
         $overlayOpacity = ((int) ($this->styles->header_overlay_opacity_raw ?: 40)) / 100;
 
         return '<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: ' . $overlayColor . '; opacity: ' . $overlayOpacity . ';"></div>';
+    }
+
+    protected function getOverlayRgba(): string
+    {
+        $hasOverlay = (bool) ($this->styles->header_overlay_raw ?: false);
+
+        if (!$hasOverlay) {
+            return '';
+        }
+
+        $hex = ltrim($this->styles->header_overlay_color ?: '#000000', '#');
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        $opacity = ((int) ($this->styles->header_overlay_opacity_raw ?: 40)) / 100;
+
+        return "rgba({$r}, {$g}, {$b}, {$opacity})";
+    }
+
+    public function defaultStyles($pageItem): string
+    {
+        $styles = parent::defaultStyles($pageItem);
+        $styles .= 'padding: 0 !important;';
+
+        return $styles;
     }
 
     public function rules()

@@ -89,10 +89,10 @@ class GroupPageItemType extends PageItemType
     {
        return _Rows(
             collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i){
-                $instance = new $groupItemType($this->pageItem, false);
-                $instance->setPrefixFormNames($i . '_');
-                
                 $actualItem = $this->groupItems->first(fn($item) => $item->order == $i) ?? null;
+
+                $instance = new $groupItemType($actualItem ?? $this->pageItem, false);
+                $instance->setPrefixFormNames($i . '_');
 
                 if($actualItem) {
                     $attrs = $actualItem?->getAttributes();

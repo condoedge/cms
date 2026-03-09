@@ -26,7 +26,7 @@ class ElementType1Item extends GroupPageItemType
             H2Item::class => fn($pageItem, $parent) => $this->h2ItemStyles($pageItem, $parent),
             ButtonItem::class => fn($pageItem, $parent) => $this->buttonItemStyles($pageItem, $parent),
             CKItem::class => fn($pageItem, $parent) => $this->ckItemStyles($pageItem, $parent),
-            ImgItem::class => 'width: 100% !important; height: auto !important; margin-bottom: 10px !important; align-items: center; object-fit: cover;',
+            ImgItem::class => fn($pageItem, $parent) => $this->imgItemStyles($pageItem, $parent),
         ];
     }
 
@@ -54,6 +54,15 @@ class ElementType1Item extends GroupPageItemType
         $styles .= 'color: ' . $parentPageItem->getTextColor(). '!important ;';
 
         return $styles;
+    }
+
+    protected function imgItemStyles($pageItem, $parentPageItem)
+    {
+        $objectFit = $pageItem->styles?->content?->object_fit ?: 'cover';
+        $aspectRatio = $pageItem->styles?->content?->aspect_ratio;
+        $aspectRatioStyle = $aspectRatio && $aspectRatio !== ImgItem::ASPECT_RATIO_FREE ? 'aspect-ratio: ' . str_replace(':', '/', $aspectRatio) . ';' : '';
+
+        return 'width: 100% !important; height: auto !important; margin-bottom: 10px !important; align-items: center; object-fit: ' . $objectFit . '; ' . $aspectRatioStyle;
     }
 
     protected function buttonItemStyles($pageItem, $parentPageItem)

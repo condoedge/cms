@@ -33,7 +33,7 @@ class PageStylingForm extends Form
             _Html('cms::cms.style')->miniTitle()->class('mb-4'),
             _Rows(
                 _InputNumber('cms::cms.font-size')->value($this->model->getFontSize())->name('font-size', false),
-                _InputNumber('cms::cms.content-max-width')->value($this->model->getContentMaxWidth())->name('content-max-width', false)->class('whiteField'),
+                _InputNumber('cms::cms.content-max-width')->value($this->model->getContentMaxWidth())->name('content-max-width', false),
                 _Columns(
                     _Input('cms::cms.content-background-color')->type('color')->value($this->model->getContentBackgroundColor())->name('background-color', false),
                     _Input('cms::cms.exterior-background-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color'),

@@ -45,7 +45,7 @@ class ImgItem extends PageItemType
         if ($this->valueImage) $item = $item->default($this->valueImage);
 
         $altEl = _Translatable('cms::cms.alt-text')->name($this->nameTitle, $this->interactsWithPageItem)
-            ->class('whiteField mt-2');
+            ->class('mt-2');
 
         if ($this->valueTitle) $altEl = $altEl->default(json_decode($this->valueTitle));
 
@@ -69,12 +69,12 @@ class ImgItem extends PageItemType
     protected function sizeStyles()
     {
         return _Rows(
-            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?: false))->class('whiteField')
-                ->toggleId('item-height-px-input', $this?->styles->height_auto_raw),
+            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?? true))->class('whiteField')
+                ->toggleId('item-height-px-input', $this?->styles->height_auto_raw ?? true),
 
             _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
 
-            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField') ,
             _Panel(
                 static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
             )->id(static::PANEL_MAX_WIDTH_ID),
@@ -83,7 +83,7 @@ class ImgItem extends PageItemType
 
     protected function objectFitStyle()
     {
-        return _Select('cms::cms.object-fit')->name('object-fit', false)
+        return _Select('cms::cms.object-fit')->name($this->formPrefix . 'object-fit', false)
             ->options(static::getObjectFitOptions())
             ->default($this->styles->object_fit ?: 'cover')
             ->class('whiteField');
@@ -93,7 +93,7 @@ class ImgItem extends PageItemType
     {
         $currentRatio = $this->styles->aspect_ratio ?: static::ASPECT_RATIO_FREE;
 
-        return _Select('cms::cms.aspect-ratio')->name('aspect-ratio', false)
+        return _Select('cms::cms.aspect-ratio')->name($this->formPrefix . 'aspect-ratio', false)
             ->options(static::getAspectRatioOptions())
             ->default($currentRatio)
             ->class('whiteField');
@@ -133,7 +133,7 @@ class ImgItem extends PageItemType
 
             $isPortrait = $sizes[0] < $sizes[1];
 
-            $maxWidth = (int) ($isPortrait ? 60 : 80);
+            $maxWidth = (int) ($isPortrait ? 80 : 100);
         }
 
         $maxWidth = $default && !$image ? $default : $maxWidth;
@@ -160,9 +160,27 @@ class ImgItem extends PageItemType
 
         $styleModel = $this->pageItem->getOrCreateStyles();
 
-        PageStyle::setStylesToModel($styleModel);
+        if ($this->interactsWithPageItem) {
+            PageStyle::setStylesToModel($styleModel);
+        } else {
+            $this->saveImageStylesToModel($styleModel);
+        }
 
         $styleModel->save();
+    }
+
+    protected function saveImageStylesToModel($styleModel)
+    {
+        $imageStyles = ['object-fit', 'aspect-ratio'];
+
+        foreach ($imageStyles as $style) {
+            $value = request($this->formPrefix . $style);
+
+            if (!is_null($value)) {
+                $suffix = config("page-editor.automapping_styles.$style", '');
+                $styleModel->content->replaceProperty($style, $value . $suffix);
+            }
+        }
     }
 
     protected function toElement($withEditor = null)
@@ -199,14 +217,16 @@ class ImgItem extends PageItemType
         $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
         $altText = htmlspecialchars($this->content->title ?: '', ENT_QUOTES);
 
-        $styles = $this->imgStyles();
+        $styles = $this->imgStylesForEmail();
+        $align = $this->styles->getRawProperty('align-items') ?? 'center';
 
+        $this->styles->removeProperties(['height', 'width', 'max-width', 'min-height', 'background-repeat', 'background-size', 'border-radius', 'object-fit', 'aspect-ratio']);
         $this->styles->replaceProperty('width', '100% !important');
         $this->styles->replaceProperty('display', null);
 
         return $this->alignElement(
             "<img src=\"{$imageUrl}\" alt=\"{$altText}\" style=\"{$styles}\" />",
-            $this->styles->getRawProperty('align-items') ?? 'center',
+            $align,
             $this->styles,
         );
     }
@@ -220,7 +240,7 @@ class ImgItem extends PageItemType
 
     protected function imgStyles()
     {
-        $height = $this->styles->height_auto_raw ? 'auto' : $this->styles->height;
+        $height = ($this->styles->height_auto_raw ?? true) ? 'auto' : $this->styles->height;
         $width = $this->styles->width_raw ? $this->styles->width : '100%';
         $borderRadius = $this->styles->border_radius;
         $minHeight = $this->styles->min_height;
@@ -236,6 +256,19 @@ class ImgItem extends PageItemType
         $aspectRatioStyle = $aspectRatio ? "aspect-ratio: {$aspectRatio};" : '';
 
         return "width: {$width};height:{$height};border-radius: {$borderRadius}; min-height: {$minHeight}; max-width: {$maxWidth}; background-repeat: {$backgroundRepeat}; background-size: {$backgroundSize}; background-position: {$backgroundPosition}; object-fit: {$objectFit}; {$aspectRatioStyle}";
+    }
+
+    /**
+     * Email-safe image styles (no object-fit, aspect-ratio, background-* properties).
+     */
+    protected function imgStylesForEmail(): string
+    {
+        $height = ($this->styles->height_auto_raw ?? true) ? 'auto' : $this->styles->height;
+        $width = $this->styles->width_raw ? $this->styles->width : '100%';
+        $borderRadius = $this->styles->border_radius;
+        $maxWidth = $this->styles->max_width;
+
+        return "width: {$width}; height: {$height}; max-width: {$maxWidth}; border-radius: {$borderRadius}; display: block;";
     }
 
     /**
@@ -274,7 +307,7 @@ class ImgItem extends PageItemType
     public function defaultStyles($pageItem): string
     {
         $styles = parent::defaultStyles($pageItem);
-        $styles .= 'background-position: center center;';
+        $styles .= 'background-position: center center; padding: 0 !important;';
 
         return $styles;
     }

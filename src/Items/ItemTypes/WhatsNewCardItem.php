@@ -61,6 +61,10 @@ class WhatsNewCardItem extends GroupPageItemType
 
     protected function imgItemStyles($pageItem, $parentPageItem)
     {
+        $objectFit = $pageItem->styles?->content?->object_fit ?: 'cover';
+        $aspectRatio = $pageItem->styles?->content?->aspect_ratio;
+        $aspectRatioStyle = $aspectRatio && $aspectRatio !== ImgItem::ASPECT_RATIO_FREE ? 'aspect-ratio: ' . str_replace(':', '/', $aspectRatio) . ';' : '';
+
         $styles = '';
 
         $styles .= 'height: ' . $parentPageItem->getStyleProperty('img_height') . '!important;';
@@ -69,6 +73,8 @@ class WhatsNewCardItem extends GroupPageItemType
         $styles .= 'border-radius: ' . $parentPageItem->getStyleProperty('img_border_radius') . '!important;';
         $styles .= 'margin: 0 auto !important;';
         $styles .= 'align-items: center;';
+        $styles .= 'object-fit: ' . $objectFit . ';';
+        $styles .= $aspectRatioStyle;
 
         return $styles;
     }
