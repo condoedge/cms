@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
+use Anonimatrix\PageEditor\Casts\Style;
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\PageItem;
 use Anonimatrix\PageEditor\Support\Facades\PageStyle;
@@ -90,8 +91,7 @@ class ButtonItem extends PageItemType
     {
         return !$this->content->href || !$this->content->title ? null : _Link($this->content->title)
             ->target('_blank')
-            ->href($this->content->href)
-            ->style('width:' . $this->getButtonWidth() . ' !important;');
+            ->href($this->content->href);
     }
 
     public function toHtml(): string
@@ -125,10 +125,11 @@ class ButtonItem extends PageItemType
     public function defaultStyles($pageItem): string
     {
         $styles = parent::defaultStyles($pageItem);
-        $buttonWidth = '30%';
-        $styles .= 'text-align: center !important; padding: 15px 4px !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; width: ' . $buttonWidth . ';border-radius: 5px; min-width: 200px; text-decoration: none;';
+        $styles .= 'text-align: center !important; padding: 15px 4px !important; margin: 10px auto !important; color: white !important; display: inline-block; font-weight: 600; border-radius: 5px; min-width: 200px; text-decoration: none;';
 
         $styles .= 'background: ' . $pageItem->styles?->background_color . '!important;';
+        $this->styles = new Style($pageItem->styles->content ?? ''); // Minor fix to be able to get button width
+        $styles .= 'width: ' . ($this->getButtonWidth() ?? '30%') . ' !important;';
 
         return $styles;
     }
