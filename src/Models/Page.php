@@ -144,6 +144,11 @@ class Page extends PageModel
         return $this->getStyleProperty('font_size_raw') ?: 12;
     }
 
+    public function getContentMaxWidth()
+    {
+        return $this->getStyleProperty('content_max_width_raw') ?: 700;
+    }
+
     /* SCOPES */
     public function scopeKnowledgeAssociatedToRoute($query, $route)
     {
@@ -171,8 +176,9 @@ class Page extends PageModel
                 $sentAt,
                 $lastModif,
                 _Flex(
-                    _Link()->class('text-gray-400 pr-2')
-                        ->selfGet('duplicatePage', ['id' => $this->id])
+                    _Link()->icon('duplicate')->class('text-gray-400 pr-2')
+                        ->balloon('cms::cms.duplicate-zone', 'down')
+                        ->selfPost('duplicatePage', ['id' => $this->id])
                         ->refresh($refreshId),
                     _DeleteLink()->byKey($this),
                 )->class('w-20 pr-2'),

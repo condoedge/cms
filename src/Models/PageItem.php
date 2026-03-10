@@ -166,7 +166,6 @@ class PageItem extends PageItemModel
     	$pageItem = new PageItem();
     	$pageItem->page_id = $this->page_id;
     	$pageItem->page_item_id = $this->id;
-        $pageItem->block_type = config('page-editor.types')[0]::ITEM_NAME;
     	$pageItem->save(['skip_validation' => true]);
 
         return $pageItem;

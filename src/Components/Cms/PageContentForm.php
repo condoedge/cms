@@ -23,7 +23,14 @@ class PageContentForm extends Form
     {
         return _Rows(
             $this->top(),
-            PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
+            _Tabs(
+                _Tab(
+                    PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
+                )->label('cms::cms.page-info'),
+                !$this->model?->id ? null : _Tab(
+                    PageEditor::getPageStyleFormComponent($this->prefixGroup, $this->model?->id),
+                )->label('cms::cms.page-styles'),
+            ),
             !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->prefixGroup, $this->model?->id),
         );
     }
@@ -31,5 +38,14 @@ class PageContentForm extends Form
     protected function top()
     {
         return _Rows();
+    }
+
+    public function duplicatePage()
+    {
+        $page = PageModel::findOrFail(request('id'));
+
+        $newPage = $page->createPageCopyWithRelations();
+
+        return $newPage;
     }
 }

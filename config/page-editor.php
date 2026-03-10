@@ -20,19 +20,21 @@ return [
     ],
 
     'types' => [
+        \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\H1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\NumberLineItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
-        \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\VideoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\CKItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ButtonItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\BoxedContentItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\OtherPageItem::class,
-        \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\WhatsNewCardItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ScribeItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\SpacerItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\DividerItem::class,
     ],
 
     'hidden_types' => [ // Won't be displayed, but it will work in groups
@@ -106,6 +108,24 @@ return [
         'border-bottom-width' => 'px',
         'border-left-width' => 'px',
         'border-right-width' => 'px',
+
+        'object-fit' => '',
+        'aspect-ratio' => '',
+
+        'divider-style' => '',
+        'divider-thickness' => 'px',
+        'divider-color' => '',
+        'divider-width' => '%',
+
+        'header-text-color' => '',
+        'header-overlay' => '',
+        'header-overlay-color' => '',
+        'header-overlay-opacity' => '',
+        'header-text-position' => '',
+
+        'button-size' => '',
+
+        'content-max-width' => 'px',
     ],
 
     'boxed_content' => [

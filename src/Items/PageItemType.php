@@ -37,6 +37,8 @@ abstract class PageItemType
 
     protected $interactsWithPageItem = true;
 
+    protected $formPrefix = '';
+
     public const DISABLE_AUTO_STYLES = false;
 
     public const ONLY_CUSTOM_STYLES = false;
@@ -129,7 +131,7 @@ abstract class PageItemType
         return _Rows(
             _Html($this->responsiveStyles($uniqueId)), // TODO WE MUST ADD A BETTER WAY TO ADD THIS. It's just a quick fix to add margin differents into desktop and mobile
             $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes)->id($uniqueId),
-        );
+        )->class('w-full');
     }
 
     protected function responsiveStyles($uniqueId)
@@ -167,7 +169,7 @@ abstract class PageItemType
         if ($items->count() > 1) {
             return _Columns(
                 $items->map(fn($item) => $this->toPreviewSinglePageItem($item, $withEditor))
-            );
+            )->class('vlFlexResponsiveColumns');
         }
 
         return $this->toPreviewSinglePageItem($items->first(), $withEditor);
@@ -176,17 +178,20 @@ abstract class PageItemType
     protected function toPreviewSinglePageItem($item, $withEditor = false)
     {
         $itemType = $item->getPageItemType();
-        $itemType->setVariables($this->variables);
+        $itemType?->setVariables($this->variables);
         $el = $itemType?->toElementWithStyles($withEditor);
+
+        if (!$el) {
+            $el = _Rows(_Html('')->class('min-h-[60px]'))->class('w-full');
+        }
 
         return !$withEditor ? $el : _Flex(
             $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
-                ->class('border-2 border-dashed box-content border-gray-300 hover:border-blue-600 w-full py-1 px-2')
+                ->class('border-2 border-dashed border-gray-300 hover:border-blue-600 w-full')
                 ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
                 ->inPanel($this->editPanelId),
-                // ->run('() => {if(document.querySelector(".kompoScrollableContent")) { document.querySelector(".kompoScrollableContent").scrollTop = 0;} }'),
-        )->class('group relative mb-3 mt-10')->style('flex-grow: 1');
+        )->class('group relative mb-3 mt-10 w-full')->style('flex-grow: 1');
     }
 
     /**
@@ -195,7 +200,10 @@ abstract class PageItemType
     public function adminPreviewOptions($editPanelId = '')
     {
         return _Flex(
-            $this->moveOrderButton($editPanelId),
+            _Flex(
+                $this->moveOrderButton($editPanelId),
+                _Html(__(static::ITEM_TITLE))->class('text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded'),
+            )->class('gap-2 items-center'),
             $this->actionsButtons($editPanelId),
         )->class('px-1 hidden -top-[34px] -z-index-1 group-hover:flex absolute align-between justify-between gap-2');
     }
@@ -218,7 +226,10 @@ abstract class PageItemType
                     _Link()->icon('columns')->balloon('newsletter.add-column', 'down-right')
                     ->selfPost('addPageItemColumn', ['id' => $this->pageItem->id])
                     ->refresh(),
-                _Link()->icon('pencil-alt')->balloon('Edit block', 'down-right')
+                _Link()->icon('duplicate')->balloon('cms::cms.duplicate-zone', 'down-right')
+                    ->selfPost('duplicatePageItem', ['item_id' => $this->pageItem->id])
+                    ->refresh(),
+                _Link()->icon('pencil-alt')->balloon('cms::cms.edit-zone', 'down-right')
                     ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
                     ->inPanel($editPanelId),
                 _DeleteLink()->icon('trash')->byKey($this->pageItem)->browse()->balloon('newsletter.delete', 'down-right'),
@@ -302,11 +313,12 @@ abstract class PageItemType
         }
 
         return _Flex(
-            $el->style('flex-grow: 1'),
+            $el?->style('flex-grow: 1'),
             ...$gridSteblings->map(function ($el) use ($withEditor) {
-                return $el->getPageItemType()?->toElementWrap($withEditor)?->style('flex-grow: 1');
+                $itemType = $el->getPageItemType();
+                return $itemType ? $itemType->toElementWrap($withEditor)?->style('flex-grow: 1') : _Rows()->style('flex-grow: 1');
             }),
-        );
+        )->class('vlFlexResponsiveColumns');
     }
 
     protected function getGridSteblingsHtml($html)
@@ -317,9 +329,24 @@ abstract class PageItemType
             return $html;
         }
 
-        return '<div style="display: flex; justify-content:center; align-items: center;">' . $html . $gridSteblings->map(function ($el) {
-            return $el->getPageItemType()?->toHtmlWrap();
-        })->join('') . '</div>';
+        $columnCount = 1 + $gridSteblings->count();
+        $colWidth = round(100 / $columnCount);
+
+        $columns = '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $html . '</td>';
+        $columns .= $gridSteblings->map(function ($el) use ($colWidth) {
+            $childHtml = $el->getPageItemType()?->toHtmlWrap() ?: '';
+            return '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $childHtml . '</td>';
+        })->join('');
+
+        return '
+            <style>
+                @media (max-width: 600px) {
+                    .responsive-columns td { display: block !important; width: 100% !important; }
+                }
+            </style>
+            <table class="responsive-columns" width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+                <tr>' . $columns . '</tr>
+            </table>';
     }
 
     /** STYLES */
@@ -547,6 +574,7 @@ abstract class PageItemType
 
     public function setPrefixFormNames($prefix)
     {
+        $this->formPrefix = $prefix;
         $this->nameTitle = $prefix . $this->nameTitle;
         $this->nameContent = $prefix . $this->nameContent;
         $this->nameImage = $prefix . $this->nameImage;

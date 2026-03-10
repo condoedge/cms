@@ -47,7 +47,11 @@ class Style {
     public function getProperties($properties = [])
     {
         $styles = collect(explode(';', $this->rawStyle))->filter()->mapWithKeys(function ($style) use ($properties){
-            $style = explode(':', $style);
+            $style = explode(':', $style, 2);
+
+            if (count($style) < 2 || !trim($style[0])) {
+                return [];
+            }
 
             if (count($properties) && !in_array(trim($style[0]), $properties)) {
                 return [];
