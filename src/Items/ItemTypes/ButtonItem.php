@@ -91,7 +91,7 @@ class ButtonItem extends PageItemType
         return !$this->content->href || !$this->content->title ? null : _Link($this->content->title)
             ->target('_blank')
             ->href($this->content->href)
-            ->style('width:' . $this->getButtonWidth() . ' !important;')
+            ->style('width:' . $this->getButtonWidth() . ' !important;');
     }
 
     public function toHtml(): string
