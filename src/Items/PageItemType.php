@@ -83,9 +83,10 @@ abstract class PageItemType
 
         $html = $this->addIdToRootTag($html, $uniqueId);
         $mobileStringStyles = $this->responsiveStyles($uniqueId);
+        $visibilityStyles = $this->visibilityStyles($uniqueId);
 
         return $this->getGridSteblingsHtml(
-            $mobileStringStyles . $html,
+            $visibilityStyles . $mobileStringStyles . $html,
         );
     }
 
@@ -148,6 +149,24 @@ abstract class PageItemType
                 }
             </style>
         ";
+    }
+
+    protected function visibilityStyles($uniqueId)
+    {
+        $hideOnMobile = $this->styles->getRawProperty('hide-on-mobile');
+        $hideOnDesktop = $this->styles->getRawProperty('hide-on-desktop');
+
+        if (!$hideOnMobile && !$hideOnDesktop) return '';
+
+        $css = '';
+        if ($hideOnMobile) {
+            $css .= "@media (max-width: 600px) { #$uniqueId { display: none !important; mso-hide: all !important; } }";
+        }
+        if ($hideOnDesktop) {
+            $css .= "@media (min-width: 601px) { #$uniqueId { display: none !important; mso-hide: all !important; } }";
+        }
+
+        return "<style>$css</style>";
     }
 
     final public function toElementWrap($withEditor = null)

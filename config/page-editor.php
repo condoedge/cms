@@ -129,6 +129,10 @@ return [
         'button-size' => '',
 
         'content-max-width' => 'px',
+
+        'hide-on-mobile' => '',
+        'hide-on-desktop' => '',
+        'font-family' => '',
     ],
 
     'boxed_content' => [

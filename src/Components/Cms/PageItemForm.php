@@ -137,23 +137,15 @@ class PageItemForm extends Form
                 )->class('vlPropertySectionBody'),
             )->class('vlPropertySection'),
 
-            // Style section
+            // Style section (colors, typography, spacing, responsive, advanced — all inside StylePageItemForm)
             _Rows(
                 _Html('cms::cms.style')->class('vlPropertySectionTitle'),
                 _Rows(
-                    $this->getStyleFormComponent(),
+                    _Panel(
+                        $this->getStyleFormComponent(),
+                    )->id('item_styles_form'),
+                    _Panel()->id(static::ITEM_FORM_STYLES_ID),
                 )->class('vlPropertySectionBody'),
-                _Panel()->id('item_styles_form'),
-                _Panel()->id(static::ITEM_FORM_STYLES_ID),
-            )->class('vlPropertySection'),
-
-            // Advanced section (collapsed)
-            _Rows(
-                _Html('cms::cms.advanced')->class('vlPropertySectionTitle vlPropertySectionCollapsed')
-                    ->run('(el) => { el.classList.toggle("vlPropertySectionCollapsed"); el.nextElementSibling.classList.toggle("hidden"); }'),
-                _Rows(
-                    _Input('cms::cms.zone-name')->name('name_pi')->class('whiteField mb-2'),
-                )->class('vlPropertySectionBody hidden'),
             )->class('vlPropertySection'),
 
             // Action buttons
