@@ -12,6 +12,7 @@ class DividerItem extends PageItemType
     public const ITEM_NAME = 'divider';
     public const ITEM_TITLE = 'cms::cms.items.divider';
     public const ITEM_DESCRIPTION = 'cms::cms.items.divider-desc';
+    public const ITEM_ICON = 'minus';
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()

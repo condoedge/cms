@@ -11,14 +11,32 @@ class PageDesignForm extends Form
     public $id = 'page_design_form';
     protected $prefixGroup = "";
 
+    /** @deprecated Use EmailEditorLayout constants instead */
     public const PREVIEW_PAGE_PANEL = 'preview_page_panel';
+    /** @deprecated Use EmailEditorLayout constants instead */
     public const PAGE_ITEM_PANEL = 'page_item_panel';
+
+    protected $useEmailEditor = true;
 
     public function created(){
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
     public function render()
+    {
+        if ($this->useEmailEditor) {
+            return $this->emailEditorLayout();
+        }
+
+        return $this->legacyLayout();
+    }
+
+    protected function emailEditorLayout()
+    {
+        return PageEditor::getEmailEditorComponent($this->prefixGroup, $this->model?->id);
+    }
+
+    protected function legacyLayout()
     {
         return _Rows(
             _Div(

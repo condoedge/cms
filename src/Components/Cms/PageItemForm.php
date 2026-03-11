@@ -54,6 +54,208 @@ class PageItemForm extends Form
 
     public function render()
     {
+        if ($this->isEmailEditorContext()) {
+            return $this->emailEditorRender();
+        }
+
+        return $this->legacyRender();
+    }
+
+    protected function isEmailEditorContext()
+    {
+        return true; // For now, always use new layout
+    }
+
+    protected function emailEditorRender()
+    {
+        $types = PageEditor::getOptionsTypes($this->prefixGroup);
+
+        // New block creation — show block type selector
+        if (!$this->model->id && !$this->model->block_type) {
+            return $this->blockTypeSelector($types);
+        }
+
+        // Existing block — show unified property panel
+        return $this->unifiedPropertyPanel();
+    }
+
+    protected function blockTypeSelector($types)
+    {
+        if (!$this->model->id) {
+            $types = $types + ['__copy__' => __('cms::cms.copy-block-from-newsletter')];
+        }
+
+        return _Rows(
+            _Html('cms::cms.add-block')->class('font-semibold text-sm mb-3'),
+            _Select('cms::cms.block-type')->options($types)
+                ->name('block_type')
+                ->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID)
+                    && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form')
+                    && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID)
+                    && $e->selfGet('getCopyBlockPanel')->inPanel(static::COPY_BLOCK_PANEL_ID)
+                ),
+            !$this->model->id ? _Panel()->id(static::COPY_BLOCK_PANEL_ID)->class('mt-4') : null,
+            _Panel(
+                $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : null,
+            )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
+            _Panel(
+                $this->getStyleFormComponent(),
+            )->id('item_styles_form')->class('mt-2'),
+            _Panel()->id(static::ITEM_FORM_STYLES_ID),
+            $this->saveButtons(),
+        )->class('p-4');
+    }
+
+    protected function unifiedPropertyPanel()
+    {
+        $blockType = $this->model->getPageItemType();
+        $icon = $blockType ? (defined($blockType::class.'::ITEM_ICON') ? $blockType::ITEM_ICON : 'document-text') : 'document-text';
+        $title = $blockType ? __($blockType::ITEM_TITLE) : '';
+
+        return _Rows(
+            // Block type header
+            _FlexBetween(
+                _Flex(
+                    _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
+                    _Html($title)->class('font-semibold text-sm'),
+                )->class('items-center gap-2'),
+                $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
+                    ->run('() => {
+                        document.querySelectorAll(".vlEmailBlock").forEach(b => b.classList.remove("vlEmailBlockSelected"));
+                        document.getElementById("'.EmailEditorLayout::PROPERTY_PANEL.'").innerHTML = "<div class=\"flex flex-col items-center justify-center py-20\"><div class=\"text-gray-300 mb-4\"><svg width=\"48\" height=\"48\"><use href=\"#mouse-circle\"/></svg></div><div class=\"text-sm text-gray-400 text-center\">'.__('cms::cms.select-block-to-edit').'</div></div>";
+                    }') : null,
+            )->class('vlPropertyHeader'),
+
+            // Hidden block type field
+            _Hidden()->name('block_type')->value($this->model->block_type),
+
+            // Content section
+            _Rows(
+                _Html('cms::cms.content')->class('vlPropertySectionTitle'),
+                _Rows(
+                    $blockType ? $blockType->blockTypeEditorElement() : null,
+                )->class('vlPropertySectionBody'),
+            )->class('vlPropertySection'),
+
+            // Style section
+            _Rows(
+                _Html('cms::cms.style')->class('vlPropertySectionTitle'),
+                _Rows(
+                    $this->getStyleFormComponent(),
+                )->class('vlPropertySectionBody'),
+                _Panel()->id('item_styles_form'),
+                _Panel()->id(static::ITEM_FORM_STYLES_ID),
+            )->class('vlPropertySection'),
+
+            // Advanced section (collapsed)
+            _Rows(
+                _Html('cms::cms.advanced')->class('vlPropertySectionTitle vlPropertySectionCollapsed')
+                    ->run('(el) => { el.classList.toggle("vlPropertySectionCollapsed"); el.nextElementSibling.classList.toggle("hidden"); }'),
+                _Rows(
+                    _Input('cms::cms.zone-name')->name('name_pi')->class('whiteField mb-2'),
+                )->class('vlPropertySectionBody hidden'),
+            )->class('vlPropertySection'),
+
+            // Action buttons
+            $this->saveButtons(),
+
+            // Styles for property panel
+            _Html($this->propertyPanelStyles()),
+        )->class('vlPropertyPanel');
+    }
+
+    protected function saveButtons()
+    {
+        $previewPanel = $this->isEmailEditorContext() ? EmailEditorLayout::PREVIEW_PANEL : PageDesignForm::PREVIEW_PAGE_PANEL;
+
+        return _Rows(
+            _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)
+                    && $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.showToast("'.__('cms::cms.saved-successfully').'") }')
+                ),
+            $this->model->id ? _DeleteButton('cms::cms.delete-block')
+                ->byKey($this->model)
+                ->class('vlPropertyDeleteBtn w-full mt-2')
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)) : null,
+        )->class('vlPropertyActions');
+    }
+
+    protected function propertyPanelStyles()
+    {
+        return '<style>
+            .vlPropertyPanel {
+                padding: 0;
+            }
+            .vlPropertyHeader {
+                padding: 16px;
+                border-bottom: 1px solid #e5e7eb;
+                position: sticky;
+                top: 0;
+                background: #ffffff;
+                z-index: 5;
+            }
+            .vlPropertySection {
+                border-bottom: 1px solid #f3f4f6;
+            }
+            .vlPropertySectionTitle {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #6b7280;
+                padding: 14px 16px 8px;
+                cursor: pointer;
+                user-select: none;
+            }
+            .vlPropertySectionTitle:hover {
+                color: #374151;
+            }
+            .vlPropertySectionCollapsed::after {
+                content: "▸";
+                float: right;
+            }
+            .vlPropertySectionTitle:not(.vlPropertySectionCollapsed)::after {
+                content: "▾";
+                float: right;
+            }
+            .vlPropertySectionBody {
+                padding: 0 16px 16px;
+            }
+            .vlPropertyActions {
+                padding: 16px;
+                position: sticky;
+                bottom: 0;
+                background: #ffffff;
+                border-top: 1px solid #e5e7eb;
+            }
+            .vlPropertySaveBtn {
+                background: #2563eb !important;
+                color: #ffffff !important;
+                border-radius: 8px !important;
+                font-weight: 600 !important;
+                font-size: 13px !important;
+                padding: 10px !important;
+            }
+            .vlPropertySaveBtn:hover {
+                background: #1d4ed8 !important;
+            }
+            .vlPropertyDeleteBtn {
+                background: transparent !important;
+                color: #dc2626 !important;
+                border: 1px solid #fecaca !important;
+                border-radius: 8px !important;
+                font-size: 13px !important;
+                padding: 8px !important;
+            }
+            .vlPropertyDeleteBtn:hover {
+                background: #fef2f2 !important;
+            }
+        </style>';
+    }
+
+    /** Legacy render — kept for backward compatibility */
+    protected function legacyRender()
+    {
         $types = PageEditor::getOptionsTypes($this->prefixGroup);
 
         if (!$this->model->id) {
@@ -119,11 +321,13 @@ class PageItemForm extends Form
 
     public function getPagePreview()
     {
+        $panelId = $this->isEmailEditorContext() ? EmailEditorLayout::PROPERTY_PANEL : PageDesignForm::PAGE_ITEM_PANEL;
+
         return PageEditor::getPagePreviewComponent(
             $this->prefixGroup,
             [
                 'page_id' => $this->pageId,
-                'panel_id' => PageDesignForm::PAGE_ITEM_PANEL,
+                'panel_id' => $panelId,
                 'with_editor' => true
             ]
         );
@@ -143,7 +347,7 @@ class PageItemForm extends Form
 
         $styleModel = PageItemStyleModel::getGenericStylesOfType($this->model->getPageItemType()::class, $this->model->page?->team_id) ?? PageItemStyleModel::make();
         PageStyle::setStylesToModel($styleModel);
-        
+
         $styleModel->block_type = request('block_type');
         $styleModel->save();
     }

@@ -11,6 +11,7 @@ class H1Item extends PageItemType
     public const ITEM_NAME = 'h1';
     public const ITEM_TITLE = 'cms::cms.items.page-title-h1';
     public const ITEM_DESCRIPTION = 'cms::cms.items.there-should-be-only-one-per-page!';
+    public const ITEM_ICON = 'smallcaps';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

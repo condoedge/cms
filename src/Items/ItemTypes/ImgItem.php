@@ -14,6 +14,7 @@ class ImgItem extends PageItemType
     public const ITEM_NAME = 'img';
     public const ITEM_TITLE = 'cms::cms.items.image';
     public const ITEM_DESCRIPTION = 'cms::cms.items.add-an-image-to-the-block';
+    public const ITEM_ICON = 'gallery';
 
     public const ASPECT_RATIO_FREE = 'free';
     public const ASPECT_RATIO_ORIGINAL = 'original';

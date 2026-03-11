@@ -12,6 +12,7 @@ class HeaderItem extends PageItemType
     public const ITEM_NAME = 'header';
     public const ITEM_TITLE = 'cms::cms.items.image-header';
     public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-image';
+    public const ITEM_ICON = 'image';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

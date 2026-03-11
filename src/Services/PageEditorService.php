@@ -114,4 +114,28 @@ class PageEditorService
     {
         return $this->getComponent('page-item-styles-form', \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class, $args);
     }
+
+    /**
+     * Get the email editor layout component.
+     */
+    public function getEmailEditorComponent(...$args)
+    {
+        return $this->getComponent('email-editor-layout', \Anonimatrix\PageEditor\Components\Cms\EmailEditorLayout::class, $args);
+    }
+
+    /**
+     * Get the block library panel component.
+     */
+    public function getBlockLibraryComponent(...$args)
+    {
+        return $this->getComponent('block-library-panel', \Anonimatrix\PageEditor\Components\Cms\BlockLibraryPanel::class, $args);
+    }
+
+    /**
+     * Get the editor top bar component.
+     */
+    public function getEditorTopBarComponent(...$args)
+    {
+        return $this->getComponent('editor-top-bar', \Anonimatrix\PageEditor\Components\Cms\EditorTopBar::class, $args);
+    }
 }

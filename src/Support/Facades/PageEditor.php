@@ -19,6 +19,9 @@ namespace Anonimatrix\PageEditor\Support\Facades;
  * @method static object getPageDesignFormComponent($pageId = null, $params = [])
  * @method static object getItemStylesFormComponent($prefix = null, $pageItemId = null, $params = [])
  * @method static object getItemStylesFormComponent($pageItemId = null, $params = [])
+ * @method static object getEmailEditorComponent($prefix = null, $pageId = null, $params = [])
+ * @method static object getBlockLibraryComponent($prefix = null, $params = [])
+ * @method static object getEditorTopBarComponent($prefix = null, $pageId = null, $params = [])
  *
  * @see \Anonimatrix\PageEditor\Services\PageEditorService
  */

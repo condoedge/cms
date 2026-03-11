@@ -9,6 +9,7 @@ class CKItem extends PageItemType
     public const ITEM_NAME = 'ck';
     public const ITEM_TITLE = 'cms::cms.items.text-editor';
     public const ITEM_DESCRIPTION = 'cms::cms.items.text-subtitles-lists-and-more';
+    public const ITEM_ICON = 'text';
     public const CUSTOM_CLASSES = false;
 
     public function __construct(\Anonimatrix\PageEditor\Models\PageItem $pageItem, $interactsWithPageItem = true)

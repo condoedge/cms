@@ -20,9 +20,11 @@ class PagePreview extends Query
     protected $withEditor = false;
 
     public $orderable = 'order';
-	public $dragHandle = '.cursor-move';
+	public $dragHandle = '.vlBlockDragHandle';
 
     protected $prefixGroup = "";
+
+    protected $useEmailEditor = true;
 
     public function created()
     {
@@ -30,9 +32,10 @@ class PagePreview extends Query
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
 
+        $this->useEmailEditor = $this->isEmailEditorContext();
+
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
         $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
-        // if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
@@ -41,17 +44,43 @@ class PagePreview extends Query
         }
 
         $contentMaxWidth = $this->page->getContentMaxWidth();
-        if ($this->withEditor) {
+        if ($this->withEditor && !$this->useEmailEditor) {
             $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "width": "100%"})}'));
-        } else {
+        } else if (!$this->withEditor) {
             $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
         }
     }
 
+    protected function isEmailEditorContext()
+    {
+        return $this->panelId === EmailEditorLayout::PROPERTY_PANEL;
+    }
+
     public function top()
     {
-        if (!$this->withEditor) return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
+        if (!$this->withEditor) {
+            return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
+        }
 
+        if ($this->useEmailEditor) {
+            return $this->emailEditorTop();
+        }
+
+        return $this->legacyTop();
+    }
+
+    protected function emailEditorTop()
+    {
+        $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
+
+        return _Rows(
+            _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
+            !$hasItems ? null : _Html('')->class('pt-2'),
+        );
+    }
+
+    protected function legacyTop()
+    {
         return _Rows(
             _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
             _FlexBetween(
@@ -72,6 +101,23 @@ class PagePreview extends Query
         );
     }
 
+    public function bottom()
+    {
+        if (!$this->withEditor || !$this->useEmailEditor) return null;
+
+        $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
+
+        if (!$hasItems) {
+            return _Rows(
+                _Html()->icon(_Sax('add-square', 48))->class('text-gray-300 mb-3'),
+                _Html('cms::cms.empty-canvas-title')->class('text-base font-semibold text-gray-400 mb-1'),
+                _Html('cms::cms.empty-canvas-desc')->class('text-sm text-gray-400 text-center'),
+            )->class('vlEmptyCanvas');
+        }
+
+        return null;
+    }
+
     public function query()
     {
         return $this->page->orderedMainPageItems();
@@ -82,7 +128,6 @@ class PagePreview extends Query
         $pageItemType = $pageItem?->getPageItemType();
 
         if (Features::hasFeature('teams')) {
-            $team = $pageItem->team;
             $team = $pageItem->page->team;
 
             $pageItemType?->setVariables([
@@ -94,9 +139,12 @@ class PagePreview extends Query
         }
 
         $pageItemType?->setEditPanelId($this->panelId);
-        $el = $pageItemType?->toPreviewElement($this->withEditor);
 
-        return $el;
+        if ($this->useEmailEditor && $this->withEditor) {
+            return $pageItemType?->toPreviewElement($this->withEditor);
+        }
+
+        return $pageItemType?->toPreviewElement($this->withEditor);
     }
 
     public function getPageItemForm()

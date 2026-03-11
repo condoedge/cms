@@ -11,6 +11,7 @@ class NumberLineItem extends PageItemType
     public const ITEM_NAME = 'number_line';
     public const ITEM_TITLE = 'cms::cms.items.number-line';
     public const ITEM_DESCRIPTION = 'cms::cms.items.number-line-description';
+    public const ITEM_ICON = 'hashtag';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {

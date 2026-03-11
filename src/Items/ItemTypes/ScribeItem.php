@@ -10,6 +10,7 @@ class ScribeItem extends PageItemType
     public const ITEM_NAME = 'scribe';
     public const ITEM_TITLE = 'cms::cms.scribe-item-title';
     public const ITEM_DESCRIPTION = 'cms::cms.scribe-item-sub';
+    public const ITEM_ICON = 'code-1';
 
     public const ONLY_CUSTOM_STYLES = true;
 

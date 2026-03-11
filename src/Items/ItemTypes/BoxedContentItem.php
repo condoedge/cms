@@ -9,6 +9,7 @@ class BoxedContentItem extends PageItemType
     public const ITEM_NAME = 'boxed_content';
     public const ITEM_TITLE = 'cms::cms.items.boxed-content';
     public const ITEM_DESCRIPTION = 'cms::cms.items.boxed-content-desc';
+    public const ITEM_ICON = 'box-1';
 
     public const ONLY_CUSTOM_STYLES = true;
 

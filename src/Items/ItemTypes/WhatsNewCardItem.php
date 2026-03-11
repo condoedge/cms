@@ -10,6 +10,7 @@ class WhatsNewCardItem extends GroupPageItemType
     public const ITEM_NAME = 'newsletter.whats-new-card';
     public const ITEM_TITLE = 'cms::cms.items.whats-new-card';
     public const ITEM_DESCRIPTION = 'cms::cms.items.whats-new-card-desc';
+    public const ITEM_ICON = 'card';
 
     const GROUP_ITEMS_TYPES = [
         ImgItem::class,

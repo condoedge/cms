@@ -16,6 +16,7 @@ abstract class PageItemType
     public const ITEM_NAME = 'default';
     public const ITEM_TITLE = 'newsletter.default';
     public const ITEM_DESCRIPTION = 'newsletter.a-default-page-item';
+    public const ITEM_ICON = 'document-text';
     public const SPECIFIC_GROUP = '';
 
     protected string | object $content;
@@ -185,7 +186,32 @@ abstract class PageItemType
             $el = _Rows(_Html('')->class('min-h-[60px]'))->class('w-full');
         }
 
-        return !$withEditor ? $el : _Flex(
+        if (!$withEditor) return $el;
+
+        $isEmailEditor = $this->isEmailEditorContext();
+
+        if ($isEmailEditor) {
+            return $this->emailEditorPreviewItem($item, $itemType, $el);
+        }
+
+        return $this->legacyPreviewItem($item, $itemType, $el);
+    }
+
+    protected function emailEditorPreviewItem($item, $itemType, $el)
+    {
+        return _Rows(
+            $itemType?->emailEditorBlockActions($this->editPanelId),
+            _Rows($el)->class('w-full'),
+        )->class('vlEmailBlock')
+         ->attr(['data-block-id' => $item->id])
+         ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
+         ->inPanel($this->editPanelId)
+         ->run('(el) => { if (window.vlEmailEditor) vlEmailEditor.selectBlock(el.closest(".vlEmailBlock")) }');
+    }
+
+    protected function legacyPreviewItem($item, $itemType, $el)
+    {
+        return _Flex(
             $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
                 ->class('border-2 border-dashed border-gray-300 hover:border-blue-600 w-full')
@@ -194,8 +220,48 @@ abstract class PageItemType
         )->class('group relative mb-3 mt-10 w-full')->style('flex-grow: 1');
     }
 
+    protected function isEmailEditorContext()
+    {
+        return $this->editPanelId === \Anonimatrix\PageEditor\Components\Cms\EmailEditorLayout::PROPERTY_PANEL;
+    }
+
     /**
-     * Get the admin options for the preview.
+     * Floating action toolbar for the email editor canvas.
+     */
+    public function emailEditorBlockActions($editPanelId = '')
+    {
+        $canSwitch = $this->pageItem->page_item_id && !$this->pageItem->pageItems()->count();
+        $canAddColumn = !$this->pageItem->page_item_id;
+
+        return _Flex(
+            _Html()->icon(_Sax('menu',16))->class('vlBlockActionBtn vlBlockDragHandle'),
+            _Html(__(static::ITEM_TITLE))->class('vlBlockTypeLabel'),
+            !$canAddColumn ? null :
+                _Link()->icon(_Sax('element-3',16))->class('vlBlockActionBtn')
+                ->balloon('newsletter.add-column', 'down')
+                ->selfPost('addPageItemColumn', ['id' => $this->pageItem->id])
+                ->refresh(),
+            !$canSwitch ? null :
+                _Link()->icon(_Sax('arrow-swap-horizontal',16))->class('vlBlockActionBtn')
+                ->balloon('newsletter.switch-columns', 'down')
+                ->selfPost('switchColumnOrder', ['id' => $this->pageItem->id])
+                ->refresh(),
+            _Link()->icon(_Sax('copy',16))->class('vlBlockActionBtn')
+                ->balloon('cms::cms.duplicate-block', 'down')
+                ->selfPost('duplicatePageItem', ['item_id' => $this->pageItem->id])
+                ->refresh(),
+            _Link()->icon(_Sax('edit-2',16))->class('vlBlockActionBtn')
+                ->balloon('cms::cms.edit-block', 'down')
+                ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
+                ->inPanel($editPanelId),
+            _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
+                ->byKey($this->pageItem)->browse()
+                ->balloon('cms::cms.delete-block', 'down'),
+        )->class('vlBlockActions');
+    }
+
+    /**
+     * Get the admin options for the preview (legacy layout).
      */
     public function adminPreviewOptions($editPanelId = '')
     {
@@ -209,7 +275,7 @@ abstract class PageItemType
     }
 
     /**
-     * Get the admin buttons for the preview.
+     * Get the admin buttons for the preview (legacy layout).
      */
     public function actionsButtons($editPanelId = '')
     {
@@ -238,7 +304,7 @@ abstract class PageItemType
     }
 
     /**
-     * Get the admin button to move the order of the item.
+     * Get the admin button to move the order of the item (legacy layout).
      */
     public function moveOrderButton($editPanelId = '')
     {
@@ -248,7 +314,7 @@ abstract class PageItemType
     }
 
     /**
-     * Generate a group of buttons for the admin preview.
+     * Generate a group of buttons for the admin preview (legacy layout).
      */
     public function adminButtonsGroup($els = [])
     {

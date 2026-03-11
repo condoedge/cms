@@ -13,6 +13,7 @@ class ButtonItem extends PageItemType
     public const ITEM_NAME = 'button';
     public const ITEM_TITLE = 'cms::cms.items.button';
     public const ITEM_DESCRIPTION = 'cms::cms.items.button';
+    public const ITEM_ICON = 'mouse-square';
 
     public const SIZE_SMALL = 'small';
     public const SIZE_MEDIUM = 'medium';

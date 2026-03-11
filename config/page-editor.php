@@ -17,6 +17,9 @@ return [
         'page-item-form' => \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class,
         'page-preview' => \Anonimatrix\PageEditor\Components\Cms\PagePreview::class,
         'page-style-form' => \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class,
+        'email-editor-layout' => \Anonimatrix\PageEditor\Components\Cms\EmailEditorLayout::class,
+        'block-library-panel' => \Anonimatrix\PageEditor\Components\Cms\BlockLibraryPanel::class,
+        'editor-top-bar' => \Anonimatrix\PageEditor\Components\Cms\EditorTopBar::class,
     ],
 
     'types' => [
