@@ -51,7 +51,7 @@ class CKItem extends PageItemType
 
         $text = replaceAllMentionsCms($this->content, $this->variables);
 
-        return '<div style="' . $this->styles . '" class="'. $this->classes . ' ckEditor">' . $text . '</div>';
+        return '<div style="' . $this->styles . '">' . $text . '</div>';
     }
 
     public function beforeMountInGroup($groupItem)

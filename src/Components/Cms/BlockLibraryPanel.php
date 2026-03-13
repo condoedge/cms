@@ -3,10 +3,7 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
-use Anonimatrix\PageEditor\Support\Facades\PageStyle;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Kompo\Form;
 
 class BlockLibraryPanel extends Form
@@ -16,18 +13,20 @@ class BlockLibraryPanel extends Form
     protected $prefixGroup = "";
     protected $pageId;
 
+    public const HIDDEN_TYPES = ['komponent', 'boxed_content', 'article', 'newsletter.whats-new-card'];
+
     public const BLOCK_CATEGORIES = [
         'content' => [
             'label' => 'cms::cms.category-content',
-            'types' => ['ck', 'h1', 'img', 'button', 'header'],
+            'types' => ['h1', 'ck', 'button', 'header', 'number_line'],
         ],
         'layout' => [
             'label' => 'cms::cms.category-layout',
-            'types' => ['spacer', 'divider', 'boxed-content', 'element-type-1'],
+            'types' => ['spacer', 'divider', 'newsletter.group'],
         ],
         'media' => [
             'label' => 'cms::cms.category-media',
-            'types' => ['video', 'scribe'],
+            'types' => ['video', 'img'],
         ],
         'other' => [
             'label' => 'cms::cms.category-other',
@@ -77,7 +76,11 @@ class BlockLibraryPanel extends Form
 
         $elements->push($this->copyBlockCard());
 
+        // Search bar as first element (raw HTML, no Kompo interaction interference)
+        $search = _Html('<div class="vlBlockSearch"><div class="vlBlockSearchWrap"><input type="text" class="vlBlockSearchInput" placeholder="'.__('cms::cms.search-blocks').'" oninput="if(window.vlEmailEditor)vlEmailEditor.filterBlocks(this.value)" /></div></div>');
+
         return _Rows(
+            $search,
             ...$elements,
         )->class('vlBlockList');
     }
@@ -90,9 +93,11 @@ class BlockLibraryPanel extends Form
         ])->toArray();
 
         foreach ($types as $typeClass) {
-            $placed = false;
             $itemName = $typeClass::ITEM_NAME;
-            $itemGroup = $typeClass::SPECIFIC_GROUP;
+
+            if (in_array($itemName, static::HIDDEN_TYPES)) continue;
+
+            $placed = false;
 
             foreach (static::BLOCK_CATEGORIES as $catKey => $cat) {
                 if (in_array($itemName, $cat['types'])) {
@@ -113,24 +118,36 @@ class BlockLibraryPanel extends Form
     protected function blockCard($typeClass)
     {
         $icon = defined($typeClass.'::ITEM_ICON') ? $typeClass::ITEM_ICON : 'document-text';
+        $url = route('page-editor.add-block', [
+            'page_id' => $this->pageId,
+            'block_type' => $typeClass::ITEM_NAME,
+        ]);
 
-        return _Rows(
-            _Html()->icon(_Sax($icon, 24))->class('vlBlockCardIcon'),
-            _Html(__($typeClass::ITEM_TITLE))->class('vlBlockCardLabel'),
-        )->class('vlBlockCard')
-         ->selfPost('addBlock', ['block_type' => $typeClass::ITEM_NAME])
-         ->onSuccess(fn($e) => $e
-            ->selfGet('refreshPreview')->inPanel(EmailEditorLayout::PREVIEW_PANEL)
-         );
+        return _Link(__($typeClass::ITEM_TITLE))
+            ->icon(_Sax($icon, 24))
+            ->class('vlBlockCard')
+            ->run('() => {
+                fetch("'.$url.'", { credentials: "same-origin" })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (!window.vlEmailEditor) { window.location.reload(); return; }
+                        var blockId = data && data.id ? String(data.id) : null;
+                        if (blockId) sessionStorage.setItem("vlPendingBlockId", blockId);
+                        vlEmailEditor.refreshPreview();
+                        if (blockId) vlEmailEditor.waitAndClickBlock(blockId);
+                    });
+            }');
     }
 
     protected function copyBlockCard()
     {
-        return _Rows(
-            _Html()->icon(_Sax('copy', 24))->class('vlBlockCardIcon'),
-            _Html('cms::cms.copy-block-from-newsletter')->class('vlBlockCardLabel'),
-        )->class('vlBlockCard vlBlockCardCopy')
-         ->selfGet('getCopyBlockForm')->inPanel(EmailEditorLayout::PROPERTY_PANEL);
+        return _Link('cms::cms.copy-block-from-newsletter')
+            ->icon(_Sax('copy', 24))
+            ->class('vlBlockCard vlBlockCardCopy')
+            ->get('page-editor.copy-block-form', [
+                'page_id' => $this->pageId,
+            ])->inPanel(EmailEditorLayout::PROPERTY_PANEL)
+            ->run('() => { if (window.vlEmailEditor) vlEmailEditor.openDrawer() }');
     }
 
     protected function designTab()
@@ -138,37 +155,13 @@ class BlockLibraryPanel extends Form
         return PageEditor::getPageStyleFormComponent($this->prefixGroup, $this->pageId);
     }
 
-    public function addBlock()
+    public function getCopyBlockForm($pageId = null)
     {
-        $blockType = request('block_type');
-        $page = PageModel::findOrFail($this->pageId);
+        $pageId = $pageId ?: $this->pageId;
 
-        $item = PageItemModel::make();
-        $item->page_id = $this->pageId;
-        $item->block_type = $blockType;
-        $item->order = $page->pageItems()->count();
-        $item->save(['skip_validation' => true]);
+        $pages = PageModel::where('id', '!=', $pageId);
 
-        return $item;
-    }
-
-    public function refreshPreview()
-    {
-        return PageEditor::getPagePreviewComponent(
-            $this->prefixGroup,
-            [
-                'page_id' => $this->pageId,
-                'panel_id' => EmailEditorLayout::PROPERTY_PANEL,
-                'with_editor' => true,
-            ]
-        );
-    }
-
-    public function getCopyBlockForm()
-    {
-        $pages = PageModel::where('id', '!=', $this->pageId);
-
-        $currentPage = PageModel::find($this->pageId);
+        $currentPage = PageModel::find($pageId);
         if ($currentPage?->team_id) {
             $pages->where('team_id', $currentPage->team_id);
         }
@@ -181,68 +174,15 @@ class BlockLibraryPanel extends Form
             _Flex(
                 _Html('cms::cms.copy-block-from-newsletter')->class('font-semibold text-sm'),
                 _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { document.getElementById("'.EmailEditorLayout::PROPERTY_PANEL.'").innerHTML = "" }'),
+                    ->run('() => { if (window.vlEmailEditor) vlEmailEditor.closeDrawer() }'),
             )->class('justify-between items-center mb-4'),
             _Select('cms::cms.select-newsletter')->name('select_newsletter', false)
                 ->options($pageOptions->toArray())
-                ->onChange(fn($e) => $e->selfGet('getCopyBlockItems')->inPanel('copy-block-items-panel')),
+                ->onChange(fn($e) => $e->get('page-editor.copy-block-items', [
+                    'page_id' => $pageId,
+                ])->inPanel('copy-block-items-panel')),
             _Panel()->id('copy-block-items-panel')->class('mt-3'),
         )->class('p-4');
     }
 
-    public function getCopyBlockItems()
-    {
-        $pageId = request('select_newsletter');
-        if (!$pageId) return _Html('');
-
-        $page = PageModel::findOrFail($pageId);
-        $items = $page->orderedMainPageItems()->get();
-
-        $options = $items->mapWithKeys(function ($item) {
-            $type = $item->getPageItemType();
-            $typeName = $type ? __($type::ITEM_TITLE) : '';
-            $zoneName = $item->name_pi ?: $typeName;
-            $label = $zoneName . ($item->name_pi ? ' (' . $typeName . ')' : '');
-            return [$item->id => $label];
-        });
-
-        return _Rows(
-            _Select('cms::cms.select-block')->name('select_block', false)
-                ->options($options->toArray()),
-            _Button('cms::cms.copy-this-block')->icon('duplicate')
-                ->selfPost('copyBlockToPage')
-                ->onSuccess(fn($e) => $e->selfGet('refreshPreview')->inPanel(EmailEditorLayout::PREVIEW_PANEL))
-                ->class('mt-3 w-full'),
-        );
-    }
-
-    public function copyBlockToPage()
-    {
-        $sourceItem = PageItemModel::findOrFail(request('select_block'));
-        $page = PageModel::findOrFail($this->pageId);
-
-        $newItem = $sourceItem->replicate();
-        $newItem->page_id = $this->pageId;
-        $newItem->order = $page->pageItems()->count();
-        $newItem->page_item_id = null;
-        $newItem->group_page_item_id = null;
-        $newItem->save(['skip_validation' => true]);
-
-        if ($sourceItem->styles) {
-            $newStyles = $sourceItem->styles->replicate();
-            $newItem->styles()->save($newStyles);
-        }
-
-        $sourceItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
-            $newGroupItem = $groupItem->replicate();
-            $newGroupItem->group_page_item_id = $newItem->id;
-            $newGroupItem->page_id = $newItem->page_id;
-            $newGroupItem->save(['skip_validation' => true]);
-
-            if ($groupItem->styles) {
-                $newGroupStyles = $groupItem->styles->replicate();
-                $newGroupItem->styles()->save($newGroupStyles);
-            }
-        });
-    }
 }

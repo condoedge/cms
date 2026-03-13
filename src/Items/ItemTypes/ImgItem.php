@@ -50,9 +50,17 @@ class ImgItem extends PageItemType
 
         if ($this->valueTitle) $altEl = $altEl->default(json_decode($this->valueTitle));
 
+        $linkEl = _Input('cms::cms.image-link-url')->name($this->nameContent, $this->interactsWithPageItem)
+            ->type('url')
+            ->placeholder('https://')
+            ->class('mt-2');
+
+        if ($this->valueContent) $linkEl = $linkEl->default($this->valueContent);
+
         return _Rows(
             $item,
             $altEl,
+            $linkEl,
         );
     }
 
@@ -70,12 +78,12 @@ class ImgItem extends PageItemType
     protected function sizeStyles()
     {
         return _Rows(
-            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?? true))->class('whiteField')
+            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?? true))
                 ->toggleId('item-height-px-input', $this?->styles->height_auto_raw ?? true),
 
-            _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
+            _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->id('item-height-px-input'),
 
-            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField') ,
+            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null)) ,
             _Panel(
                 static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
             )->id(static::PANEL_MAX_WIDTH_ID),
@@ -139,13 +147,13 @@ class ImgItem extends PageItemType
 
         $maxWidth = $default && !$image ? $default : $maxWidth;
 
-        return _InputNumber('cms::newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
+        return _InputNumber('cms::newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth));
     }
 
     protected function cornerRadiusStyle()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
         );
     }
 
@@ -195,7 +203,12 @@ class ImgItem extends PageItemType
         )->class('w-full');
 
         if(!$withEditor && $el) {
-            $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+            $linkUrl = $this->pageItem->content;
+            if ($linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL)) {
+                $el = $el->attr(['title' => $linkUrl]);
+            } else {
+                $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+            }
         }
 
         return $el;
@@ -225,8 +238,19 @@ class ImgItem extends PageItemType
         $this->styles->replaceProperty('width', '100% !important');
         $this->styles->replaceProperty('display', null);
 
+        $widthAttr = $this->styles->width_raw ? (int) $this->styles->width_raw : '100%';
+        $heightAttr = ($this->styles->height_auto_raw ?? true) ? 'auto' : (int) $this->styles->height_raw;
+
+        $imgTag = "<img src=\"{$imageUrl}\" alt=\"{$altText}\" style=\"{$styles} display:block; border:0; outline:none; text-decoration:none;\" width=\"{$widthAttr}\" height=\"{$heightAttr}\" />";
+
+        $linkUrl = $this->pageItem->content;
+        if ($linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL)) {
+            $linkUrl = htmlspecialchars($linkUrl, ENT_QUOTES);
+            $imgTag = "<a href=\"{$linkUrl}\" target=\"_blank\" style=\"text-decoration:none; outline:none; border:none;\">{$imgTag}</a>";
+        }
+
         return $this->alignElement(
-            "<img src=\"{$imageUrl}\" alt=\"{$altText}\" style=\"{$styles}\" />",
+            $imgTag,
             $align,
             $this->styles,
         );

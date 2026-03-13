@@ -97,17 +97,52 @@ class ButtonItem extends PageItemType
 
     public function toHtml(): string
     {
-        $originalStyles = $this->styles;
-        $tdStyles = collect($this->styles->getProperties(['color', 'background-color', 'border-color', 'text-decoration', 'width', 'max-width', 'border-radius', 'margin']))->map(function ($value, $key) {
-            return $key . ': ' . $value . ';';
-        })->implode(' ');
-        $originalStyles->removeProperties([ 'margin', 'width']);
+        if (!$this->content->href || !$this->content->title) {
+            return '';
+        }
 
+        $href = htmlspecialchars($this->content->href, ENT_QUOTES);
+        $title = htmlspecialchars($this->content->title, ENT_QUOTES);
+        $bgColor = $this->styles->background_color ?: '#2563eb';
+        $textColor = $this->styles->color ?: '#ffffff';
+        $borderRadius = (int) ($this->styles->border_radius_raw ?: 5);
+        $fontSize = (int) ($this->styles->font_size_raw ?: 14);
         $buttonWidth = $this->getButtonWidth();
+        $buttonWidthPx = $this->getButtonWidthPx();
+        $arcsize = $buttonWidthPx > 0 ? round(($borderRadius / $buttonWidthPx) * 100) : 10;
+        $padding = $this->styles->padding ?: '15px 4px';
 
-        return !$this->content->href || !$this->content->title ? '' : str_replace("\r\n", '', $this->centerElement($this->centerElement(
-            '<a target="_blank" href="' . $this->content->href . '" style="' . $originalStyles . 'width: 100% !important;" class="'. $this->classes . '">' . $this->content->title . '</a>'
-        , $tdStyles, $buttonWidth, tableStyles: 'width:' . $buttonWidth . ' !important;'), tableStyles: 'padding: 10px 0 !important; table-layout:fixed;'));
+        return '<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout:fixed;">
+            <tr>
+                <td align="center" style="padding:10px 0;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:' . $buttonWidth . ';">
+                        <tr>
+                            <td align="center" bgcolor="' . $bgColor . '" style="background-color:' . $bgColor . '; border-radius:' . $borderRadius . 'px; text-align:center;">
+                                <!--[if mso]>
+                                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="' . $href . '" style="height:45px;v-text-anchor:middle;width:' . $buttonWidthPx . 'px;" arcsize="' . $arcsize . '%" fillcolor="' . $bgColor . '" stroke="f">
+                                    <w:anchorlock/>
+                                    <center style="color:' . $textColor . '; font-size:' . $fontSize . 'px; font-weight:600;">' . $this->content->title . '</center>
+                                </v:roundrect>
+                                <![endif]-->
+                                <!--[if !mso]><!-->
+                                <a href="' . $href . '" target="_blank" style="display:inline-block; width:100%; padding:' . $padding . '; color:' . $textColor . '; background-color:' . $bgColor . '; font-size:' . $fontSize . 'px; font-weight:600; text-align:center; text-decoration:none; border-radius:' . $borderRadius . 'px; -webkit-text-size-adjust:none; mso-hide:all;">' . $this->content->title . '</a>
+                                <!--<![endif]-->
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>';
+    }
+
+    /**
+     * Get the button width in pixels (based on a 600px container).
+     */
+    protected function getButtonWidthPx(): int
+    {
+        $pct = (int) str_replace('%', '', $this->getButtonWidth());
+
+        return (int) round(600 * $pct / 100);
     }
 
     public function rules()

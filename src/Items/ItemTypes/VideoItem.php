@@ -37,8 +37,8 @@ class VideoItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 80)->class('whiteField'),
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 100),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
             $this->justifyStylesEls(),
         );
     }
@@ -104,10 +104,13 @@ class VideoItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        return _Html($this->toHtml());
+        return _Html($this->toElementHtml());
     }
 
-    public function toHtml(): string
+    /**
+     * Render the video for the editor preview (iframe/video embeds).
+     */
+    protected function toElementHtml(): string
     {
         $type = $this->detectVideoType();
 
@@ -120,6 +123,44 @@ class VideoItem extends PageItemType
         }
 
         return $this->renderVideoFile();
+    }
+
+    /**
+     * Render the video for email output (thumbnail with play button link).
+     * iframes and video tags are not supported in email clients.
+     */
+    public function toHtml(): string
+    {
+        $type = $this->detectVideoType();
+        $embedId = $this->extractEmbedId();
+        $videoStyles = $this->videoStyles();
+
+        if ($type === 'youtube' && $embedId) {
+            $thumbnailUrl = 'https://img.youtube.com/vi/' . $embedId . '/maxresdefault.jpg';
+            $videoUrl = 'https://www.youtube.com/watch?v=' . $embedId;
+        } elseif ($type === 'vimeo' && $embedId) {
+            $thumbnailUrl = 'https://vumbnail.com/' . $embedId . '.jpg';
+            $videoUrl = 'https://vimeo.com/' . $embedId;
+        } else {
+            // File video — no thumbnail available, render a simple link
+            $videoUrl = \Storage::url($this->content);
+            return $this->centerElement(
+                '<table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td align="center" style="background-color:#000000; border-radius:8px; padding:20px 40px;">
+                    <a href="' . htmlspecialchars($videoUrl, ENT_QUOTES) . '" target="_blank" style="color:#ffffff; text-decoration:none; font-size:16px; font-weight:600;">&#9654; ' . __('cms::cms.watch-video') . '</a>
+                </td></tr></table>',
+                (string) $this->styles
+            );
+        }
+
+        $thumbnailUrl = htmlspecialchars($thumbnailUrl, ENT_QUOTES);
+        $videoUrl = htmlspecialchars($videoUrl, ENT_QUOTES);
+
+        return $this->centerElement(
+            '<a href="' . $videoUrl . '" target="_blank" style="text-decoration:none; display:block; position:relative;">
+                <img src="' . $thumbnailUrl . '" alt="' . __('cms::cms.watch-video') . '" style="width:100%; max-width:100%; height:auto; display:block; border:0; ' . $videoStyles . '" width="600" />
+            </a>',
+            (string) $this->styles
+        );
     }
 
     protected function renderYoutubeEmbed(): string

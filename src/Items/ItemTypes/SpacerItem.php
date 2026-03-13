@@ -46,6 +46,6 @@ class SpacerItem extends PageItemType
     {
         $height = $this->styles->height_raw ?: 40;
 
-        return '<div style="height: ' . $height . 'px; width: 100%; line-height: ' . $height . 'px; font-size: 0;">&nbsp;</div>';
+        return '<div style="height: ' . $height . 'px; width: 100%; line-height: ' . $height . 'px; font-size: 0; mso-line-height-rule: exactly;">&nbsp;</div>';
     }
 }

@@ -61,7 +61,7 @@ class DividerItem extends PageItemType
         $color = $this->styles->divider_color ?: '#d5d5d5';
         $width = $this->styles->divider_width_raw ?: 100;
 
-        return '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="' . $this->styles . '">
+        return '<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="' . $this->styles . '">
             <tr>
                 <td align="center">
                     <div style="width: ' . $width . '%; border-top: ' . $thickness . 'px ' . $style . ' ' . $color . '; line-height: 0; font-size: 0;">&nbsp;</div>

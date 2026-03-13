@@ -97,8 +97,7 @@ class PageStylingForm extends Form
             _Rows(
                 _Html('cms::cms.font-size')->class('vlDesignLabel'),
                 _Flex(
-                    _InputNumber()->value($this->model->getFontSize())->name('font-size', false)
-                        ->class('vlDesignNumberInput'),
+                    _InputNumber()->value($this->model->getFontSize())->name('font-size', false),
                     _Html('px')->class('vlDesignUnit'),
                 )->class('items-center gap-2'),
             )->class('vlDesignField'),
@@ -113,8 +112,7 @@ class PageStylingForm extends Form
             _Rows(
                 _Html('cms::cms.content-max-width')->class('vlDesignLabel'),
                 _Flex(
-                    _InputNumber()->value($this->model->getContentMaxWidth())->name('content-max-width', false)
-                        ->class('vlDesignNumberInput'),
+                    _InputNumber()->value($this->model->getContentMaxWidth())->name('content-max-width', false),
                     _Html('px')->class('vlDesignUnit'),
                 )->class('items-center gap-2'),
             )->class('vlDesignField'),
@@ -184,13 +182,13 @@ class PageStylingForm extends Form
             }
             .vlDesignSwatch {
                 width: 28px;
-                height: 28px;
+                height: 36px;
                 border-radius: 6px;
                 border: 1px solid #e5e7eb;
                 flex-shrink: 0;
             }
             .vlDesignColorInput {
-                height: 32px !important;
+                height: 36px !important;
                 flex: 1 !important;
                 padding: 2px !important;
                 border-radius: 6px !important;

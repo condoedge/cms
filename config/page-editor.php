@@ -20,6 +20,10 @@ return [
         'email-editor-layout' => \Anonimatrix\PageEditor\Components\Cms\EmailEditorLayout::class,
         'block-library-panel' => \Anonimatrix\PageEditor\Components\Cms\BlockLibraryPanel::class,
         'editor-top-bar' => \Anonimatrix\PageEditor\Components\Cms\EditorTopBar::class,
+        'template-gallery' => \Anonimatrix\PageEditor\Components\Cms\TemplateGallery::class,
+        'save-as-template' => \Anonimatrix\PageEditor\Components\Cms\SaveAsTemplateForm::class,
+        'send-test-email' => \Anonimatrix\PageEditor\Components\Cms\SendTestEmailForm::class,
+        'preview-with-variables' => \Anonimatrix\PageEditor\Components\Cms\PreviewWithVariablesForm::class,
     ],
 
     'types' => [

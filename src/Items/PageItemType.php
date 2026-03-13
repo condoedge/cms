@@ -199,10 +199,19 @@ abstract class PageItemType
     {
         $itemType = $item->getPageItemType();
         $itemType?->setVariables($this->variables);
-        $el = $itemType?->toElementWithStyles($withEditor);
+        try {
+            $el = $itemType?->toElementWithStyles($withEditor);
+            $hasContent = $itemType?->toElement($withEditor) !== null;
+        } catch (\Throwable $e) {
+            $el = null;
+            $hasContent = false;
+        }
 
-        if (!$el) {
-            $el = _Rows(_Html('')->class('min-h-[60px]'))->class('w-full');
+        if (!$el || !$hasContent) {
+            $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
+            $el = _Rows(
+                _Html('<div class="vlEmptyBlockPlaceholder">'.$typeName.' — '.__('cms::cms.click-to-edit').'</div>')
+            )->class('w-full');
         }
 
         if (!$withEditor) return $el;
@@ -218,14 +227,16 @@ abstract class PageItemType
 
     protected function emailEditorPreviewItem($item, $itemType, $el)
     {
+        $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
+
         return _Rows(
             $itemType?->emailEditorBlockActions($this->editPanelId),
-            _Rows($el)->class('w-full'),
+            _Rows($el)->class('w-full vlEmailBlockContent'),
         )->class('vlEmailBlock')
-         ->attr(['data-block-id' => $item->id])
+         ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName])
+         ->onClick
          ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
-         ->inPanel($this->editPanelId)
-         ->run('(el) => { if (window.vlEmailEditor) vlEmailEditor.selectBlock(el.closest(".vlEmailBlock")) }');
+         ->inPanel($this->editPanelId);
     }
 
     protected function legacyPreviewItem($item, $itemType, $el)
@@ -234,7 +245,7 @@ abstract class PageItemType
             $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
                 ->class('border-2 border-dashed border-gray-300 hover:border-blue-600 w-full')
-                ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
+                ->onClick->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
                 ->inPanel($this->editPanelId),
         )->class('group relative mb-3 mt-10 w-full')->style('flex-grow: 1');
     }
@@ -255,16 +266,6 @@ abstract class PageItemType
         return _Flex(
             _Html()->icon(_Sax('menu',16))->class('vlBlockActionBtn vlBlockDragHandle'),
             _Html(__(static::ITEM_TITLE))->class('vlBlockTypeLabel'),
-            !$canAddColumn ? null :
-                _Link()->icon(_Sax('element-3',16))->class('vlBlockActionBtn')
-                ->balloon('newsletter.add-column', 'down')
-                ->selfPost('addPageItemColumn', ['id' => $this->pageItem->id])
-                ->refresh(),
-            !$canSwitch ? null :
-                _Link()->icon(_Sax('arrow-swap-horizontal',16))->class('vlBlockActionBtn')
-                ->balloon('newsletter.switch-columns', 'down')
-                ->selfPost('switchColumnOrder', ['id' => $this->pageItem->id])
-                ->refresh(),
             _Link()->icon(_Sax('copy',16))->class('vlBlockActionBtn')
                 ->balloon('cms::cms.duplicate-block', 'down')
                 ->selfPost('duplicatePageItem', ['item_id' => $this->pageItem->id])
@@ -272,7 +273,8 @@ abstract class PageItemType
             _Link()->icon(_Sax('edit-2',16))->class('vlBlockActionBtn')
                 ->balloon('cms::cms.edit-block', 'down')
                 ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
-                ->inPanel($editPanelId),
+                ->inPanel($editPanelId)
+                ->run('() => { if (window.vlEmailEditor) vlEmailEditor.openDrawer() }'),
             _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
                 ->byKey($this->pageItem)->browse()
                 ->balloon('cms::cms.delete-block', 'down'),
@@ -416,6 +418,8 @@ abstract class PageItemType
 
         $columnCount = 1 + $gridSteblings->count();
         $colWidth = round(100 / $columnCount);
+        $colWidthPx = round(600 * $colWidth / 100);
+        $uniqueId = uniqid('grid-cols-');
 
         $columns = '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $html . '</td>';
         $columns .= $gridSteblings->map(function ($el) use ($colWidth) {
@@ -426,12 +430,18 @@ abstract class PageItemType
         return '
             <style>
                 @media (max-width: 600px) {
-                    .responsive-columns td { display: block !important; width: 100% !important; }
+                    .' . $uniqueId . ' td { display: block !important; width: 100% !important; }
                 }
             </style>
-            <table class="responsive-columns" width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+            <!--[if mso]>
+            <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="' . $colWidthPx . '" valign="top">
+            <![endif]-->
+            <table role="presentation" class="' . $uniqueId . '" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
                 <tr>' . $columns . '</tr>
-            </table>';
+            </table>
+            <!--[if mso]>
+            </td></tr></table>
+            <![endif]-->';
     }
 
     /** STYLES */
@@ -498,12 +508,12 @@ abstract class PageItemType
     protected function justifyStylesEls()
     {
         return _Rows(
-            _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('align-items', false)->options([
-                'start' => __('cms::cms.left'),
-                'center' => __('cms::cms.center'),
-                'end' => __('cms::cms.right'),
-            ])->optionClass('px-4 py-2 text-center cursor-pointer')
-            ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
+            _ButtonGroup('newsletter.page-item-justify')->name('align-items', false)->options([
+                'start' => _Html()->icon(_Sax('textalign-left', 16)),
+                'center' => _Html()->icon(_Sax('textalign-center', 16)),
+                'end' => _Html()->icon(_Sax('textalign-right', 16)),
+            ])->optionClass('vlAlignBtn')
+            ->selectedClass('vlAlignBtnActive', 'vlAlignBtnInactive')
             ->value($this->styles->align_items ?: 'center'),
         );
     }
@@ -624,7 +634,7 @@ abstract class PageItemType
         $matches = [];
         $bgColor = preg_match($backgroundPattern, $styles, $matches) ? $matches[1] : null;
         
-        return '<table width="'.$width.'" border="0" cellspacing="0" cellpadding="0" style="'.$tableStyles.'">
+        return '<table role="presentation" width="'.$width.'" border="0" cellspacing="0" cellpadding="0" style="'.$tableStyles.'">
             <tr>
                 <td align="' . $align . '" style="'. $styles .'" bgcolor="'.$bgColor.'">
                     ' . $el . '

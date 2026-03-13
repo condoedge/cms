@@ -15,6 +15,7 @@ class PagePreview extends Query
     public $containerClass = 'flex flex-col external-container';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
+    public $noItemsFound = '';
 
     protected $panelId;
     protected $withEditor = false;
@@ -140,10 +141,6 @@ class PagePreview extends Query
 
         $pageItemType?->setEditPanelId($this->panelId);
 
-        if ($this->useEmailEditor && $this->withEditor) {
-            return $pageItemType?->toPreviewElement($this->withEditor);
-        }
-
         return $pageItemType?->toPreviewElement($this->withEditor);
     }
 
@@ -198,4 +195,5 @@ class PagePreview extends Query
             }
         });
     }
+
 }

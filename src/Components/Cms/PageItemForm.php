@@ -54,20 +54,6 @@ class PageItemForm extends Form
 
     public function render()
     {
-        if ($this->isEmailEditorContext()) {
-            return $this->emailEditorRender();
-        }
-
-        return $this->legacyRender();
-    }
-
-    protected function isEmailEditorContext()
-    {
-        return true; // For now, always use new layout
-    }
-
-    protected function emailEditorRender()
-    {
         $types = PageEditor::getOptionsTypes($this->prefixGroup);
 
         // New block creation — show block type selector
@@ -113,29 +99,27 @@ class PageItemForm extends Form
         $title = $blockType ? __($blockType::ITEM_TITLE) : '';
 
         return _Rows(
-            // Block type header
-            _FlexBetween(
-                _Flex(
-                    _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
-                    _Html($title)->class('font-semibold text-sm'),
-                )->class('items-center gap-2'),
-                $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
-                    ->run('() => {
-                        document.querySelectorAll(".vlEmailBlock").forEach(b => b.classList.remove("vlEmailBlockSelected"));
-                        document.getElementById("'.EmailEditorLayout::PROPERTY_PANEL.'").innerHTML = "<div class=\"flex flex-col items-center justify-center py-20\"><div class=\"text-gray-300 mb-4\"><svg width=\"48\" height=\"48\"><use href=\"#mouse-circle\"/></svg></div><div class=\"text-sm text-gray-400 text-center\">'.__('cms::cms.select-block-to-edit').'</div></div>";
-                    }') : null,
-            )->class('vlPropertyHeader'),
-
-            // Hidden block type field
-            _Hidden()->name('block_type')->value($this->model->block_type),
+            // Block type header with title input
+            _Rows(
+                _FlexBetween(
+                    _Flex(
+                        _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
+                        _Html($title)->class('font-semibold text-sm'),
+                    )->class('items-center gap-2'),
+                    $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
+                        ->run('() => {
+                            document.querySelectorAll(".vlEmailBlock").forEach(b => b.classList.remove("vlEmailBlockSelected"));
+                            document.getElementById("'.EmailEditorLayout::PROPERTY_PANEL.'").innerHTML = "<div class=\"flex flex-col items-center justify-center py-20\"><div class=\"text-gray-300 mb-4\"><svg width=\"48\" height=\"48\"><use href=\"#mouse-circle\"/></svg></div><div class=\"text-sm text-gray-400 text-center\">'.__('cms::cms.select-block-to-edit').'</div></div>";
+                        }') : null,
+                )->class('mb-3'),
+                _Hidden()->name('block_type')->value($this->model->block_type),
+                _Input('cms::cms.title-optional')->name('name_pi'),
+            )->class('vlPropertyHeader vlPropertySection mb-4'),
 
             // Content section
             _Rows(
-                _Html('cms::cms.content')->class('vlPropertySectionTitle'),
-                _Rows(
-                    $blockType ? $blockType->blockTypeEditorElement() : null,
-                )->class('vlPropertySectionBody'),
-            )->class('vlPropertySection'),
+                $blockType ? $blockType->blockTypeEditorElement() : null,
+            )->class('vlPropertySection vlPropertySectionBody mb-4'),
 
             // Style section (colors, typography, spacing, responsive, advanced — all inside StylePageItemForm)
             _Rows(
@@ -158,7 +142,7 @@ class PageItemForm extends Form
 
     protected function saveButtons()
     {
-        $previewPanel = $this->isEmailEditorContext() ? EmailEditorLayout::PREVIEW_PANEL : PageDesignForm::PREVIEW_PAGE_PANEL;
+        $previewPanel = EmailEditorLayout::PREVIEW_PANEL;
 
         return _Rows(
             _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
@@ -179,7 +163,7 @@ class PageItemForm extends Form
                 padding: 0;
             }
             .vlPropertyHeader {
-                padding: 16px;
+                padding: 16px 32px;
                 border-bottom: 1px solid #e5e7eb;
                 position: sticky;
                 top: 0;
@@ -195,26 +179,13 @@ class PageItemForm extends Form
                 text-transform: uppercase;
                 letter-spacing: 0.08em;
                 color: #6b7280;
-                padding: 14px 16px 8px;
-                cursor: pointer;
-                user-select: none;
-            }
-            .vlPropertySectionTitle:hover {
-                color: #374151;
-            }
-            .vlPropertySectionCollapsed::after {
-                content: "▸";
-                float: right;
-            }
-            .vlPropertySectionTitle:not(.vlPropertySectionCollapsed)::after {
-                content: "▾";
-                float: right;
+                padding: 14px 32px 8px;
             }
             .vlPropertySectionBody {
-                padding: 0 16px 16px;
+                padding: 0 32px 16px;
             }
             .vlPropertyActions {
-                padding: 16px;
+                padding: 16px 32px;
                 position: sticky;
                 bottom: 0;
                 background: #ffffff;
@@ -226,7 +197,7 @@ class PageItemForm extends Form
                 border-radius: 8px !important;
                 font-weight: 600 !important;
                 font-size: 13px !important;
-                padding: 10px !important;
+                padding: 14px !important;
             }
             .vlPropertySaveBtn:hover {
                 background: #1d4ed8 !important;
@@ -237,60 +208,12 @@ class PageItemForm extends Form
                 border: 1px solid #fecaca !important;
                 border-radius: 8px !important;
                 font-size: 13px !important;
-                padding: 8px !important;
+                padding: 14px !important;
             }
             .vlPropertyDeleteBtn:hover {
                 background: #fef2f2 !important;
             }
         </style>';
-    }
-
-    /** Legacy render — kept for backward compatibility */
-    protected function legacyRender()
-    {
-        $types = PageEditor::getOptionsTypes($this->prefixGroup);
-
-        if (!$this->model->id) {
-            $types = $types + ['__copy__' => __('cms::cms.copy-block-from-newsletter')];
-        }
-
-        return _Tabs(
-            _Tab(
-                _Rows(
-                    _Columns(
-                        _Select('cms::cms.zone-type')->options(
-                            $types,
-                        )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form') && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID) && $e->selfGet('getCopyBlockPanel')->inPanel(static::COPY_BLOCK_PANEL_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
-                        $this->model->id ? _DeleteButton('cms::cms.clear')->byKey($this->model)->refresh('page_design_form')->class('align-right')->col('col-md-4') : null,
-                    )->class('items-center'),
-                    _Input('cms::cms.zone-name')->name('name_pi'),
-                    !$this->model->id ? _Panel(
-                        _Html(''),
-                    )->id(static::COPY_BLOCK_PANEL_ID)->class('mt-4') : null,
-                    _Panel(
-                        $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : _Html(''),
-                    )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
-                    _FlexBetween(
-                        _SubmitButton('cms::cms.save-zone-and-new')->class('ml-auto mt-3')
-                            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                        _SubmitButton('cms::cms.save-zone')->class('ml-auto mt-3')
-                            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                    )->class('gap-4'),
-                )
-            )->label('cms::cms.zone-content'),
-            _Tab(
-                _Rows(
-                    _Panel(
-                        $this->getStyleFormComponent(),
-                    )->id('item_styles_form'),
-                    _FlexBetween(
-                        _Button('cms::cms.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
-                        _SubmitButton('cms::cms.save')->class('ml-auto')
-                            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                    )->class('gap-4 mt-3'),
-                )->class('!mb-2')
-            )->label('cms::cms.zone-styles'),
-        );
     }
 
     public function rules()
@@ -313,13 +236,11 @@ class PageItemForm extends Form
 
     public function getPagePreview()
     {
-        $panelId = $this->isEmailEditorContext() ? EmailEditorLayout::PROPERTY_PANEL : PageDesignForm::PAGE_ITEM_PANEL;
-
         return PageEditor::getPagePreviewComponent(
             $this->prefixGroup,
             [
                 'page_id' => $this->pageId,
-                'panel_id' => $panelId,
+                'panel_id' => EmailEditorLayout::PROPERTY_PANEL,
                 'with_editor' => true
             ]
         );
@@ -444,7 +365,7 @@ class PageItemForm extends Form
 
         return _Button('cms::cms.copy-this-block')->icon('duplicate')
             ->selfPost('copyBlockToPage', ['item_id' => $itemId])
-            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL))
+            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(EmailEditorLayout::PROPERTY_PANEL) && $e->selfGet('getPagePreview')->inPanel(EmailEditorLayout::PREVIEW_PANEL))
             ->class('mt-2');
     }
 
