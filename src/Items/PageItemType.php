@@ -508,7 +508,7 @@ abstract class PageItemType
     protected function justifyStylesEls()
     {
         return _Rows(
-            _ButtonGroup('newsletter.page-item-justify')->name('align-items', false)->options([
+            _ButtonGroup('newsletter.page-item-justify')->name($this->formPrefix . 'align-items', false)->options([
                 'start' => _Html()->icon(_Sax('textalign-left', 16)),
                 'center' => _Html()->icon(_Sax('textalign-center', 16)),
                 'end' => _Html()->icon(_Sax('textalign-right', 16)),

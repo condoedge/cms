@@ -77,16 +77,17 @@ class ImgItem extends PageItemType
 
     protected function sizeStyles()
     {
+        $maxWidth = (int) ($this->pageItem->getStyleProperty('max_width_raw') ?: 100);
+
         return _Rows(
-            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?? true))
-                ->toggleId('item-height-px-input', $this?->styles->height_auto_raw ?? true),
-
-            _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->id('item-height-px-input'),
-
-            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null)) ,
-            _Panel(
-                static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
-            )->id(static::PANEL_MAX_WIDTH_ID),
+            _Html('cms::cms.image-width')->class('vlStyleSubLabel'),
+            _Html('
+                <div class="flex items-center gap-3">
+                    <input type="range" name="' . $this->formPrefix . 'max-width" min="10" max="100" step="5" value="' . $maxWidth . '" class="flex-1" oninput="this.nextElementSibling.textContent = this.value + \'%\'" />
+                    <span class="text-sm font-semibold text-gray-700 w-10 text-right">' . $maxWidth . '%</span>
+                </div>
+            '),
+            _Hidden()->name($this->formPrefix . 'height-auto', false)->value(1),
         );
     }
 
@@ -113,8 +114,6 @@ class ImgItem extends PageItemType
         return [
             'cover' => __('cms::cms.object-fit-cover'),
             'contain' => __('cms::cms.object-fit-contain'),
-            'fill' => __('cms::cms.object-fit-fill'),
-            'none' => __('cms::cms.object-fit-none'),
         ];
     }
 
@@ -153,7 +152,7 @@ class ImgItem extends PageItemType
     protected function cornerRadiusStyle()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name($this->formPrefix . 'border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
         );
     }
 
@@ -180,7 +179,7 @@ class ImgItem extends PageItemType
 
     protected function saveImageStylesToModel($styleModel)
     {
-        $imageStyles = ['object-fit', 'aspect-ratio'];
+        $imageStyles = ['object-fit', 'aspect-ratio', 'max-width', 'border-radius', 'align-items'];
 
         foreach ($imageStyles as $style) {
             $value = request($this->formPrefix . $style);

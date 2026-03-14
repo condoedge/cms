@@ -22,6 +22,7 @@ return [
     "exterior-background-color" => "Exterior background color",
     "first-save-page" => "Save to continue",
     "font-size" => "Font size",
+    "image-width" => "Image width",
     "font-size-number" => "Number font size",
     "gray" => "Gray",
     "green" => "Green",

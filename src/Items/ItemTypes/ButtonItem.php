@@ -47,7 +47,7 @@ class ButtonItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Select('cms::cms.button-size')->name('button-size', false)
+            _Select('cms::cms.button-size')->name($this->formPrefix . 'button-size', false)
                 ->options(static::getSizeOptions())
                 ->default($this->styles->button_size ?: static::SIZE_MEDIUM)
                 ->class('whiteField'),
@@ -60,9 +60,23 @@ class ButtonItem extends PageItemType
 
         $styleModel = $this->pageItem->getOrCreateStyles();
 
-        PageStyle::setStylesToModel($styleModel);
+        if ($this->interactsWithPageItem) {
+            PageStyle::setStylesToModel($styleModel);
+        } else {
+            $this->saveButtonStylesToModel($styleModel);
+        }
 
         $styleModel->save();
+    }
+
+    protected function saveButtonStylesToModel($styleModel)
+    {
+        $value = request($this->formPrefix . 'button-size');
+
+        if (!is_null($value)) {
+            $suffix = config('page-editor.automapping_styles.button-size', '');
+            $styleModel->content->replaceProperty('button-size', $value . $suffix);
+        }
     }
 
     public static function getSizeOptions(): array
