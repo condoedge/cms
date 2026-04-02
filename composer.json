@@ -9,7 +9,6 @@
         },
         "files": [
             "src/helpers/components.php",
-            "src/helpers/utils.php",
             "src/helpers/errors.php"
         ]
     },

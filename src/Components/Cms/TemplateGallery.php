@@ -3,37 +3,35 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
-use Anonimatrix\PageEditor\Support\Facades\Features\Teams;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
-use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
-use Kompo\Form;
+use Condoedge\Utils\Kompo\Common\Modal;
 
-class TemplateGallery extends Form
+class TemplateGallery extends Modal
 {
     public $id = 'template-gallery';
 
-    protected $prefixGroup = "";
+    public $_Title = 'cms::cms.template-gallery';
 
-    public function render()
+    protected $prefixGroup = "";
+    protected $noHeaderButtons = true;
+    protected $targetPageId;
+
+    public function created()
+    {
+        $this->targetPageId = $this->modelKey();
+    }
+
+    public function body()
     {
         $templates = $this->getTemplates();
 
-        return _Rows(
-            _FlexBetween(
-                _Html('cms::cms.template-gallery')->class('text-base font-semibold text-gray-800'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { document.querySelector(".vlTemplateModal").remove() }'),
-            )->class('mb-4'),
-
+        return [
             _Html('cms::cms.template-gallery-desc')->class('text-sm text-gray-500 mb-5'),
 
             $templates->isEmpty()
                 ? $this->emptyState()
                 : $this->templateGrid($templates),
-
-            _Html($this->galleryStyles()),
-        )->class('vlTemplateGalleryInner');
+        ];
     }
 
     protected function getTemplates()
@@ -56,14 +54,14 @@ class TemplateGallery extends Form
             _Html()->icon(_Sax('document-copy', 40))->class('text-gray-300 mb-3'),
             _Html('cms::cms.no-templates-yet')->class('text-sm text-gray-400 text-center'),
             _Html('cms::cms.no-templates-desc')->class('text-xs text-gray-300 text-center mt-1'),
-        )->class('vlTemplateEmpty');
+        )->class('flex flex-col items-center py-10');
     }
 
     protected function templateGrid($templates)
     {
         return _Rows(
             ...$templates->map(fn($template) => $this->templateCard($template)),
-        )->class('vlTemplateGrid');
+        )->class('flex flex-col gap-2');
     }
 
     protected function templateCard($template)
@@ -74,7 +72,7 @@ class TemplateGallery extends Form
             _Flex(
                 _Rows(
                     _Html()->icon(_Sax('document-text', 24))->class('text-gray-400'),
-                )->class('vlTemplateCardIcon'),
+                )->class('w-10 h-10 min-w-[40px] bg-gray-100 rounded-lg flex items-center justify-center'),
                 _Rows(
                     _Html($template->title ?: __('cms::cms.untitled-email'))->class('text-sm font-medium text-gray-800'),
                     _Html(trans_choice('cms::cms.template-block-count', $blockCount, ['count' => $blockCount]))
@@ -83,22 +81,22 @@ class TemplateGallery extends Form
             )->class('items-center gap-3 min-w-0 flex-1'),
             _Flex(
                 _Button('cms::cms.use-template')
-                    ->class('vlTemplateUseBtn')
+                    ->class('text-xs')
                     ->selfPost('createFromTemplate', ['template_id' => $template->id])
-                    ->onSuccess(fn($e) => $e->run('() => { document.querySelector(".vlTemplateModal").remove(); window.location.reload(); }')),
+                    ->onSuccess(fn($e) => $e->closeModal()->run('() => { window.location.reload(); }')),
                 _Link()->icon(_Sax('trash', 16))
-                    ->class('vlTemplateDeleteBtn')
+                    ->class('text-gray-400 hover:text-red-600')
                     ->balloon('cms::cms.delete-template', 'down')
                     ->selfPost('deleteTemplate', ['template_id' => $template->id])
                     ->onSuccess(fn($e) => $e->selfGet('refreshGallery')->inPanel('template-gallery-panel')),
             )->class('items-center gap-2 flex-shrink-0'),
-        )->class('vlTemplateCard');
+        )->class('p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all');
     }
 
     public function createFromTemplate()
     {
         $template = PageModel::findOrFail(request('template_id'));
-        $pageId = request('target_page_id');
+        $pageId = $this->targetPageId;
 
         if (!$pageId) return;
 
@@ -157,92 +155,5 @@ class TemplateGallery extends Form
     public function refreshGallery()
     {
         return new static(null, []);
-    }
-
-    protected function galleryStyles()
-    {
-        return '<style>
-            .vlTemplateModal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: vlModalFadeIn 0.15s ease;
-            }
-            .vlTemplateGalleryInner {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 24px;
-                width: 560px;
-                max-width: 90vw;
-                max-height: 80vh;
-                overflow-y: auto;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            }
-            .vlTemplateEmpty {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 40px 20px;
-            }
-            .vlTemplateGrid {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-            }
-            .vlTemplateCard {
-                padding: 12px 16px;
-                border: 1px solid #e5e7eb;
-                border-radius: 10px;
-                transition: all 0.15s;
-            }
-            .vlTemplateCard:hover {
-                border-color: #93c5fd;
-                background: #fafbff;
-            }
-            .vlTemplateCardIcon {
-                width: 40px;
-                height: 40px;
-                min-width: 40px;
-                background: #f3f4f6;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .vlTemplateUseBtn {
-                padding: 6px 14px !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
-                background: #2563eb !important;
-                color: #ffffff !important;
-                border-radius: 6px !important;
-                border: none !important;
-                white-space: nowrap;
-            }
-            .vlTemplateUseBtn:hover {
-                background: #1d4ed8 !important;
-            }
-            .vlTemplateDeleteBtn {
-                width: 32px;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 6px;
-                color: #9ca3af;
-                transition: all 0.15s;
-            }
-            .vlTemplateDeleteBtn:hover {
-                background: #fef2f2;
-                color: #dc2626;
-            }
-        </style>';
     }
 }

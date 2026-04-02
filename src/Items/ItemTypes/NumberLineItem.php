@@ -65,7 +65,7 @@ class NumberLineItem extends PageItemType
     {
         return $this->openCloseTag("
             <div style=\"display: flex; justify-content:center;\">
-                <div style=\"color: white; text-align: center; font-size: 1.5rem;\">{$this->content->title}</div>
+                <div style=\"color: white; text-align: center; font-size: 1.5rem;\">{$this->content->number}</div>
             </div>
         ");
     }

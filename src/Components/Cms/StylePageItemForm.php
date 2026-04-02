@@ -135,32 +135,32 @@ class StylePageItemForm extends Form
             $hidePadding ? null : _Div(
                 _Input()->placeholder('↑ Top')->name('padding-top' . $suffix, false)
                     ->default($this->model?->getStyleProperty('padding_top' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('↓ Bottom')->name('padding-bottom' . $suffix, false)
                     ->default($this->model?->getStyleProperty('padding_bottom' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('← Left')->name('padding-left' . $suffix, false)
                     ->default($this->model?->getStyleProperty('padding_left' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('→ Right')->name('padding-right' . $suffix, false)
                     ->default($this->model?->getStyleProperty('padding_right' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
             )->class('vlSpacingControl vlSpacingPadding'),
 
             _Html('cms::cms.margin-px')->class($hidePadding ? 'vlStyleSubLabel' : 'vlStyleSubLabel mt-3'),
             _Div(
                 _Input()->placeholder('↑ Top')->name('margin-top' . $suffix, false)
                     ->default($this->model?->getStyleProperty('margin_top' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('↓ Bottom')->name('margin-bottom' . $suffix, false)
                     ->default($this->model?->getStyleProperty('margin_bottom' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('← Left')->name('margin-left' . $suffix, false)
                     ->default($this->model?->getStyleProperty('margin_left' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
                 _Input()->placeholder('→ Right')->name('margin-right' . $suffix, false)
                     ->default($this->model?->getStyleProperty('margin_right' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
-                    ->class('vlSpacingInput'),
+                    ->class('vlSpacingInput whiteField'),
             )->class('vlSpacingControl vlSpacingMargin'),
         );
     }
@@ -201,7 +201,7 @@ class StylePageItemForm extends Form
                     el.nextElementSibling.classList.toggle("hidden");
                 }'),
             _Rows(
-                _Input('cms::cms.classes')->name('classes')->class('vlCompactInput mb-2'),
+                _Input('cms::cms.classes')->name('classes')->class('mb-2'),
                 _Link('cms::cms.clear-styles')->icon(_Sax('refresh', 14))
                     ->selfPost('clearStyles')->inPanel('item_styles_form')
                     ->class('vlClearStylesBtn'),
@@ -211,205 +211,7 @@ class StylePageItemForm extends Form
 
     protected function emailEditorStyleOverrides()
     {
-        return _Html('<style>
-            /* Remove Kompo default card styling on form fields inside drawer */
-            .vlEditorRightPanel .vlFormField {
-                margin-top: 0 !important;
-                margin-bottom: 4px !important;
-            }
-            .vlEditorRightPanel .vlFormLabel {
-                font-size: 12px !important;
-                color: #6b7280 !important;
-                margin-bottom: 2px !important;
-            }
-            .vlEditorRightPanel .vlInputWrapper {
-                background-color: #f3f4f6 !important;
-            }
-            .vlEditorRightPanel .vlInputWrapper .toggle-button {
-                background-color: #f3f4f6 !important;
-            }
-
-            /* Style Labels */
-            .vlStyleLabel {
-                font-size: 11px;
-                font-weight: 600;
-                color: #6b7280;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-bottom: 0.5;
-                margin-top: 0.75rem;
-            }
-            .vlStyleSubLabel {
-                font-size: 11px;
-                font-weight: 600;
-                color: #9ca3af;
-                margin-bottom: 4px;
-            }
-
-            /* Color Inputs */
-            .vlColorInput {
-                height: 36px !important;
-                cursor: pointer;
-            }
-
-            /* Compact Inputs */
-            .vlCompactInput {
-                font-size: 13px !important;
-                padding: 6px 10px !important;
-                border-radius: 6px !important;
-                border: 1px solid #e5e7eb !important;
-                background: #ffffff !important;
-            }
-            .vlCompactInput:focus {
-                border-color: #93c5fd !important;
-                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
-            }
-
-            /* Background Toggle */
-            .vlBgOption {
-                padding: 14px 12px !important;
-                font-size: 13px !important;
-                border-radius: 8px !important;
-                cursor: pointer;
-                text-align: center;
-            }
-            .vlBgOptionActive {
-                background: #2563eb !important;
-                color: #ffffff !important;
-            }
-            .vlBgOptionInactive {
-                background: #f3f4f6 !important;
-                color: #6b7280 !important;
-            }
-
-            /* Alignment Buttons */
-            .vlEditorRightPanel .vlButtonGroup .vlInputWrapper {
-                padding: 0 !important;
-                background: transparent !important;
-                border: none !important;
-            }
-            .vlEditorRightPanel .vlButtonGroup .vlOptionCont {
-                display: flex !important;
-                gap: 4px !important;
-            }
-            .vlEditorRightPanel .vlButtonGroup .vlOptionCont > .vlOption + .vlOption {
-                border-left: none !important;
-            }
-            .vlAlignBtn {
-                flex: 1 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border-radius: 6px !important;
-                cursor: pointer !important;
-                padding: 16px 0 !important;
-            }
-            .vlAlignBtn > div {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-            .vlAlignBtnActive {
-                background: #2563eb !important;
-                color: #ffffff !important;
-            }
-            .vlAlignBtnInactive {
-                background: #f3f4f6 !important;
-                color: #6b7280 !important;
-            }
-
-            /* Spacing Visual Control */
-            .vlSpacingTabs > ul > li {
-                margin-right: 8px !important;
-            }
-            .vlSpacingTabs > ul > li > a {
-                font-size: 11px !important;
-                font-weight: 600 !important;
-                padding: 6px 16px !important;
-                display: inline-block !important;
-            }
-            .vlSpacingTabContent {
-                padding: 8px 0 0 !important;
-            }
-            .vlSpacingControl {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-                padding: 8px;
-                border: 1.5px dashed #d1d5db;
-                border-radius: 8px;
-            }
-            .vlSpacingPadding {
-                border-color: #93c5fd;
-                background: #f0f7ff;
-            }
-            .vlSpacingMargin {
-                border-color: #fdba74;
-                background: #fffbf0;
-            }
-            .vlSpacingCenter {
-                display: contents;
-            }
-            .vlSpacingRow {
-                display: contents;
-            }
-            .vlSpacingBox {
-                display: none;
-            }
-            .vlSpacingInput {
-                width: 100% !important;
-                min-width: 0 !important;
-                text-align: center !important;
-                font-size: 13px !important;
-            }
-            .vlSpacingInput:focus {
-                border-color: #93c5fd !important;
-                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
-            }
-            .vlSpacingTop, .vlSpacingBottom {
-                width: 100% !important;
-            }
-
-            /* Toggle */
-            .vlToggle {
-                font-size: 13px !important;
-            }
-            .vlToggleFullWidth {
-                width: 100% !important;
-                display: flex !important;
-                justify-content: space-between !important;
-                padding: 8px 12px !important;
-                background: #f9fafb !important;
-                border: 1px solid #e5e7eb !important;
-                border-radius: 8px !important;
-            }
-
-            /* Advanced Section */
-            .vlAdvancedToggle {
-                cursor: pointer;
-                user-select: none;
-            }
-            .vlAdvancedToggle::after {
-                content: " ▸";
-            }
-            .vlAdvancedToggle.vlAdvancedOpen::after {
-                content: " ▾";
-            }
-
-            /* Clear Styles */
-            .vlClearStylesBtn {
-                font-size: 12px !important;
-                color: #9ca3af !important;
-                display: flex !important;
-                align-items: center !important;
-                gap: 4px !important;
-            }
-            .vlClearStylesBtn:hover {
-                color: #dc2626 !important;
-            }
-        </style>');
+        return null;
     }
 
     protected function extraInputs()

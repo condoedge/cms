@@ -29,7 +29,6 @@ class EditorTopBar extends Form
     {
         return _Flex(
             $this->backButton(),
-            $this->titleInput(),
         )->class('items-center gap-3 flex-1 min-w-0');
     }
 
@@ -37,13 +36,6 @@ class EditorTopBar extends Form
     {
         return _Link()->icon('arrow-left')
             ->class('vlEditorTopBarBack');
-    }
-
-    protected function titleInput()
-    {
-        return _Input()->name('title_display', false)
-            ->value($this->model->title ?: __('cms::cms.untitled-email'))
-            ->class('vlEditorTopBarTitle');
     }
 
     protected function centerSection()
@@ -116,17 +108,25 @@ class EditorTopBar extends Form
     {
         if (!$this->model->id) return null;
 
-        return _Div(
-            _Link()->icon(_Sax('more', 20))
-                ->class('vlEditorActionBtn')
-                ->attr(['data-actions-trigger' => true])
-                ->run('(el) => {
-                    var menu = el.closest(".vlActionsMenuWrap").querySelector(".vlActionsMenu");
-                    if (menu) { menu.remove(); return; }
-                }')
-                ->selfGet('getActionsMenu')->inPanel('actions-menu-panel'),
-            _Panel()->id('actions-menu-panel'),
-        )->class('vlActionsMenuWrap')->style('position: relative;');
+        return _Dropdown()->icon(_Sax('more', 20))
+            ->button('vlEditorActionBtn font-normal')
+            ->openOnClick()
+            ->alignRight()
+            ->noCaret()
+            ->submenu(
+                _DropdownLink('cms::cms.send-test')->icon(_Sax('sms', 16))
+                    ->class('pt-4')
+                    ->selfGet('getSendTestModal')->inModal(),
+                _DropdownLink('cms::cms.preview-with-data')->icon(_Sax('eye', 16))
+                    ->selfGet('getPreviewVarsModal')->inModal(),
+                _DropdownLink('cms::cms.export-html')->icon(_Sax('document-download', 16))
+                    ->href('page-editor.export-html', ['page_id' => $this->model->id])->inNewTab(),
+                _DropdownLink('cms::cms.save-as-template')->icon(_Sax('document-favorite', 16))
+                    ->selfGet('getSaveTemplateModal')->inModal(),
+                _DropdownLink('cms::cms.browse-templates')->icon(_Sax('element-4', 16))
+                    ->class('pb-4')
+                    ->selfGet('getTemplateGalleryModal')->inModal(),
+            );
     }
 
     protected function previewButton()
@@ -146,7 +146,7 @@ class EditorTopBar extends Form
             ->class('vlEditorSaveBtn')
             ->selfPost('savePage')
             ->withAllFormValues()
-            ->onSuccess(fn($e) => $e->run('() => { vlEmailEditor.showToast("'.__('cms::cms.saved-successfully').'") }'));
+            ->alert('cms::cms.saved-successfully');
     }
 
     public function savePage()
@@ -162,61 +162,21 @@ class EditorTopBar extends Form
 
     public function getSendTestModal()
     {
-        return _Div(
-            new SendTestEmailForm(null, [
-                'page_id' => $this->model->id,
-            ]),
-        )->class('vlTestEmailModal');
+        return new SendTestEmailForm($this->model->id);
     }
 
     public function getSaveTemplateModal()
     {
-        return _Div(
-            new SaveAsTemplateForm(null, [
-                'page_id' => $this->model->id,
-            ]),
-        )->class('vlSaveTemplateModal');
-    }
-
-    public function getTemplateGalleryModal()
-    {
-        return _Div(
-            _Panel(
-                new TemplateGallery(null, [
-                    'target_page_id' => $this->model->id,
-                ]),
-            )->id('template-gallery-panel'),
-        )->class('vlTemplateModal');
-    }
-
-    public function getActionsMenu()
-    {
-        return _Rows(
-            _Link('cms::cms.send-test')->icon(_Sax('sms', 16))
-                ->class('vlActionsMenuItem')
-                ->selfGet('getSendTestModal')->inModal(),
-            _Link('cms::cms.preview-with-data')->icon(_Sax('eye', 16))
-                ->class('vlActionsMenuItem')
-                ->selfGet('getPreviewVarsModal')->inModal(),
-            _Link('cms::cms.export-html')->icon(_Sax('document-download', 16))
-                ->class('vlActionsMenuItem')
-                ->href('page-editor.export-html', ['page_id' => $this->model->id])->inNewTab(),
-            _Div()->class('vlActionsMenuDivider'),
-            _Link('cms::cms.save-as-template')->icon(_Sax('document-favorite', 16))
-                ->class('vlActionsMenuItem')
-                ->selfGet('getSaveTemplateModal')->inModal(),
-            _Link('cms::cms.browse-templates')->icon(_Sax('element-4', 16))
-                ->class('vlActionsMenuItem')
-                ->selfGet('getTemplateGalleryModal')->inModal(),
-        )->class('vlActionsMenu');
+        return new SaveAsTemplateForm($this->model->id);
     }
 
     public function getPreviewVarsModal()
     {
-        return _Div(
-            new PreviewWithVariablesForm(null, [
-                'page_id' => $this->model->id,
-            ]),
-        )->class('vlPreviewVarsModal');
+        return new PreviewWithVariablesForm($this->model->id);
+    }
+
+    public function getTemplateGalleryModal()
+    {
+        return new TemplateGallery($this->model->id);
     }
 }

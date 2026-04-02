@@ -4,48 +4,39 @@ namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
-use Kompo\Form;
+use Condoedge\Utils\Kompo\Common\Modal;
 
-class SaveAsTemplateForm extends Form
+class SaveAsTemplateForm extends Modal
 {
     public $id = 'save-as-template-form';
+
+    public $_Title = 'cms::cms.save-as-template';
 
     protected $prefixGroup = "";
 
     public function created()
     {
-        $this->model(PageModel::find($this->prop('page_id')) ?? PageModel::make());
+        $this->model(PageModel::findOrFail($this->modelKey()));
     }
 
-    public function render()
+    public function headerButtons()
     {
-        return _Rows(
-            _FlexBetween(
-                _Html('cms::cms.save-as-template')->class('text-base font-semibold text-gray-800'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { document.querySelector(".vlSaveTemplateModal").remove() }'),
-            )->class('mb-4'),
+        return _SubmitButton('cms::cms.save-as-template')
+            ->selfPost('saveAsTemplate')
+            ->withAllFormValues()
+            ->alert('cms::cms.template-saved')
+            ->closeModal();
+    }
 
+    public function body()
+    {
+        return [
             _Html('cms::cms.save-as-template-desc')->class('text-sm text-gray-500 mb-4'),
 
             _Input('cms::cms.template-name')
                 ->name('template_name')
-                ->value($this->model->title ? $this->model->title . ' - Template' : '')
-                ->class('mb-4'),
-
-            _FlexEnd(
-                _Link('cms::cms.cancel')
-                    ->class('vlSaveTemplateCancelBtn')
-                    ->run('() => { document.querySelector(".vlSaveTemplateModal").remove() }'),
-                _Button('cms::cms.save-as-template')
-                    ->class('vlSaveTemplateSaveBtn')
-                    ->selfPost('saveAsTemplate')
-                    ->withAllFormValues()
-                    ->onSuccess(fn($e) => $e->run('() => { document.querySelector(".vlSaveTemplateModal").remove(); vlEmailEditor.showToast("'.__('cms::cms.template-saved').'") }')),
-            )->class('gap-3'),
-
-            _Html($this->modalStyles()),
-        )->class('vlSaveTemplateFormInner');
+                ->value($this->model->title ? $this->model->title . ' - Template' : ''),
+        ];
     }
 
     public function saveAsTemplate()
@@ -100,56 +91,5 @@ class SaveAsTemplateForm extends Form
                 }
             });
         });
-    }
-
-    protected function modalStyles()
-    {
-        return '<style>
-            .vlSaveTemplateModal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: vlModalFadeIn 0.15s ease;
-            }
-            .vlSaveTemplateFormInner {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 24px;
-                width: 440px;
-                max-width: 90vw;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            }
-            .vlSaveTemplateCancelBtn {
-                padding: 7px 16px;
-                font-size: 13px;
-                font-weight: 500;
-                color: #374151;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                transition: all 0.15s;
-            }
-            .vlSaveTemplateCancelBtn:hover {
-                background: #f9fafb;
-            }
-            .vlSaveTemplateSaveBtn {
-                padding: 7px 20px !important;
-                font-size: 13px !important;
-                font-weight: 600 !important;
-                background: #2563eb !important;
-                color: #ffffff !important;
-                border-radius: 8px !important;
-                border: none !important;
-            }
-            .vlSaveTemplateSaveBtn:hover {
-                background: #1d4ed8 !important;
-            }
-        </style>';
     }
 }

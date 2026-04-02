@@ -3,47 +3,37 @@
 namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
-use Anonimatrix\PageEditor\Support\Facades\Features\Teams;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
-use Kompo\Form;
+use Condoedge\Utils\Kompo\Common\Modal;
 
-class PreviewWithVariablesForm extends Form
+class PreviewWithVariablesForm extends Modal
 {
     public $id = 'preview-with-variables-form';
+
+    public $_Title = 'cms::cms.preview-with-data';
 
     protected $prefixGroup = "";
 
     public function created()
     {
-        $this->model(PageModel::find($this->prop('page_id')) ?? PageModel::make());
+        $this->model(PageModel::findOrFail($this->modelKey()));
     }
 
-    public function render()
+    public function headerButtons()
     {
-        return _Rows(
-            _FlexBetween(
-                _Html('cms::cms.preview-with-data')->class('text-base font-semibold text-gray-800'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { document.querySelector(".vlPreviewVarsModal").remove() }'),
-            )->class('mb-4'),
+        return _SubmitButton('cms::cms.generate-preview')
+            ->selfPost('generatePreview')
+            ->withAllFormValues()
+            ->inNewTab();
+    }
 
+    public function body()
+    {
+        return [
             _Html('cms::cms.preview-with-data-desc')->class('text-sm text-gray-500 mb-4'),
 
             $this->variableInputs(),
-
-            _FlexEnd(
-                _Link('cms::cms.cancel')
-                    ->class('vlPreviewVarsCancelBtn')
-                    ->run('() => { document.querySelector(".vlPreviewVarsModal").remove() }'),
-                _Button('cms::cms.generate-preview')
-                    ->class('vlPreviewVarsGenerateBtn')
-                    ->selfPost('generatePreview')
-                    ->withAllFormValues()
-                    ->inNewTab(),
-            )->class('gap-3 mt-4'),
-
-            _Html($this->modalStyles()),
-        )->class('vlPreviewVarsFormInner');
+        ];
     }
 
     protected function variableInputs()
@@ -59,7 +49,7 @@ class PreviewWithVariablesForm extends Form
                 _Input($label)
                     ->name('var_' . $key, false)
                     ->value($this->getSampleValue($key))
-                    ->class('mb-3 vlCompactInput')
+                    ->class('mb-3')
             ),
         );
     }
@@ -124,57 +114,5 @@ class PreviewWithVariablesForm extends Form
         $fullHtml = $sendTestForm->buildEmailHtml($htmlContent, $bgColor, $contentBg, $textColor, $linkColor, $fontSize, $maxWidth, $fontFamily);
 
         return response($fullHtml)->header('Content-Type', 'text/html');
-    }
-
-    protected function modalStyles()
-    {
-        return '<style>
-            .vlPreviewVarsModal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: vlModalFadeIn 0.15s ease;
-            }
-            .vlPreviewVarsFormInner {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 24px;
-                width: 440px;
-                max-width: 90vw;
-                max-height: 80vh;
-                overflow-y: auto;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            }
-            .vlPreviewVarsCancelBtn {
-                padding: 7px 16px;
-                font-size: 13px;
-                font-weight: 500;
-                color: #374151;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-            }
-            .vlPreviewVarsCancelBtn:hover {
-                background: #f9fafb;
-            }
-            .vlPreviewVarsGenerateBtn {
-                padding: 7px 20px !important;
-                font-size: 13px !important;
-                font-weight: 600 !important;
-                background: #2563eb !important;
-                color: #ffffff !important;
-                border-radius: 8px !important;
-                border: none !important;
-            }
-            .vlPreviewVarsGenerateBtn:hover {
-                background: #1d4ed8 !important;
-            }
-        </style>';
     }
 }

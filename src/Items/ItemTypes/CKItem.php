@@ -49,7 +49,7 @@ class CKItem extends PageItemType
     {
         $this->styles->removeProperties(['text-align']);
 
-        $text = replaceAllMentionsCms($this->content, $this->variables);
+        $text = replaceAllMentions($this->content, $this->variables);
 
         return '<div style="' . $this->styles . '">' . $text . '</div>';
     }

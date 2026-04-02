@@ -4,54 +4,45 @@ namespace Anonimatrix\PageEditor\Components\Cms;
 
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Illuminate\Support\Facades\Mail;
-use Kompo\Form;
+use Condoedge\Utils\Kompo\Common\Modal;
 
-class SendTestEmailForm extends Form
+class SendTestEmailForm extends Modal
 {
     public $id = 'send-test-email-form';
+
+    public $_Title = 'cms::cms.send-test-email';
 
     protected $prefixGroup = "";
 
     public function created()
     {
-        $this->model(PageModel::find($this->prop('page_id')) ?? PageModel::make());
+        $this->model(PageModel::findOrFail($this->modelKey()));
     }
 
-    public function render()
+    public function headerButtons()
     {
-        return _Rows(
-            _FlexBetween(
-                _Html('cms::cms.send-test-email')->class('text-base font-semibold text-gray-800'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { document.querySelector(".vlTestEmailModal").remove() }'),
-            )->class('mb-4'),
+        return _SubmitButton('cms::cms.send-test')
+            ->selfPost('sendTestEmail')
+            ->withAllFormValues()
+            ->alert('cms::cms.test-email-sent')
+            ->closeModal();
+    }
 
+    public function body()
+    {
+        return [
             _Html('cms::cms.send-test-email-desc')->class('text-sm text-gray-500 mb-4'),
 
             _Input('cms::cms.recipient-email')
-                ->name('test_email')
+                ->name('test_email', false)
                 ->type('email')
                 ->value(auth()->user()?->email)
                 ->class('mb-4'),
 
             _Input('cms::cms.email-subject')
-                ->name('test_subject')
-                ->value($this->model->title ?: __('cms::cms.untitled-email'))
-                ->class('mb-4'),
-
-            _FlexEnd(
-                _Link('cms::cms.cancel')
-                    ->class('vlTestEmailCancelBtn')
-                    ->run('() => { document.querySelector(".vlTestEmailModal").remove() }'),
-                _Button('cms::cms.send-test')
-                    ->class('vlTestEmailSendBtn')
-                    ->selfPost('sendTestEmail')
-                    ->withAllFormValues()
-                    ->onSuccess(fn($e) => $e->run('() => { document.querySelector(".vlTestEmailModal").remove(); vlEmailEditor.showToast("'.__('cms::cms.test-email-sent').'") }')),
-            )->class('gap-3'),
-
-            _Html($this->modalStyles()),
-        )->class('vlTestEmailFormInner');
+                ->name('test_subject', false)
+                ->value($this->model->title ?: __('cms::cms.untitled-email')),
+        ];
     }
 
     public function sendTestEmail()
@@ -149,60 +140,5 @@ class SendTestEmailForm extends Form
         }, $html);
 
         return ['html' => $html, 'css' => trim($css)];
-    }
-
-    protected function modalStyles()
-    {
-        return '<style>
-            .vlTestEmailModal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: vlModalFadeIn 0.15s ease;
-            }
-            @keyframes vlModalFadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            .vlTestEmailFormInner {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 24px;
-                width: 440px;
-                max-width: 90vw;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            }
-            .vlTestEmailCancelBtn {
-                padding: 7px 16px;
-                font-size: 13px;
-                font-weight: 500;
-                color: #374151;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                transition: all 0.15s;
-            }
-            .vlTestEmailCancelBtn:hover {
-                background: #f9fafb;
-            }
-            .vlTestEmailSendBtn {
-                padding: 7px 20px !important;
-                font-size: 13px !important;
-                font-weight: 600 !important;
-                background: #2563eb !important;
-                color: #ffffff !important;
-                border-radius: 8px !important;
-                border: none !important;
-            }
-            .vlTestEmailSendBtn:hover {
-                background: #1d4ed8 !important;
-            }
-        </style>';
     }
 }

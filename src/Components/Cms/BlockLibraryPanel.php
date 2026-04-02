@@ -49,7 +49,7 @@ class BlockLibraryPanel extends Form
                 _Tab(
                     $this->designTab(),
                 )->label('cms::cms.design')->class('vlBlockLibTabContent'),
-            )->class('vlBlockLibTabs'),
+            )->class('vlBlockLibTabs px-6 pt-2'),
         )->class('vlBlockLibPanel');
     }
 
@@ -82,7 +82,7 @@ class BlockLibraryPanel extends Form
         return _Rows(
             $search,
             ...$elements,
-        )->class('vlBlockList');
+        );
     }
 
     protected function categorizeTypes($types)

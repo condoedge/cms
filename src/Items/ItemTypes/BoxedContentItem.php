@@ -77,7 +77,7 @@ class BoxedContentItem extends PageItemType
 
     public function toHtml(): string
     {
-        $text = replaceAllMentionsCms($this->content, $this->variables);
+        $text = replaceAllMentions($this->content, $this->variables);
 
         return '<div style="' . $this->styles . '" class="'. $this->classes . ' ckEditor">' . $text . '</div>';
     }

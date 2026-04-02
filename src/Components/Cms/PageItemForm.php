@@ -146,9 +146,8 @@ class PageItemForm extends Form
 
         return _Rows(
             _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
-                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)
-                    && $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.showToast("'.__('cms::cms.saved-successfully').'") }')
-                ),
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel))
+                ->alert('cms::cms.saved-successfully'),
             $this->model->id ? _DeleteButton('cms::cms.delete-block')
                 ->byKey($this->model)
                 ->class('vlPropertyDeleteBtn w-full mt-2')
@@ -158,62 +157,7 @@ class PageItemForm extends Form
 
     protected function propertyPanelStyles()
     {
-        return '<style>
-            .vlPropertyPanel {
-                padding: 0;
-            }
-            .vlPropertyHeader {
-                padding: 16px 32px;
-                border-bottom: 1px solid #e5e7eb;
-                position: sticky;
-                top: 0;
-                background: #ffffff;
-                z-index: 5;
-            }
-            .vlPropertySection {
-                border-bottom: 1px solid #f3f4f6;
-            }
-            .vlPropertySectionTitle {
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                color: #6b7280;
-                padding: 14px 32px 8px;
-            }
-            .vlPropertySectionBody {
-                padding: 0 32px 16px;
-            }
-            .vlPropertyActions {
-                padding: 16px 32px;
-                position: sticky;
-                bottom: 0;
-                background: #ffffff;
-                border-top: 1px solid #e5e7eb;
-            }
-            .vlPropertySaveBtn {
-                background: #2563eb !important;
-                color: #ffffff !important;
-                border-radius: 8px !important;
-                font-weight: 600 !important;
-                font-size: 13px !important;
-                padding: 14px !important;
-            }
-            .vlPropertySaveBtn:hover {
-                background: #1d4ed8 !important;
-            }
-            .vlPropertyDeleteBtn {
-                background: transparent !important;
-                color: #dc2626 !important;
-                border: 1px solid #fecaca !important;
-                border-radius: 8px !important;
-                font-size: 13px !important;
-                padding: 14px !important;
-            }
-            .vlPropertyDeleteBtn:hover {
-                background: #fef2f2 !important;
-            }
-        </style>';
+        return '';
     }
 
     public function rules()
