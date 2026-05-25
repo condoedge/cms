@@ -29,13 +29,28 @@ class EditorTopBar extends Form
     {
         return _Flex(
             $this->backButton(),
+            $this->titleInput(),
         )->class('items-center gap-3 flex-1 min-w-0');
+    }
+
+    protected function titleInput()
+    {
+        if (!$this->model->id) return null;
+
+        return _Input()
+            ->name('title_display', false)
+            ->value($this->model->title ?: __('cms::cms.untitled-email'))
+            ->placeholder('cms::cms.untitled-email')
+            ->class('vlEditorTopBarTitle !mb-0')
+            ->attr(['aria-label' => __('cms::cms.email-title')]);
     }
 
     protected function backButton()
     {
         return _Link()->icon('arrow-left')
-            ->class('vlEditorTopBarBack');
+            ->class('vlEditorTopBarBack')
+            ->attr(['aria-label' => __('cms::cms.back')])
+            ->run('() => { window.history.back() }');
     }
 
     protected function centerSection()

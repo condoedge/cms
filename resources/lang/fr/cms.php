@@ -134,6 +134,8 @@ return [
     "design" => "Design",
     "preview" => "Aperçu",
     "untitled-email" => "Courriel sans titre",
+    "back" => "Retour",
+    "email-title" => "Titre du courriel",
     "saved-successfully" => "Sauvegardé avec succès",
     "select-block-to-edit" => "Cliquez sur un bloc pour le modifier",
     "click-to-edit" => "Cliquez pour modifier",

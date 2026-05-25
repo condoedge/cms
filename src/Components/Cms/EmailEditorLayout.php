@@ -253,9 +253,16 @@ class EmailEditorLayout extends Form
         refreshPreview: function() {
             var wrapper = document.querySelector(".vlQueryWrapperPagePreview");
             if (!wrapper) { window.location.reload(); return; }
-            var vm = wrapper.__vue__;
-            while (vm && !vm.browseQuery) { vm = vm.\$parent; }
-            if (vm && vm.browseQuery) { vm.browseQuery(); }
+            var el = wrapper;
+            var vm = null;
+            for (var i = 0; i < 8 && el; i++) {
+                if (el.__vue__ && typeof el.__vue__.browseQuery === "function") {
+                    vm = el.__vue__;
+                    break;
+                }
+                el = el.parentElement;
+            }
+            if (vm) { vm.browseQuery(); }
             else { window.location.reload(); }
         },
 
@@ -290,8 +297,10 @@ class EmailEditorLayout extends Form
         },
 
         toggleMobilePanel: function(panel) {
-            var leftPanel = document.querySelector(".vlEditorLeftPanel");
-            if (panel === "blocks") { leftPanel.classList.toggle("vlPanelMobileOpen"); }
+            if (panel === "blocks") {
+                var leftPanel = document.querySelector(".vlEditorLeftPanel");
+                if (leftPanel) leftPanel.classList.toggle("vlPanelMobileOpen");
+            }
             else if (panel === "properties") { this.openDrawer(); }
         }
     };

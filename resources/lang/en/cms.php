@@ -134,6 +134,8 @@ return [
     "design" => "Design",
     "preview" => "Preview",
     "untitled-email" => "Untitled email",
+    "back" => "Back",
+    "email-title" => "Email title",
     "saved-successfully" => "Saved successfully",
     "select-block-to-edit" => "Click a block on the canvas to edit it",
     "click-to-edit" => "Click to edit",
