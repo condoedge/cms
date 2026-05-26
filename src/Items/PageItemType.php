@@ -126,47 +126,35 @@ abstract class PageItemType
 
     final protected function toElementWithStyles($withEditor = null)
     {
-        if(static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
+        if (static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
 
         $uniqueId = uniqid('page-item-type-');
 
         return _Rows(
-            _Html($this->responsiveStyles($uniqueId)), // TODO WE MUST ADD A BETTER WAY TO ADD THIS. It's just a quick fix to add margin differents into desktop and mobile
+            _Html($this->responsiveStyles($uniqueId)),
             $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes)->id($uniqueId),
         )->class('w-full');
     }
 
+    // Mobile-only media query; visibility rules are intentionally omitted from the editor preview.
     protected function responsiveStyles($uniqueId)
     {
-        $mobileStringStyles = $this->styles->getMobileStringStyles();
-
-        return "
-            <style>
-                @media (max-width: 768px) {
-                    #$uniqueId {
-                        $mobileStringStyles
-                    }
-                }
-            </style>
-        ";
+        return $this->renderItemStyles($uniqueId, includeVisibility: false);
     }
 
     protected function visibilityStyles($uniqueId)
     {
-        $hideOnMobile = $this->styles->getRawProperty('hide-on-mobile');
-        $hideOnDesktop = $this->styles->getRawProperty('hide-on-desktop');
+        return $this->renderItemStyles($uniqueId, includeMobile: false);
+    }
 
-        if (!$hideOnMobile && !$hideOnDesktop) return '';
-
-        $css = '';
-        if ($hideOnMobile) {
-            $css .= "@media (max-width: 600px) { #$uniqueId { display: none !important; mso-hide: all !important; } }";
-        }
-        if ($hideOnDesktop) {
-            $css .= "@media (min-width: 601px) { #$uniqueId { display: none !important; mso-hide: all !important; } }";
-        }
-
-        return "<style>$css</style>";
+    protected function renderItemStyles(string $uniqueId, bool $includeMobile = true, bool $includeVisibility = true): string
+    {
+        return view('cms::partials.item-styles', [
+            'uniqueId' => $uniqueId,
+            'mobileStyles' => $includeMobile ? $this->styles->getMobileStringStyles() : '',
+            'hideOnMobile' => $includeVisibility && $this->styles->getRawProperty('hide-on-mobile'),
+            'hideOnDesktop' => $includeVisibility && $this->styles->getRawProperty('hide-on-desktop'),
+        ])->render();
     }
 
     final public function toElementWrap($withEditor = null)

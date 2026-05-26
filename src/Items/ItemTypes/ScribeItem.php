@@ -26,13 +26,16 @@ class ScribeItem extends PageItemType
     {
         $html = $this->toElementHtml();
 
-        if ($withEditor) {
-            return _Html(
-                '<div style="position: absolute; height: 100%; width: 92%; min-height: 740px;"></div>' . $html,
-            );
+        if (!$withEditor) {
+            return _Html($html);
         }
 
-        return _Html($html);
+        // In editor mode, overlay a transparent div so clicks land on the wrapper (selecting the
+        // block) instead of being captured by the Scribe iframe.
+        return _Rows(
+            _Div()->class('absolute w-[92%] h-full')->style('min-height:740px;'),
+            _Html($html),
+        );
     }
 
     protected function toElementHtml(): string
