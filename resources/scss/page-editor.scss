@@ -635,6 +635,11 @@
     color: #6b7280 !important;
     margin-bottom: 2px !important;
 }
+/* Neutralize .whiteField on the drawer's white background — fields keep the
+   default gray background so their edges remain visible. */
+.vlEditorRightPanel .whiteField .vlInputWrapper {
+    background-color: var(--form-control-bg);
+}
 
 /* Style Labels */
 .vlStyleLabel {

@@ -192,11 +192,7 @@ return [
     "template-block-count" => "{1} :count block|[2,*] :count blocks",
     "search-blocks" => "Search blocks...",
 
-    // Sprint 5 - Undo/Redo, Drag, Accessibility, Variables
-    "undo" => "Undo",
-    "redo" => "Redo",
-    "nothing-to-undo" => "Nothing to undo",
-    "nothing-to-redo" => "Nothing to redo",
+    // Sprint 5 - Drag, Accessibility, Variables
     "drop-here" => "Drop block here",
     "skip-to-canvas" => "Skip to canvas",
     "email-editor" => "Email editor",

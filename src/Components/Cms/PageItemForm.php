@@ -11,7 +11,6 @@ use Kompo\Form;
 
 class PageItemForm extends Form
 {
-    protected $refresh = true;
     protected $pageId;
     protected $updateOrder;
     public const ITEM_FORM_PANEL_ID = 'itemFormPanel';
@@ -134,9 +133,6 @@ class PageItemForm extends Form
 
             // Action buttons
             $this->saveButtons(),
-
-            // Styles for property panel
-            _Html($this->propertyPanelStyles()),
         )->class('vlPropertyPanel');
     }
 
@@ -153,11 +149,6 @@ class PageItemForm extends Form
                 ->class('vlPropertyDeleteBtn w-full mt-2')
                 ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)) : null,
         )->class('vlPropertyActions');
-    }
-
-    protected function propertyPanelStyles()
-    {
-        return '';
     }
 
     public function rules()

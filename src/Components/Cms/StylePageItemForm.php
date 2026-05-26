@@ -48,7 +48,6 @@ class StylePageItemForm extends Form
                 $this->responsiveSection(),
                 $this->advancedSection(),
             ),
-            $this->emailEditorStyleOverrides(),
         );
     }
 
@@ -207,11 +206,6 @@ class StylePageItemForm extends Form
                     ->class('vlClearStylesBtn'),
             )->class('hidden'),
         )->class('mb-3');
-    }
-
-    protected function emailEditorStyleOverrides()
-    {
-        return null;
     }
 
     protected function extraInputs()

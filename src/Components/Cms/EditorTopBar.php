@@ -56,25 +56,8 @@ class EditorTopBar extends Form
     protected function centerSection()
     {
         return _Flex(
-            $this->undoRedoButtons(),
             $this->deviceToggles(),
         )->class('items-center gap-3');
-    }
-
-    protected function undoRedoButtons()
-    {
-        if (!$this->model->id) return null;
-
-        return _Flex(
-            _Link()->icon(_Sax('undo', 18))
-                ->class('vlUndoRedoBtn vlUndoRedoBtnDisabled')
-                ->attr(['data-undo-btn' => true, 'title' => __('cms::cms.nothing-to-undo'), 'aria-label' => __('cms::cms.undo')])
-                ->run('() => { vlEmailEditor.undo() }'),
-            _Link()->icon(_Sax('redo', 18))
-                ->class('vlUndoRedoBtn vlUndoRedoBtnDisabled')
-                ->attr(['data-redo-btn' => true, 'title' => __('cms::cms.nothing-to-redo'), 'aria-label' => __('cms::cms.redo')])
-                ->run('() => { vlEmailEditor.redo() }'),
-        )->class('vlUndoRedoGroup');
     }
 
     protected function deviceToggles()

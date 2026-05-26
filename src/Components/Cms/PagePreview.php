@@ -25,15 +25,11 @@ class PagePreview extends Query
 
     protected $prefixGroup = "";
 
-    protected $useEmailEditor = true;
-
     public function created()
     {
         $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : PageModel::make();
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
-
-        $this->useEmailEditor = $this->isEmailEditorContext();
 
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
         $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
@@ -41,20 +37,10 @@ class PagePreview extends Query
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
+            $contentMaxWidth = $this->page->getContentMaxWidth();
             $this->onLoad(fn($e) => $e->run('() => {$(".external-container").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
-        }
-
-        $contentMaxWidth = $this->page->getContentMaxWidth();
-        if ($this->withEditor && !$this->useEmailEditor) {
-            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "width": "100%"})}'));
-        } else if (!$this->withEditor) {
             $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
         }
-    }
-
-    protected function isEmailEditorContext()
-    {
-        return $this->panelId === EmailEditorLayout::PROPERTY_PANEL;
     }
 
     public function top()
@@ -63,15 +49,6 @@ class PagePreview extends Query
             return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
         }
 
-        if ($this->useEmailEditor) {
-            return $this->emailEditorTop();
-        }
-
-        return $this->legacyTop();
-    }
-
-    protected function emailEditorTop()
-    {
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 
         return _Rows(
@@ -80,31 +57,9 @@ class PagePreview extends Query
         );
     }
 
-    protected function legacyTop()
-    {
-        return _Rows(
-            _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
-            _FlexBetween(
-                !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->icon('eye')->outlined()->class('p-2 flex items-center gap-1 text-sm')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
-                _Flex(
-                    _Link()->icon('device-mobile')->balloon('cms::cms.preview-mobile', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "375px" ? "100%" : "375px"; el.style.margin = "0 auto"; }'),
-                    _Link()->icon('device-tablet')->balloon('cms::cms.preview-tablet', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "768px" ? "100%" : "768px"; el.style.margin = "0 auto"; }'),
-                    _Link()->icon('desktop-computer')->balloon('cms::cms.preview-desktop', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = "100%"; }'),
-                )->class('gap-1'),
-            )->class('mb-2'),
-            _Button('cms::cms.add-zone')->icon('plus')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
-        );
-    }
-
     public function bottom()
     {
-        if (!$this->withEditor || !$this->useEmailEditor) return null;
+        if (!$this->withEditor) return null;
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 

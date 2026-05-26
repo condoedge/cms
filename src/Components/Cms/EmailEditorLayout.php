@@ -124,10 +124,6 @@ class EmailEditorLayout extends Form
 
     protected function editorJsCode()
     {
-        $undoLabel = __('cms::cms.undo');
-        $redoLabel = __('cms::cms.redo');
-        $nothingToUndo = __('cms::cms.nothing-to-undo');
-        $nothingToRedo = __('cms::cms.nothing-to-redo');
         $propertyPanel = static::PROPERTY_PANEL;
 
         return <<<JS
@@ -135,10 +131,6 @@ class EmailEditorLayout extends Form
     if (window.vlEmailEditor) return;
 
     window.vlEmailEditor = {
-        _actionsMenuOpen: false,
-        _undoStack: [],
-        _redoStack: [],
-
         setDevice: function(device) {
             var frame = document.querySelector(".vlCanvasFrame");
             var toggles = document.querySelectorAll(".vlDeviceToggle");
@@ -174,19 +166,6 @@ class EmailEditorLayout extends Form
             setTimeout(function() { if (toast.parentNode) toast.remove(); }, 2500);
         },
 
-        toggleActionsMenu: function(triggerEl) {
-            var existing = document.querySelector(".vlActionsMenu");
-            if (existing) { existing.remove(); this._actionsMenuOpen = false; return; }
-            if (triggerEl) triggerEl.click();
-            this._actionsMenuOpen = true;
-        },
-
-        closeActionsMenu: function() {
-            var existing = document.querySelector(".vlActionsMenu");
-            if (existing) existing.remove();
-            this._actionsMenuOpen = false;
-        },
-
         filterBlocks: function(query) {
             var cards = document.querySelectorAll(".vlBlockCard:not(.vlBlockCardCopy)");
             var categories = document.querySelectorAll(".vlBlockCategoryLabel");
@@ -203,51 +182,6 @@ class EmailEditorLayout extends Form
                 if (catLabel) catLabel.style.display = visibleCards.length > 0 ? "" : "none";
                 grid.style.display = visibleCards.length > 0 ? "" : "none";
             });
-        },
-
-        snapshotBlockOrder: function() {
-            var blocks = document.querySelectorAll(".vlEmailBlock[data-block-id]");
-            var ids = [];
-            blocks.forEach(function(b) { ids.push(b.getAttribute("data-block-id")); });
-            return ids;
-        },
-
-        pushUndo: function(action) {
-            this._undoStack.push(action);
-            if (this._undoStack.length > 30) this._undoStack.shift();
-            this._redoStack = [];
-            this.updateUndoRedoUI();
-        },
-
-        undo: function() {
-            if (this._undoStack.length === 0) return;
-            var action = this._undoStack.pop();
-            this._redoStack.push(action);
-            this.updateUndoRedoUI();
-            this.showToast("{$undoLabel}: " + action.label);
-            if (action.undoFn) action.undoFn();
-        },
-
-        redo: function() {
-            if (this._redoStack.length === 0) return;
-            var action = this._redoStack.pop();
-            this._undoStack.push(action);
-            this.updateUndoRedoUI();
-            this.showToast("{$redoLabel}: " + action.label);
-            if (action.redoFn) action.redoFn();
-        },
-
-        updateUndoRedoUI: function() {
-            var undoBtn = document.querySelector("[data-undo-btn]");
-            var redoBtn = document.querySelector("[data-redo-btn]");
-            if (undoBtn) {
-                undoBtn.classList.toggle("vlUndoRedoBtnDisabled", this._undoStack.length === 0);
-                undoBtn.title = this._undoStack.length > 0 ? ("{$undoLabel} " + this._undoStack[this._undoStack.length-1].label) : "{$nothingToUndo}";
-            }
-            if (redoBtn) {
-                redoBtn.classList.toggle("vlUndoRedoBtnDisabled", this._redoStack.length === 0);
-                redoBtn.title = this._redoStack.length > 0 ? ("{$redoLabel} " + this._redoStack[this._redoStack.length-1].label) : "{$nothingToRedo}";
-            }
         },
 
         refreshPreview: function() {
@@ -305,12 +239,17 @@ class EmailEditorLayout extends Form
         }
     };
 
-    // Close actions menu on outside click
-    document.addEventListener("click", function(e) {
-        if (vlEmailEditor._actionsMenuOpen && !e.target.closest(".vlActionsMenu") && !e.target.closest("[data-actions-trigger]")) {
-            vlEmailEditor.closeActionsMenu();
-        }
-    });
+    // Portal the drawer + backdrop into <body> so position:fixed escapes any
+    // ancestor with a transform (Kompo tabs, animations, etc.) that would
+    // otherwise turn it into the new containing block.
+    function vlPortalDrawer() {
+        var drawer = document.querySelector(".vlEditorRightPanel");
+        var backdrop = document.querySelector(".vlDrawerBackdrop");
+        if (!drawer || !backdrop) { setTimeout(vlPortalDrawer, 200); return; }
+        if (drawer.parentElement !== document.body) document.body.appendChild(drawer);
+        if (backdrop.parentElement !== document.body) document.body.appendChild(backdrop);
+    }
+    vlPortalDrawer();
 
     // Open drawer on block click (capture phase), but not on action buttons
     document.addEventListener("click", function(e) {
@@ -330,13 +269,8 @@ class EmailEditorLayout extends Form
             if (saveBtn) saveBtn.click();
             return;
         }
-        if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) { e.preventDefault(); vlEmailEditor.undo(); return; }
-        if ((e.ctrlKey || e.metaKey) && e.key === "z" && e.shiftKey) { e.preventDefault(); vlEmailEditor.redo(); return; }
         if (isInput) return;
         if (e.key === "Escape") {
-            var modal = document.querySelector(".vlTestEmailModal, .vlSaveTemplateModal, .vlTemplateModal");
-            if (modal) { modal.remove(); return; }
-            vlEmailEditor.closeActionsMenu();
             vlEmailEditor.closeDrawer();
             return;
         }
@@ -358,8 +292,6 @@ class EmailEditorLayout extends Form
             }
         }
     });
-
-    setTimeout(function() { vlEmailEditor.updateUndoRedoUI(); }, 100);
 
     // Auto-open drawer when property panel gets content
     function vlInitDrawerObserver() {

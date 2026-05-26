@@ -274,7 +274,7 @@ abstract class PageItemType
                 ->balloon('cms::cms.edit-block', 'down')
                 ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
                 ->inPanel($editPanelId)
-                ->run('() => { if (window.vlEmailEditor) vlEmailEditor.openDrawer() }'),
+                ->onSuccess(fn($e) => $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.openDrawer() }')),
             _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
                 ->byKey($this->pageItem)->browse()
                 ->balloon('cms::cms.delete-block', 'down'),
