@@ -65,12 +65,12 @@ class BlockLibraryPanel extends Form
             if ($category['items']->isEmpty()) continue;
 
             $elements->push(
-                _Html(__($category['label']))->class('vlBlockCategoryLabel')
+                _Html($category['label'])->class('vlBlockCategoryLabel')
             );
 
             $elements->push(
                 _Rows(
-                    ...$category['items']->map(fn($typeClass) => $this->blockCard($typeClass))
+                    $category['items']->map(fn($typeClass) => $this->blockCard($typeClass))
                 )->class('vlBlockGrid')
             );
         }
@@ -79,7 +79,9 @@ class BlockLibraryPanel extends Form
 
         return _Rows(
             $this->searchInput(),
-            ...$elements,
+            _Rows(
+                $elements,
+            ),
         );
     }
 
@@ -134,7 +136,7 @@ class BlockLibraryPanel extends Form
             'block_type' => $typeClass::ITEM_NAME,
         ]);
 
-        return _Link(__($typeClass::ITEM_TITLE))
+        return _Link($typeClass::ITEM_TITLE)
             ->icon(_Sax($icon, 24))
             ->class('vlBlockCard')
             ->run('() => {

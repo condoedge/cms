@@ -83,6 +83,10 @@
             var backdrop = document.querySelector('.vlDrawerBackdrop');
             if (panel) panel.classList.remove('vlDrawerOpen');
             if (backdrop) backdrop.classList.remove('vlDrawerBackdropVisible');
+            this.clearSelection();
+        },
+
+        clearSelection: function () {
             document.querySelectorAll('.vlEmailBlock').forEach(function (b) {
                 b.classList.remove('vlEmailBlockSelected');
             });

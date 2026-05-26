@@ -893,3 +893,8 @@
         flex-direction: column !important;
     }
 }
+
+.vlQueryWrapperPagePreview {
+    overflow-y: unset !important;
+    overflow-x: unset !important;
+}

@@ -231,37 +231,32 @@ class ImgItem extends PageItemType
 
     public function toHtml(): string
     {
-        $imageUrl = $this->content?->image;
-        if (!$imageUrl) {
+        if (!$this->content?->image) {
             return '';
         }
 
         $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
         $altText = htmlspecialchars($this->content->title ?: '', ENT_QUOTES);
-
-        $styles = $this->imgStylesForEmail();
+        $imgStyles = $this->imgStylesForEmail();
         $align = $this->styles->getRawProperty('align-items') ?? 'center';
 
         $this->styles->removeProperties(['height', 'width', 'max-width', 'min-height', 'background-repeat', 'background-size', 'border-radius', 'object-fit', 'aspect-ratio']);
         $this->styles->replaceProperty('width', '100% !important');
         $this->styles->replaceProperty('display', null);
 
-        $widthAttr = $this->styles->width_raw ? (int) $this->styles->width_raw : '100%';
-        $heightAttr = ($this->styles->height_auto_raw ?? true) ? 'auto' : (int) $this->styles->height_raw;
-
-        $imgTag = "<img src=\"{$imageUrl}\" alt=\"{$altText}\" style=\"{$styles} display:block; border:0; outline:none; text-decoration:none;\" width=\"{$widthAttr}\" height=\"{$heightAttr}\" />";
-
         $linkUrl = $this->pageItem->content;
-        if ($linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL)) {
-            $linkUrl = htmlspecialchars($linkUrl, ENT_QUOTES);
-            $imgTag = "<a href=\"{$linkUrl}\" target=\"_blank\" style=\"text-decoration:none; outline:none; border:none;\">{$imgTag}</a>";
-        }
+        $hasValidLink = $linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL);
 
-        return $this->alignElement(
-            $imgTag,
-            $align,
-            $this->styles,
-        );
+        $imgTag = view('cms::items.image-email', [
+            'imageUrl' => $imageUrl,
+            'altText' => $altText,
+            'imgStyles' => $imgStyles,
+            'widthAttr' => $this->styles->width_raw ? (int) $this->styles->width_raw : '100%',
+            'heightAttr' => ($this->styles->height_auto_raw ?? true) ? 'auto' : (int) $this->styles->height_raw,
+            'linkUrl' => $hasValidLink ? htmlspecialchars($linkUrl, ENT_QUOTES) : null,
+        ])->render();
+
+        return $this->alignElement($imgTag, $align, $this->styles);
     }
 
     public function rules()

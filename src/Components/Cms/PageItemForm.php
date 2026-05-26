@@ -107,10 +107,8 @@ class PageItemForm extends Form
                         _Html($title)->class('font-semibold text-sm'),
                     )->class('items-center gap-2'),
                     $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
-                        ->run('() => {
-                            document.querySelectorAll(".vlEmailBlock").forEach(b => b.classList.remove("vlEmailBlockSelected"));
-                            document.getElementById("'.EmailEditorLayout::PROPERTY_PANEL.'").innerHTML = "<div class=\"flex flex-col items-center justify-center py-20\"><div class=\"text-gray-300 mb-4\"><svg width=\"48\" height=\"48\"><use href=\"#mouse-circle\"/></svg></div><div class=\"text-sm text-gray-400 text-center\">'.__('cms::cms.select-block-to-edit').'</div></div>";
-                        }') : null,
+                        ->selfGet('getEmptyPropertyState')->inPanel(EmailEditorLayout::PROPERTY_PANEL)
+                        ->onSuccess(fn ($e) => $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.clearSelection() }')) : null,
                 )->class('mb-3'),
                 _Hidden()->name('block_type')->value($this->model->block_type),
                 _Input('cms::cms.title-optional')->name('name_pi'),
@@ -237,6 +235,14 @@ class PageItemForm extends Form
         return $blockType && PageItemModel::blockTypes()->has($blockType);
     }
 
+    public function getEmptyPropertyState()
+    {
+        return _Rows(
+            _Html()->icon(_Sax('mouse-circle', 48))->class('text-gray-300 mb-4'),
+            _Html('cms::cms.select-block-to-edit')->class('text-sm text-gray-400 text-center'),
+        )->class('flex flex-col items-center justify-center py-20');
+    }
+
     public function getCopyBlockPanel()
     {
         if (request('block_type') !== '__copy__') {
@@ -293,28 +299,6 @@ class PageItemForm extends Form
         $sourceItem = PageItemModel::findOrFail(request('item_id'));
         $page = PageModel::findOrFail($this->pageId);
 
-        $newItem = $sourceItem->replicate();
-        $newItem->page_id = $this->pageId;
-        $newItem->order = $page->pageItems()->count();
-        $newItem->page_item_id = null;
-        $newItem->group_page_item_id = null;
-        $newItem->save(['skip_validation' => true]);
-
-        if ($sourceItem->styles) {
-            $newStyles = $sourceItem->styles->replicate();
-            $newItem->styles()->save($newStyles);
-        }
-
-        $sourceItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
-            $newGroupItem = $groupItem->replicate();
-            $newGroupItem->group_page_item_id = $newItem->id;
-            $newGroupItem->page_id = $newItem->page_id;
-            $newGroupItem->save(['skip_validation' => true]);
-
-            if ($groupItem->styles) {
-                $newGroupStyles = $groupItem->styles->replicate();
-                $newGroupItem->styles()->save($newGroupStyles);
-            }
-        });
+        app(PageBlockService::class)->copyToPage($sourceItem, $page);
     }
 }

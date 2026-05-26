@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageTemplateService;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Condoedge\Utils\Kompo\Common\Modal;
@@ -95,52 +96,12 @@ class TemplateGallery extends Modal
 
     public function createFromTemplate()
     {
+        if (!$this->targetPageId) return;
+
         $template = PageModel::findOrFail(request('template_id'));
-        $pageId = $this->targetPageId;
+        $targetPage = PageModel::findOrFail($this->targetPageId);
 
-        if (!$pageId) return;
-
-        $targetPage = PageModel::findOrFail($pageId);
-
-        // Clear existing items on the target page
-        $targetPage->pageItems()->get()->each->delete();
-
-        // Copy all items from template
-        $template->orderedMainPageItems()->get()->each(function ($item) use ($targetPage) {
-            $newItem = $item->replicate();
-            $newItem->page_id = $targetPage->id;
-            $newItem->save(['skip_validation' => true]);
-
-            if ($item->styles) {
-                $newStyles = $item->styles->replicate();
-                $newItem->styles()->save($newStyles);
-            }
-
-            $item->groupPageItems()->each(function ($groupItem) use ($newItem) {
-                $newGroupItem = $groupItem->replicate();
-                $newGroupItem->group_page_item_id = $newItem->id;
-                $newGroupItem->page_id = $newItem->page_id;
-                $newGroupItem->save(['skip_validation' => true]);
-
-                if ($groupItem->styles) {
-                    $newGroupStyles = $groupItem->styles->replicate();
-                    $newGroupItem->styles()->save($newGroupStyles);
-                }
-            });
-        });
-
-        // Copy page styles
-        if ($template->styles) {
-            $existingStyles = $targetPage->styles;
-            if ($existingStyles) {
-                $existingStyles->content = $template->styles->content;
-                $existingStyles->save();
-            } else {
-                $newStyles = $template->styles->replicate();
-                $newStyles->page_id = $targetPage->id;
-                $newStyles->save();
-            }
-        }
+        app(PageTemplateService::class)->applyTemplateToPage($template, $targetPage);
     }
 
     public function deleteTemplate()

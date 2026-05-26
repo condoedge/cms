@@ -94,7 +94,7 @@ class EmailEditorLayout extends Form
                     ]),
                 )->id(static::PREVIEW_PANEL),
             )->class('vlCanvasFrame')->style('max-width:'.(int) $maxWidth.'px;background:'.$contentBg.';'),
-        )->class('vlEditorCenterPanel')->style('background:'.$bgColor.';')
+        )->class('vlEditorCenterPanel overflow-y-auto')->style('background:'.$bgColor.'; max-height: calc(100vh - 64px);')
             ->attr(['role' => 'main', 'aria-label' => __('cms::cms.canvas')]);
     }
 

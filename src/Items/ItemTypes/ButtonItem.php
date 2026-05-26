@@ -115,38 +115,21 @@ class ButtonItem extends PageItemType
             return '';
         }
 
-        $href = htmlspecialchars($this->content->href, ENT_QUOTES);
-        $title = htmlspecialchars($this->content->title, ENT_QUOTES);
-        $bgColor = $this->styles->background_color ?: '#2563eb';
-        $textColor = $this->styles->color ?: '#ffffff';
-        $borderRadius = (int) ($this->styles->border_radius_raw ?: 5);
-        $fontSize = (int) ($this->styles->font_size_raw ?: 14);
-        $buttonWidth = $this->getButtonWidth();
         $buttonWidthPx = $this->getButtonWidthPx();
-        $arcsize = $buttonWidthPx > 0 ? round(($borderRadius / $buttonWidthPx) * 100) : 10;
-        $padding = $this->styles->padding ?: '15px 4px';
+        $borderRadius = (int) ($this->styles->border_radius_raw ?: 5);
 
-        return '<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout:fixed;">
-            <tr>
-                <td align="center" style="padding:10px 0;">
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:' . $buttonWidth . ';">
-                        <tr>
-                            <td align="center" bgcolor="' . $bgColor . '" style="background-color:' . $bgColor . '; border-radius:' . $borderRadius . 'px; text-align:center;">
-                                <!--[if mso]>
-                                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="' . $href . '" style="height:45px;v-text-anchor:middle;width:' . $buttonWidthPx . 'px;" arcsize="' . $arcsize . '%" fillcolor="' . $bgColor . '" stroke="f">
-                                    <w:anchorlock/>
-                                    <center style="color:' . $textColor . '; font-size:' . $fontSize . 'px; font-weight:600;">' . $this->content->title . '</center>
-                                </v:roundrect>
-                                <![endif]-->
-                                <!--[if !mso]><!-->
-                                <a href="' . $href . '" target="_blank" style="display:inline-block; width:100%; padding:' . $padding . '; color:' . $textColor . '; background-color:' . $bgColor . '; font-size:' . $fontSize . 'px; font-weight:600; text-align:center; text-decoration:none; border-radius:' . $borderRadius . 'px; -webkit-text-size-adjust:none; mso-hide:all;">' . $this->content->title . '</a>
-                                <!--<![endif]-->
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>';
+        return view('cms::items.button', [
+            'href' => htmlspecialchars($this->content->href, ENT_QUOTES),
+            'title' => htmlspecialchars($this->content->title, ENT_QUOTES),
+            'bgColor' => $this->styles->background_color ?: '#2563eb',
+            'textColor' => $this->styles->color ?: '#ffffff',
+            'borderRadius' => $borderRadius,
+            'fontSize' => (int) ($this->styles->font_size_raw ?: 14),
+            'padding' => $this->styles->padding ?: '15px 4px',
+            'buttonWidth' => $this->getButtonWidth(),
+            'buttonWidthPx' => $buttonWidthPx,
+            'arcsize' => $buttonWidthPx > 0 ? (int) round(($borderRadius / $buttonWidthPx) * 100) : 10,
+        ])->render();
     }
 
     /**

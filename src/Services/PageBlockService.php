@@ -44,6 +44,13 @@ class PageBlockService
         })->toArray();
     }
 
+    public function copyAllItemsToPage($sourcePage, $targetPage): void
+    {
+        $sourcePage->orderedMainPageItems()->get()->each(
+            fn ($item) => $this->copyToPage($item, $targetPage),
+        );
+    }
+
     public function copyToPage($sourceItem, $targetPage)
     {
         $newItem = $sourceItem->replicate();

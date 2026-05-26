@@ -35,39 +35,25 @@ class ScribeItem extends PageItemType
         return _Html($html);
     }
 
-    /**
-     * Render the Scribe embed for the editor preview (iframe).
-     */
     protected function toElementHtml(): string
     {
-        $height = $this->pageItem?->styles?->content?->height_raw ?: 740;
-        $uniqueId = uniqid('scribe-item-');
+        $contentId = htmlspecialchars((string) $this->content, ENT_QUOTES);
 
-        return '<div>
-            <div id="loading-'.$uniqueId.'" style="display: flex; justify-content:center; margin-top: 50px;">' . _Spinner('w-16 h-16')->__toHtml() . '</div>
-            <iframe onload="$(\'#loading-'.$uniqueId.'\').fadeOut()" src="https://scribehow.com/embed/' .
-            $this->content .
-            '?as=scrollable&skipIntro=true&removeLogo=true" width="100%" frameborder="0" height="' . $height . '"></iframe>
-        </div>';
+        return view('cms::items.scribe-preview', [
+            'uniqueId' => uniqid('scribe-item-'),
+            'height' => $this->pageItem?->styles?->content?->height_raw ?: 740,
+            'scribeEmbedUrl' => 'https://scribehow.com/embed/'.$contentId.'?as=scrollable&skipIntro=true&removeLogo=true',
+            'spinner' => _Spinner('w-16 h-16')->__toHtml(),
+        ])->render();
     }
 
-    /**
-     * Render the Scribe item for email output (link instead of iframe).
-     * iframes are not supported in email clients.
-     */
+    // iframes aren't supported in email clients — render a CTA link to the Scribe page instead.
     public function toHtml(): string
     {
-        $scribeUrl = 'https://scribehow.com/shared/' . htmlspecialchars($this->content, ENT_QUOTES);
-
-        return '<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td align="center" style="padding:20px 0;">
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td align="center" style="background-color:#2563eb; border-radius:8px; padding:14px 30px;">
-                        <a href="' . $scribeUrl . '" target="_blank" style="color:#ffffff; text-decoration:none; font-size:15px; font-weight:600;">' . __('cms::cms.view-guide') . '</a>
-                    </td></tr></table>
-                </td>
-            </tr>
-        </table>';
+        return view('cms::items.scribe-email', [
+            'scribeUrl' => 'https://scribehow.com/shared/'.htmlspecialchars($this->content, ENT_QUOTES),
+            'label' => __('cms::cms.view-guide'),
+        ])->render();
     }
 
     public function blockTypeEditorStylesElement()

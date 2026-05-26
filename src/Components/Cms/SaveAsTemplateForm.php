@@ -2,7 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
-use Anonimatrix\PageEditor\Support\Facades\Features\Features;
+use Anonimatrix\PageEditor\Services\PageTemplateService;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Condoedge\Utils\Kompo\Common\Modal;
 
@@ -42,54 +42,8 @@ class SaveAsTemplateForm extends Modal
     public function saveAsTemplate()
     {
         $name = request('template_name');
-        if (!$name) return;
+        if (!$name || !$this->model->id) return;
 
-        $source = $this->model;
-        if (!$source->id) return;
-
-        // Create the template page
-        $template = $source->replicate();
-        $template->title = $name;
-        $template->is_template = true;
-        $template->published_at = null;
-        $template->sent_at = null;
-        $template->page_id = null;
-
-        if (Features::hasFeature('teams')) {
-            $template->team_id = auth()->user()->current_team_id;
-        }
-
-        $template->save();
-
-        // Copy page styles
-        if ($source->styles) {
-            $newStyles = $source->styles->replicate();
-            $newStyles->page_id = $template->id;
-            $newStyles->save();
-        }
-
-        // Copy all page items
-        $source->orderedMainPageItems()->get()->each(function ($item) use ($template) {
-            $newItem = $item->replicate();
-            $newItem->page_id = $template->id;
-            $newItem->save(['skip_validation' => true]);
-
-            if ($item->styles) {
-                $newStyles = $item->styles->replicate();
-                $newItem->styles()->save($newStyles);
-            }
-
-            $item->groupPageItems()->each(function ($groupItem) use ($newItem) {
-                $newGroupItem = $groupItem->replicate();
-                $newGroupItem->group_page_item_id = $newItem->id;
-                $newGroupItem->page_id = $newItem->page_id;
-                $newGroupItem->save(['skip_validation' => true]);
-
-                if ($groupItem->styles) {
-                    $newGroupStyles = $groupItem->styles->replicate();
-                    $newGroupItem->styles()->save($newGroupStyles);
-                }
-            });
-        });
+        app(PageTemplateService::class)->createTemplateFromPage($this->model, $name);
     }
 }

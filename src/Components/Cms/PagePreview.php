@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
@@ -37,9 +38,16 @@ class PagePreview extends Query
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
-            $contentMaxWidth = $this->page->getContentMaxWidth();
-            $this->onLoad(fn($e) => $e->run('() => {$(".external-container").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
-            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
+            // json_encode keeps colors/sizes from breaking out of the JS string literal even if
+            // they ever contained quotes or backslashes.
+            $exterior = json_encode($this->page->getExteriorBackgroundColor());
+            $content = json_encode($this->page->getContentBackgroundColor());
+            $maxWidth = json_encode($this->page->getContentMaxWidth().'px');
+
+            $this->onLoad(fn ($e) => $e->run(
+                "() => { \$('.external-container').css('background-color', {$exterior});"
+                ." \$('.vlQueryWrapperPagePreview').css({'background-color': {$content}, 'max-width': {$maxWidth}, 'margin': '0 auto'}); }"
+            ));
         }
     }
 
@@ -137,25 +145,7 @@ class PagePreview extends Query
     {
         $pageItem = PageItemModel::findOrFail(request('item_id'));
 
-        $newItem = $pageItem->replicate();
-        $newItem->order = $pageItem->page->pageItems()->count();
-        $newItem->save(['skip_validation' => true]);
-
-        if ($pageItem->styles) {
-            $newStyles = $pageItem->styles->replicate();
-            $newItem->styles()->save($newStyles);
-        }
-
-        $pageItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
-            $newGroupItem = $groupItem->replicate();
-            $newGroupItem->group_page_item_id = $newItem->id;
-            $newGroupItem->save(['skip_validation' => true]);
-
-            if ($groupItem->styles) {
-                $newGroupStyles = $groupItem->styles->replicate();
-                $newGroupItem->styles()->save($newGroupStyles);
-            }
-        });
+        app(PageBlockService::class)->copyToPage($pageItem, $pageItem->page);
     }
 
 }
