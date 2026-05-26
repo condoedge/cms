@@ -89,59 +89,55 @@ class GroupPageItemType extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $sections = collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i){
-            $actualItem = $this->groupItems->first(fn($item) => $item->order == $i) ?? null;
+        $sections = collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType, $i) {
+            $actualItem = $this->groupItems->first(fn ($item) => $item->order == $i) ?? null;
 
             $instance = new $groupItemType($actualItem ?? $this->pageItem, false);
             $instance->setPrefixFormNames($i . '_');
 
-            if($actualItem) {
+            if ($actualItem) {
                 $attrs = $actualItem?->getAttributes();
-
                 $instance->setFormValues($attrs['title'], $attrs['content'], $actualItem->image);
             }
 
-            $contentEl = $instance->blockTypeEditorElement();
-            $stylesEl = $instance->blockTypeEditorStylesElement();
-            $paddingEl = $this->subItemPaddingInputs($i, $actualItem);
-
-            return _Rows(
-                _Html('
-                    <div class="vlGroupSectionHeader" onclick="var s=this.closest(\'.vlGroupSection\');var b=s.querySelector(\'.vlGroupSectionBody\');this.querySelector(\'.vlGroupChevron\').classList.toggle(\'vlGroupChevronOpen\');if(b.classList.contains(\'vlGroupCollapsed\')){b.classList.remove(\'vlGroupCollapsed\');b.style.maxHeight=b.scrollHeight+\'px\';setTimeout(function(){b.style.maxHeight=\'none\'},250)}else{b.style.maxHeight=b.scrollHeight+\'px\';b.offsetHeight;b.style.maxHeight=\'0\';b.classList.add(\'vlGroupCollapsed\')}">
-                        <span class="vlGroupChevron">&#9656;</span>
-                        <span>' . __($groupItemType::ITEM_TITLE) . '</span>
-                    </div>
-                '),
+            return $this->collapsibleSection(
+                __($groupItemType::ITEM_TITLE),
                 _Rows(
-                    $contentEl,
-                    $stylesEl,
-                    $paddingEl,
-                )->class('vlGroupSectionBody vlGroupCollapsed'),
-            )->class('vlGroupSection');
+                    $instance->blockTypeEditorElement(),
+                    $instance->blockTypeEditorStylesElement(),
+                    $this->subItemPaddingInputs($i, $actualItem),
+                ),
+            );
         });
 
-        return _Rows(
-            ...$sections->push(_Html($this->groupSectionStyles())),
-        );
+        return _Rows(...$sections);
     }
 
     protected function subItemPaddingInputs($index, $actualItem = null)
     {
         $prefix = $index . '_';
-        $uid = 'grp-padding-' . $index . '-' . uniqid();
 
-        return _Rows(
-            _Html('
-                <div class="vlGroupSectionHeader" onclick="var s=this.closest(\'.vlGroupPaddingWrap\');var b=s.querySelector(\'.vlGroupPaddingBody\');this.querySelector(\'.vlGroupChevron\').classList.toggle(\'vlGroupChevronOpen\');if(b.classList.contains(\'vlGroupCollapsed\')){b.classList.remove(\'vlGroupCollapsed\');b.style.maxHeight=b.scrollHeight+\'px\';setTimeout(function(){b.style.maxHeight=\'none\'},250)}else{b.style.maxHeight=b.scrollHeight+\'px\';b.offsetHeight;b.style.maxHeight=\'0\';b.classList.add(\'vlGroupCollapsed\')}">
-                    <span class="vlGroupChevron">&#9656;</span>
-                    <span>' . __('cms::cms.spacing') . '</span>
-                </div>
-            '),
+        return $this->collapsibleSection(
+            __('cms::cms.spacing'),
             _Rows(
                 $this->subItemPaddingTab($prefix, 'desktop', $actualItem),
                 $this->subItemPaddingTab($prefix, 'mobile', $actualItem),
-            )->class('vlGroupPaddingBody vlGroupCollapsed'),
-        )->class('vlGroupPaddingWrap mt-2');
+            ),
+        )->class('mt-2');
+    }
+
+    // Section header styling (uppercase, gray, hover-darken) is conveyed via Tailwind classes on
+    // the title element; expand/collapse is owned by the _Collapsible Vue component.
+    protected function collapsibleSection(string $title, $body)
+    {
+        $titleEl = _Flex(
+            _Html($title)->class('text-xs font-semibold uppercase tracking-wider text-gray-600'),
+        )->class('items-center gap-2 py-2.5 cursor-pointer hover:text-gray-800');
+
+        return _Collapsible($body)
+            ->titleLabel($titleEl)
+            ->withIcon('chevron-up', 'text-gray-400 text-xs')
+            ->class('border-b border-gray-200');
     }
 
     protected function subItemPaddingTab($prefix, $device, $actualItem = null)
@@ -192,49 +188,6 @@ class GroupPageItemType extends PageItemType
         if ($changed) {
             $styleModel->save();
         }
-    }
-
-    protected function groupSectionStyles()
-    {
-        return '<style>
-            .vlGroupSection {
-                border-bottom: 1px solid #e5e7eb;
-            }
-            .vlGroupSectionHeader {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                padding: 10px 0;
-                cursor: pointer;
-                user-select: none;
-                font-size: 12px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: #4b5563;
-            }
-            .vlGroupSectionHeader:hover {
-                color: #1f2937;
-            }
-            .vlGroupChevron {
-                display: inline-block;
-                font-size: 10px;
-                transition: transform 0.15s ease;
-                color: #9ca3af;
-            }
-            .vlGroupChevronOpen {
-                transform: rotate(90deg);
-            }
-            .vlGroupSectionBody {
-                padding: 0 0 12px 0;
-                overflow: hidden;
-                transition: max-height 0.25s ease;
-            }
-            .vlGroupSectionBody.vlGroupCollapsed {
-                max-height: 0 !important;
-                padding-bottom: 0;
-            }
-        </style>';
     }
 
     protected function toElement($withEditor = null)

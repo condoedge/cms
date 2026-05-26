@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
@@ -242,20 +243,13 @@ class PageItemForm extends Form
             return _Html('');
         }
 
-        $currentPage = PageModel::find($this->pageId);
-        $query = PageModel::where('id', '!=', $this->pageId);
-
-        if ($currentPage?->team_id) {
-            $query->where('team_id', $currentPage->team_id);
-        }
-
-        $pages = $query->orderByDesc('updated_at')
-            ->get()
-            ->mapWithKeys(fn($page) => [$page->id => $page->title]);
+        $pages = app(PageBlockService::class)->copyableSourcePages((int) $this->pageId)
+            ->mapWithKeys(fn ($page) => [$page->id => $page->title])
+            ->toArray();
 
         return _Rows(
-            _Select('cms::cms.select-newsletter')->name('select_newsletter', false)->options($pages->toArray())
-                ->onChange(fn($e) => $e->selfGet('getPageBlocksSelect')->inPanel('copyBlockItemsPanel')),
+            _Select('cms::cms.select-newsletter')->name('select_newsletter', false)->options($pages)
+                ->onChange(fn ($e) => $e->selfGet('getPageBlocksSelect')->inPanel('copyBlockItemsPanel')),
             _Panel(
                 _Html(''),
             )->id('copyBlockItemsPanel'),
@@ -264,26 +258,16 @@ class PageItemForm extends Form
 
     public function getPageBlocksSelect()
     {
-        $pageId = request('select_newsletter');
-
+        $pageId = (int) request('select_newsletter');
         if (!$pageId) {
             return _Html('');
         }
 
-        $page = PageModel::findOrFail($pageId);
-        $items = $page->orderedMainPageItems()->get();
-
-        $options = $items->mapWithKeys(function ($item) {
-            $type = $item->getPageItemType();
-            $typeName = $type ? __($type::ITEM_TITLE) : '';
-            $zoneName = $item->name_pi ?: $typeName;
-            $label = $zoneName . ($item->name_pi ? ' (' . $typeName . ')' : '');
-            return [$item->id => $label];
-        });
+        $options = app(PageBlockService::class)->copyableItemOptions($pageId);
 
         return _Rows(
-            _Select('cms::cms.select-block')->name('select_block', false)->options($options->toArray())
-                ->onChange(fn($e) => $e->selfGet('getCopyButton')->inPanel('copyBlockButtonPanel')),
+            _Select('cms::cms.select-block')->name('select_block', false)->options($options)
+                ->onChange(fn ($e) => $e->selfGet('getCopyButton')->inPanel('copyBlockButtonPanel')),
             _Panel(
                 _Html(''),
             )->id('copyBlockButtonPanel'),

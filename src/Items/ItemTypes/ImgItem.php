@@ -79,14 +79,23 @@ class ImgItem extends PageItemType
     {
         $maxWidth = (int) ($this->pageItem->getStyleProperty('max_width_raw') ?: 100);
 
+        $inputId = 'vlImgWidth-'.uniqid();
+        $labelId = $inputId.'-label';
+
         return _Rows(
             _Html('cms::cms.image-width')->class('vlStyleSubLabel'),
-            _Html('
-                <div class="flex items-center gap-3">
-                    <input type="range" name="' . $this->formPrefix . 'max-width" min="10" max="100" step="5" value="' . $maxWidth . '" class="flex-1" oninput="this.nextElementSibling.textContent = this.value + \'%\'" />
-                    <span class="text-sm font-semibold text-gray-700 w-10 text-right">' . $maxWidth . '%</span>
-                </div>
-            '),
+            _Flex(
+                _Input()->name($this->formPrefix . 'max-width', false)
+                    ->type('range')
+                    ->value($maxWidth)
+                    ->id($inputId)
+                    ->class('flex-1')
+                    ->attr(['min' => 10, 'max' => 100, 'step' => 5])
+                    ->onInput(fn ($e) => $e->run(
+                        '() => { var i=document.getElementById("'.$inputId.'");var l=document.getElementById("'.$labelId.'");if(i&&l)l.textContent=i.value+"%"; }'
+                    )),
+                _Html($maxWidth.'%')->id($labelId)->class('text-sm font-semibold text-gray-700 w-10 text-right'),
+            )->class('items-center gap-3'),
             _Hidden()->name($this->formPrefix . 'height-auto', false)->value(1),
         );
     }
