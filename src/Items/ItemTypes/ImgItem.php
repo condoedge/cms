@@ -196,7 +196,7 @@ class ImgItem extends PageItemType
         $styles = $this->imgStyles();
 
         $el = !$this->content?->image ? null : _Rows(
-            _Img()->src(\Storage::url($this->content->image_preview['path']))
+            _Img()->src(\Storage::disk('public')->url($this->content->image_preview['path']))
                 ->style($styles)
                 ->attr(['alt' => $this->content->title ?: ''])
         )->class('w-full');
@@ -216,7 +216,7 @@ class ImgItem extends PageItemType
     public static function getFullView()
     {
         return _Rows(
-            _Img()->src(\Storage::url(request('path'))),
+            _Img()->src(\Storage::disk('public')->url(request('path'))),
         )->class('w-full overflow-y-auto mini-scroll')->style('max-height: 95vh');
     }
 

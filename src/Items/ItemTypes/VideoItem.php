@@ -143,7 +143,7 @@ class VideoItem extends PageItemType
             $videoUrl = 'https://vimeo.com/' . $embedId;
         } else {
             // File video — no thumbnail available, render a simple link
-            $videoUrl = \Storage::url($this->content);
+            $videoUrl = \Storage::disk('public')->url($this->content);
             return $this->centerElement(
                 '<table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td align="center" style="background-color:#000000; border-radius:8px; padding:20px 40px;">
                     <a href="' . htmlspecialchars($videoUrl, ENT_QUOTES) . '" target="_blank" style="color:#ffffff; text-decoration:none; font-size:16px; font-weight:600;">&#9654; ' . __('cms::cms.watch-video') . '</a>
@@ -192,7 +192,7 @@ class VideoItem extends PageItemType
         $videoStyles = $this->videoStyles();
 
         return '<video style="' . $videoStyles .  '"  class="'. $this->classes . '" autoplay="" loop="" muted="" playsinline="" controlslist="nodownload,nofullscreen,noremoteplayback">
-            <source src="' . \Storage::url($this->content) . '" type="video/mp4">
+            <source src="' . \Storage::disk('public')->url($this->content) . '" type="video/mp4">
             Your browser does not support the video tag.
         </video>';
     }

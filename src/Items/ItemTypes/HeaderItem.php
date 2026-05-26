@@ -112,7 +112,7 @@ class HeaderItem extends PageItemType
         $bgSize = $this->styles->object_fit ?: 'cover';
         $overlayStyle = $this->buildOverlayStyle();
 
-        $bgStyle = !$this->content->image ? '' : "background-image: url('" . \Storage::url($this->content->image['path']) . "');";
+        $bgStyle = !$this->content->image ? '' : "background-image: url('" . \Storage::disk('public')->url($this->content->image['path']) . "');";
 
         return _Rows(
             _Html('
