@@ -210,7 +210,9 @@ abstract class PageItemType
         if (!$el || !$hasContent) {
             $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
             $el = _Rows(
-                _Html('<div class="vlEmptyBlockPlaceholder">'.$typeName.' — '.__('cms::cms.click-to-edit').'</div>')
+                _Div(
+                    _Html($typeName.' — '.__('cms::cms.click-to-edit'))
+                )->class('vlEmptyBlockPlaceholder'),
             )->class('w-full');
         }
 

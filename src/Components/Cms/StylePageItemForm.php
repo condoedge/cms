@@ -195,7 +195,9 @@ class StylePageItemForm extends Form
     {
         return _Rows(
             _Link('cms::cms.advanced')->class('vlStyleLabel vlAdvancedToggle')
-                ->run('(el) => {
+                ->id('advanced-toggle')
+                ->run('({el}) => {
+                    el = el("advanced-toggle").el;
                     el.classList.toggle("vlAdvancedOpen");
                     el.nextElementSibling.classList.toggle("hidden");
                 }'),

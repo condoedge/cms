@@ -46,15 +46,22 @@ class PagePreview extends Query
     public function top()
     {
         if (!$this->withEditor) {
-            return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
+            return $this->responsiveColumnsStyle();
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 
         return _Rows(
-            _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
+            $this->responsiveColumnsStyle(),
             !$hasItems ? null : _Html('')->class('pt-2'),
         );
+    }
+
+    // Static CSS (no interpolation). Inline so the public preview keeps working when
+    // the host hasn't imported resources/scss/page-editor.scss.
+    protected function responsiveColumnsStyle()
+    {
+        return _Html('<style>@media (max-width:600px){.vlFlexResponsiveColumns{flex-direction:column !important;}}</style>');
     }
 
     public function bottom()

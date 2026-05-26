@@ -2,7 +2,6 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
-use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
@@ -42,14 +41,16 @@ class BlockLibraryPanel extends Form
     public function render()
     {
         return _Rows(
-            _Tabs(
+            _SwipeableTabs(
                 _Tab(
                     $this->blocksTab(),
                 )->label('cms::cms.blocks')->class('vlBlockLibTabContent'),
                 _Tab(
                     $this->designTab(),
                 )->label('cms::cms.design')->class('vlBlockLibTabContent'),
-            )->class('vlBlockLibTabs px-6 pt-2'),
+            )->class('vlBlockLibTabs px-6 pt-2')->config([
+                'tabParamKey' => 'block_lib_tab',
+            ]),
         )->class('vlBlockLibPanel');
     }
 
@@ -76,13 +77,23 @@ class BlockLibraryPanel extends Form
 
         $elements->push($this->copyBlockCard());
 
-        // Search bar as first element (raw HTML, no Kompo interaction interference)
-        $search = _Html('<div class="vlBlockSearch"><div class="vlBlockSearchWrap"><input type="text" class="vlBlockSearchInput" placeholder="'.__('cms::cms.search-blocks').'" oninput="if(window.vlEmailEditor)vlEmailEditor.filterBlocks(this.value)" /></div></div>');
-
         return _Rows(
-            $search,
+            $this->searchInput(),
             ...$elements,
         );
+    }
+
+    protected function searchInput()
+    {
+        return _Div(
+            _Div(
+                _Input()->name('search_blocks', false)
+                    ->placeholder('cms::cms.search-blocks')
+                    ->id('vlBlockSearchInput')
+                    ->class('vlBlockSearchInput')
+                    ->onInput(fn ($e) => $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.filterBlocks(document.getElementById("vlBlockSearchInput").value) }')),
+            )->class('vlBlockSearchWrap'),
+        )->class('vlBlockSearch');
     }
 
     protected function categorizeTypes($types)
@@ -154,35 +165,4 @@ class BlockLibraryPanel extends Form
     {
         return PageEditor::getPageStyleFormComponent($this->prefixGroup, $this->pageId);
     }
-
-    public function getCopyBlockForm($pageId = null)
-    {
-        $pageId = $pageId ?: $this->pageId;
-
-        $pages = PageModel::where('id', '!=', $pageId);
-
-        $currentPage = PageModel::find($pageId);
-        if ($currentPage?->team_id) {
-            $pages->where('team_id', $currentPage->team_id);
-        }
-
-        $pageOptions = $pages->orderByDesc('updated_at')
-            ->get()
-            ->mapWithKeys(fn($page) => [$page->id => $page->title]);
-
-        return _Rows(
-            _Flex(
-                _Html('cms::cms.copy-block-from-newsletter')->class('font-semibold text-sm'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { if (window.vlEmailEditor) vlEmailEditor.closeDrawer() }'),
-            )->class('justify-between items-center mb-4'),
-            _Select('cms::cms.select-newsletter')->name('select_newsletter', false)
-                ->options($pageOptions->toArray())
-                ->onChange(fn($e) => $e->get('page-editor.copy-block-items', [
-                    'page_id' => $pageId,
-                ])->inPanel('copy-block-items-panel')),
-            _Panel()->id('copy-block-items-panel')->class('mt-3'),
-        )->class('p-4');
-    }
-
 }

@@ -237,8 +237,6 @@
 /* ---- Center Panel - Canvas ---- */
 .vlEditorCenterPanel {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
     padding: 16px;
 }
 .vlCanvasFrame {
@@ -888,4 +886,10 @@
 }
 .vlEditorLeftPanel .vlTabPaneContent {
     padding: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .vlFlexResponsiveColumns {
+        flex-direction: column !important;
+    }
 }

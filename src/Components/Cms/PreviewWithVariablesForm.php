@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\EmailHtmlBuilderService;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Condoedge\Utils\Kompo\Common\Modal;
@@ -95,23 +96,11 @@ class PreviewWithVariablesForm extends Modal
         $variables = [];
         foreach (request()->all() as $key => $value) {
             if (str_starts_with($key, 'var_')) {
-                $varKey = substr($key, 4);
-                $variables[$varKey] = $value;
+                $variables[substr($key, 4)] = $value;
             }
         }
 
-        $htmlContent = $page->getHtmlContent($variables);
-
-        $bgColor = $page->getExteriorBackgroundColor();
-        $contentBg = $page->getContentBackgroundColor();
-        $textColor = $page->getTextColor();
-        $linkColor = $page->getLinkColor();
-        $fontSize = $page->getFontSize();
-        $maxWidth = $page->getContentMaxWidth();
-        $fontFamily = $page->getFontFamily();
-
-        $sendTestForm = new SendTestEmailForm(null, ['page_id' => $page->id]);
-        $fullHtml = $sendTestForm->buildEmailHtml($htmlContent, $bgColor, $contentBg, $textColor, $linkColor, $fontSize, $maxWidth, $fontFamily);
+        $fullHtml = app(EmailHtmlBuilderService::class)->buildFromPage($page, $variables);
 
         return response($fullHtml)->header('Content-Type', 'text/html');
     }
