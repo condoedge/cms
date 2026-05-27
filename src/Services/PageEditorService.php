@@ -31,6 +31,58 @@ class PageEditorService
     }
 
     /**
+     * Build the block-library category structure: each category lists its full type classes,
+     * with any uncategorized (and not library-hidden) type flowing into the implicit "other"
+     * bucket. Categories are driven entirely by `page-editor.block_categories` config.
+     *
+     * Returned shape: [
+     *   'category-key' => ['label' => '...', 'items' => Collection<TypeClass>],
+     *   ...
+     *   'other' => ['label' => '...', 'items' => Collection<TypeClass>],
+     * ]
+     */
+    public function getCategorizedTypes($prefixGroup = "")
+    {
+        $categories = config('page-editor.block_categories', []);
+        $libraryHidden = config('page-editor.library_hidden_types', []);
+
+        $bucketed = collect($categories)->map(fn ($cat) => [
+            'label' => $cat['label'],
+            'items' => collect(),
+        ])->toArray();
+
+        $otherItems = collect();
+
+        foreach ($this->getAvailableTypes($prefixGroup) as $typeClass) {
+            $itemName = $typeClass::ITEM_NAME;
+
+            if (in_array($itemName, $libraryHidden, true)) continue;
+
+            $placed = false;
+            foreach ($categories as $catKey => $cat) {
+                if (in_array($itemName, $cat['types'] ?? [], true)) {
+                    $bucketed[$catKey]['items']->push($typeClass);
+                    $placed = true;
+                    break;
+                }
+            }
+
+            if (!$placed) {
+                $otherItems->push($typeClass);
+            }
+        }
+
+        if ($otherItems->isNotEmpty()) {
+            $bucketed['other'] = [
+                'label' => config('page-editor.library_other_label', 'cms::cms.category-other'),
+                'items' => $otherItems,
+            ];
+        }
+
+        return $bucketed;
+    }
+
+    /**
      * Set the routes for the package.
      *
      * @param string $route
@@ -113,5 +165,29 @@ class PageEditorService
     public function getItemStylesFormComponent(...$args)
     {
         return $this->getComponent('page-item-styles-form', \Anonimatrix\PageEditor\Components\Cms\StylePageItemForm::class, $args);
+    }
+
+    /**
+     * Get the page editor layout component (3-panel block editor).
+     */
+    public function getPageEditorComponent(...$args)
+    {
+        return $this->getComponent('page-editor-layout', \Anonimatrix\PageEditor\Components\Cms\PageEditorLayout::class, $args);
+    }
+
+    /**
+     * Get the block library panel component.
+     */
+    public function getBlockLibraryComponent(...$args)
+    {
+        return $this->getComponent('block-library-panel', \Anonimatrix\PageEditor\Components\Cms\BlockLibraryPanel::class, $args);
+    }
+
+    /**
+     * Get the editor top bar component.
+     */
+    public function getEditorTopBarComponent(...$args)
+    {
+        return $this->getComponent('editor-top-bar', \Anonimatrix\PageEditor\Components\Cms\EditorTopBar::class, $args);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemStyleModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
@@ -11,12 +12,14 @@ use Kompo\Form;
 
 class PageItemForm extends Form
 {
-    protected $refresh = true;
     protected $pageId;
     protected $updateOrder;
     public const ITEM_FORM_PANEL_ID = 'itemFormPanel';
     public const ITEM_FORM_STYLES_ID = 'itemFormStyles';
     public const COPY_BLOCK_PANEL_ID = 'copyBlockPanel';
+
+    // Sentinel block_type that means "copy from another page" — not a real item type.
+    public const COPY_BLOCK_TYPE = '__copy__';
 
     protected $prefixGroup = "";
 
@@ -56,47 +59,98 @@ class PageItemForm extends Form
     {
         $types = PageEditor::getOptionsTypes($this->prefixGroup);
 
-        if (!$this->model->id) {
-            $types = $types + ['__copy__' => __('cms::cms.copy-block-from-newsletter')];
+        // New block creation — show block type selector
+        if (!$this->model->id && !$this->model->block_type) {
+            return $this->blockTypeSelector($types);
         }
 
-        return _Tabs(
-            _Tab(
-                _Rows(
-                    _Columns(
-                        _Select('cms::cms.zone-type')->options(
-                            $types,
-                        )->name('block_type')->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID) && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form') && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID) && $e->selfGet('getCopyBlockPanel')->inPanel(static::COPY_BLOCK_PANEL_ID))->col($this->model->id ? 'col-md-8' : 'col-md-12'),
-                        $this->model->id ? _DeleteButton('cms::cms.clear')->byKey($this->model)->refresh('page_design_form')->class('align-right')->col('col-md-4') : null,
-                    )->class('items-center'),
-                    _Input('cms::cms.zone-name')->name('name_pi'),
-                    !$this->model->id ? _Panel(
-                        _Html(''),
-                    )->id(static::COPY_BLOCK_PANEL_ID)->class('mt-4') : null,
-                    _Panel(
-                        $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : _Html(''),
-                    )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
-                    _FlexBetween(
-                        _SubmitButton('cms::cms.save-zone-and-new')->class('ml-auto mt-3')
-                            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                        _SubmitButton('cms::cms.save-zone')->class('ml-auto mt-3')
-                            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                    )->class('gap-4'),
-                )
-            )->label('cms::cms.zone-content'),
-            _Tab(
+        // Existing block — show unified property panel
+        return $this->unifiedPropertyPanel();
+    }
+
+    protected function blockTypeSelector($types)
+    {
+        if (!$this->model->id) {
+            $types = $types + [self::COPY_BLOCK_TYPE => __('cms::cms.copy-block-from-newsletter')];
+        }
+
+        return _Rows(
+            _Html('cms::cms.add-block')->class('font-semibold text-sm mb-3'),
+            _Select('cms::cms.block-type')->options($types)
+                ->name('block_type')
+                ->onChange(fn($e) => $e->selfGet('itemForm')->inPanel(static::ITEM_FORM_PANEL_ID)
+                    && $e->selfGet('getStyleFormComponent')->inPanel('item_styles_form')
+                    && $e->selfGet('itemStylesForm')->inPanel(static::ITEM_FORM_STYLES_ID)
+                    && $e->selfGet('getCopyBlockPanel')->inPanel(static::COPY_BLOCK_PANEL_ID)
+                ),
+            !$this->model->id ? _Panel()->id(static::COPY_BLOCK_PANEL_ID)->class('mt-4') : null,
+            _Panel(
+                $this->model->block_type ? $this->model->getPageItemType()?->blockTypeEditorElement() : null,
+            )->id(static::ITEM_FORM_PANEL_ID)->class('mt-4'),
+            _Panel(
+                $this->getStyleFormComponent(),
+            )->id('item_styles_form')->class('mt-2'),
+            _Panel()->id(static::ITEM_FORM_STYLES_ID),
+            $this->saveButtons(),
+        )->class('p-4');
+    }
+
+    protected function unifiedPropertyPanel()
+    {
+        $blockType = $this->model->getPageItemType();
+        $icon = $blockType ? $blockType::ITEM_ICON : 'document-text';
+        $title = $blockType ? __($blockType::ITEM_TITLE) : '';
+
+        return _Rows(
+            // Block type header with title input
+            _Rows(
+                _FlexBetween(
+                    _Flex(
+                        _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
+                        _Html($title)->class('font-semibold text-sm'),
+                    )->class('items-center gap-2'),
+                    $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
+                        ->selfGet('getEmptyPropertyState')->inPanel(PageEditorLayout::PROPERTY_PANEL)
+                        ->onSuccess(fn ($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.clearSelection() }')) : null,
+                )->class('mb-3'),
+                _Hidden()->name('block_type')->value($this->model->block_type),
+                _Input('cms::cms.title-optional')->name('name_pi'),
+            )->class('vlPropertyHeader vlPropertySection mb-4'),
+
+            // Content section
+            _Rows(
+                $blockType ? $blockType->blockTypeEditorElement() : null,
+            )->class('vlPropertySection vlPropertySectionBody mb-4'),
+
+            // Style section (colors, typography, spacing, responsive, advanced — all inside StylePageItemForm)
+            _Rows(
+                _Html('cms::cms.style')->class('vlPropertySectionTitle'),
                 _Rows(
                     _Panel(
                         $this->getStyleFormComponent(),
                     )->id('item_styles_form'),
-                    _FlexBetween(
-                        _Button('cms::cms.set-generic-styles-to-block')->selfPost('setGenericStyles')->withAllFormValues(),
-                        _SubmitButton('cms::cms.save')->class('ml-auto')
-                            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL)),
-                    )->class('gap-4 mt-3'),
-                )->class('!mb-2')
-            )->label('cms::cms.zone-styles'),
-        );
+                    _Panel()->id(static::ITEM_FORM_STYLES_ID),
+                )->class('vlPropertySectionBody'),
+            )->class('vlPropertySection'),
+
+            // Action buttons
+            $this->saveButtons(),
+        )->class('vlPropertyPanel');
+    }
+
+    protected function saveButtons()
+    {
+        $previewPanel = PageEditorLayout::PREVIEW_PANEL;
+
+        return _Rows(
+            _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel))
+                ->alert('cms::cms.saved-successfully'),
+            $this->model->id ? _DeleteButton('cms::cms.delete-block')
+                ->byKey($this->model)
+                ->class('vlPropertyDeleteBtn w-full mt-2')
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)) : null,
+        )->class('vlPropertyActions');
     }
 
     public function rules()
@@ -123,7 +177,7 @@ class PageItemForm extends Form
             $this->prefixGroup,
             [
                 'page_id' => $this->pageId,
-                'panel_id' => PageDesignForm::PAGE_ITEM_PANEL,
+                'panel_id' => PageEditorLayout::PROPERTY_PANEL,
                 'with_editor' => true
             ]
         );
@@ -143,14 +197,14 @@ class PageItemForm extends Form
 
         $styleModel = PageItemStyleModel::getGenericStylesOfType($this->model->getPageItemType()::class, $this->model->page?->team_id) ?? PageItemStyleModel::make();
         PageStyle::setStylesToModel($styleModel);
-        
+
         $styleModel->block_type = request('block_type');
         $styleModel->save();
     }
 
     public function itemForm()
     {
-        if(request('block_type') === '__copy__' || !$this->isValidBlockType()) {
+        if(request('block_type') === self::COPY_BLOCK_TYPE || !$this->isValidBlockType()) {
             return _Rows();
         }
 
@@ -184,26 +238,27 @@ class PageItemForm extends Form
         return $blockType && PageItemModel::blockTypes()->has($blockType);
     }
 
+    public function getEmptyPropertyState()
+    {
+        return _Rows(
+            _Html()->icon(_Sax('mouse-circle', 48))->class('text-gray-300 mb-4'),
+            _Html('cms::cms.select-block-to-edit')->class('text-sm text-gray-400 text-center'),
+        )->class('flex flex-col items-center justify-center py-20');
+    }
+
     public function getCopyBlockPanel()
     {
-        if (request('block_type') !== '__copy__') {
+        if (request('block_type') !== self::COPY_BLOCK_TYPE) {
             return _Html('');
         }
 
-        $currentPage = PageModel::find($this->pageId);
-        $query = PageModel::where('id', '!=', $this->pageId);
-
-        if ($currentPage?->team_id) {
-            $query->where('team_id', $currentPage->team_id);
-        }
-
-        $pages = $query->orderByDesc('updated_at')
-            ->get()
-            ->mapWithKeys(fn($page) => [$page->id => $page->title]);
+        $pages = app(PageBlockService::class)->copyableSourcePages((int) $this->pageId)
+            ->mapWithKeys(fn ($page) => [$page->id => $page->title])
+            ->toArray();
 
         return _Rows(
-            _Select('cms::cms.select-newsletter')->name('select_newsletter', false)->options($pages->toArray())
-                ->onChange(fn($e) => $e->selfGet('getPageBlocksSelect')->inPanel('copyBlockItemsPanel')),
+            _Select('cms::cms.select-newsletter')->name('select_newsletter', false)->options($pages)
+                ->onChange(fn ($e) => $e->selfGet('getPageBlocksSelect')->inPanel('copyBlockItemsPanel')),
             _Panel(
                 _Html(''),
             )->id('copyBlockItemsPanel'),
@@ -212,26 +267,16 @@ class PageItemForm extends Form
 
     public function getPageBlocksSelect()
     {
-        $pageId = request('select_newsletter');
-
+        $pageId = (int) request('select_newsletter');
         if (!$pageId) {
             return _Html('');
         }
 
-        $page = PageModel::findOrFail($pageId);
-        $items = $page->orderedMainPageItems()->get();
-
-        $options = $items->mapWithKeys(function ($item) {
-            $type = $item->getPageItemType();
-            $typeName = $type ? __($type::ITEM_TITLE) : '';
-            $zoneName = $item->name_pi ?: $typeName;
-            $label = $zoneName . ($item->name_pi ? ' (' . $typeName . ')' : '');
-            return [$item->id => $label];
-        });
+        $options = app(PageBlockService::class)->copyableItemOptions($pageId);
 
         return _Rows(
-            _Select('cms::cms.select-block')->name('select_block', false)->options($options->toArray())
-                ->onChange(fn($e) => $e->selfGet('getCopyButton')->inPanel('copyBlockButtonPanel')),
+            _Select('cms::cms.select-block')->name('select_block', false)->options($options)
+                ->onChange(fn ($e) => $e->selfGet('getCopyButton')->inPanel('copyBlockButtonPanel')),
             _Panel(
                 _Html(''),
             )->id('copyBlockButtonPanel'),
@@ -248,7 +293,7 @@ class PageItemForm extends Form
 
         return _Button('cms::cms.copy-this-block')->icon('duplicate')
             ->selfPost('copyBlockToPage', ['item_id' => $itemId])
-            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageDesignForm::PAGE_ITEM_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageDesignForm::PREVIEW_PAGE_PANEL))
+            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageEditorLayout::PROPERTY_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageEditorLayout::PREVIEW_PANEL))
             ->class('mt-2');
     }
 
@@ -257,28 +302,6 @@ class PageItemForm extends Form
         $sourceItem = PageItemModel::findOrFail(request('item_id'));
         $page = PageModel::findOrFail($this->pageId);
 
-        $newItem = $sourceItem->replicate();
-        $newItem->page_id = $this->pageId;
-        $newItem->order = $page->pageItems()->count();
-        $newItem->page_item_id = null;
-        $newItem->group_page_item_id = null;
-        $newItem->save(['skip_validation' => true]);
-
-        if ($sourceItem->styles) {
-            $newStyles = $sourceItem->styles->replicate();
-            $newItem->styles()->save($newStyles);
-        }
-
-        $sourceItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
-            $newGroupItem = $groupItem->replicate();
-            $newGroupItem->group_page_item_id = $newItem->id;
-            $newGroupItem->page_id = $newItem->page_id;
-            $newGroupItem->save(['skip_validation' => true]);
-
-            if ($groupItem->styles) {
-                $newGroupStyles = $groupItem->styles->replicate();
-                $newGroupItem->styles()->save($newGroupStyles);
-            }
-        });
+        app(PageBlockService::class)->copyToPage($sourceItem, $page);
     }
 }

@@ -82,27 +82,112 @@ class GroupPageItemType extends PageItemType
             $instance->setPrefixFormNames($i . '_');
 
             $instance->afterSave($item);
+
+            $this->saveSubItemPadding($item, $i);
         });
     }
 
     public function blockTypeEditorElement()
     {
-       return _Rows(
-            collect(static::GROUP_ITEMS_TYPES)->map(function($groupItemType, $i){
-                $actualItem = $this->groupItems->first(fn($item) => $item->order == $i) ?? null;
+        $sections = collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType, $i) {
+            $actualItem = $this->groupItems->first(fn ($item) => $item->order == $i) ?? null;
 
-                $instance = new $groupItemType($actualItem ?? $this->pageItem, false);
-                $instance->setPrefixFormNames($i . '_');
+            $instance = new $groupItemType($actualItem ?? $this->pageItem, false);
+            $instance->setPrefixFormNames($i . '_');
 
-                if($actualItem) {
-                    $attrs = $actualItem?->getAttributes();
+            if ($actualItem) {
+                $attrs = $actualItem?->getAttributes();
+                $instance->setFormValues($attrs['title'], $attrs['content'], $actualItem->image);
+            }
 
-                    $instance->setFormValues($attrs['title'], $attrs['content'], $actualItem->image);
-                }
+            return $this->collapsibleSection(
+                __($groupItemType::ITEM_TITLE),
+                _Rows(
+                    $instance->blockTypeEditorElement(),
+                    $instance->blockTypeEditorStylesElement(),
+                    $this->subItemPaddingInputs($i, $actualItem),
+                ),
+            );
+        });
 
-                return $instance->blockTypeEditorElement();
-            }),
+        return _Rows(...$sections);
+    }
+
+    protected function subItemPaddingInputs($index, $actualItem = null)
+    {
+        $prefix = $index . '_';
+
+        return $this->collapsibleSection(
+            __('cms::cms.spacing'),
+            _Rows(
+                $this->subItemPaddingTab($prefix, 'desktop', $actualItem),
+                $this->subItemPaddingTab($prefix, 'mobile', $actualItem),
+            ),
+        )->class('mt-2');
+    }
+
+    // Section header styling (uppercase, gray, hover-darken) is conveyed via Tailwind classes on
+    // the title element; expand/collapse is owned by the _Collapsible Vue component.
+    protected function collapsibleSection(string $title, $body)
+    {
+        $titleEl = _Flex(
+            _Html($title)->class('text-xs font-semibold uppercase tracking-wider text-gray-600'),
+        )->class('items-center gap-2 py-2.5 cursor-pointer hover:text-gray-800');
+
+        return _Collapsible($body)
+            ->titleLabel($titleEl)
+            ->withIcon('chevron-up', 'text-gray-400 text-xs')
+            ->class('border-b border-gray-200');
+    }
+
+    protected function subItemPaddingTab($prefix, $device, $actualItem = null)
+    {
+        $suffix = $device === 'mobile' ? '-mobile' : '';
+        $styleSuffix = $device === 'mobile' ? '_mobile' : '';
+        $defaultVal = $device === 'mobile' ? 0 : null;
+
+        $paddingTop = $actualItem?->getStyleProperty('padding_top' . $styleSuffix . '_raw') ?? $defaultVal;
+        $paddingBottom = $actualItem?->getStyleProperty('padding_bottom' . $styleSuffix . '_raw') ?? $defaultVal;
+        $paddingLeft = $actualItem?->getStyleProperty('padding_left' . $styleSuffix . '_raw') ?? $defaultVal;
+        $paddingRight = $actualItem?->getStyleProperty('padding_right' . $styleSuffix . '_raw') ?? $defaultVal;
+
+        $label = $device === 'mobile' ? __('cms::cms.mobile') : __('cms::cms.desktop');
+
+        return _Rows(
+            _Html($label)->class('vlStyleSubLabel mt-1'),
+            _Div(
+                _Input()->placeholder('↑')->name($prefix . 'padding-top' . $suffix, false)->default($paddingTop)->class('vlSpacingInput'),
+                _Input()->placeholder('↓')->name($prefix . 'padding-bottom' . $suffix, false)->default($paddingBottom)->class('vlSpacingInput'),
+                _Input()->placeholder('←')->name($prefix . 'padding-left' . $suffix, false)->default($paddingLeft)->class('vlSpacingInput'),
+                _Input()->placeholder('→')->name($prefix . 'padding-right' . $suffix, false)->default($paddingRight)->class('vlSpacingInput'),
+            )->class('vlSpacingControl vlSpacingPadding'),
         );
+    }
+
+    protected function saveSubItemPadding($item, $index)
+    {
+        $prefix = $index . '_';
+        $paddingStyles = [
+            'padding-top', 'padding-bottom', 'padding-left', 'padding-right',
+            'padding-top-mobile', 'padding-bottom-mobile', 'padding-left-mobile', 'padding-right-mobile',
+        ];
+
+        $styleModel = $item->getOrCreateStyles();
+        $changed = false;
+
+        foreach ($paddingStyles as $style) {
+            $value = request($prefix . $style);
+
+            if (!is_null($value) && $value !== '') {
+                $suffix = config("page-editor.automapping_styles.$style", 'px');
+                $styleModel->content->replaceProperty($style, $value . $suffix);
+                $changed = true;
+            }
+        }
+
+        if ($changed) {
+            $styleModel->save();
+        }
     }
 
     protected function toElement($withEditor = null)

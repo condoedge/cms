@@ -10,6 +10,7 @@ class ScribeItem extends PageItemType
     public const ITEM_NAME = 'scribe';
     public const ITEM_TITLE = 'cms::cms.scribe-item-title';
     public const ITEM_DESCRIPTION = 'cms::cms.scribe-item-sub';
+    public const ITEM_ICON = 'code-1';
 
     public const ONLY_CUSTOM_STYLES = true;
 
@@ -23,27 +24,39 @@ class ScribeItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        if ($withEditor) {
-            return _Html(
-                '<div style="position: absolute; height: 100%; width: 92%; min-height: 740px;"></div>' .
-                    $this->toHtml(),
-            );
+        $html = $this->toElementHtml();
+
+        if (!$withEditor) {
+            return _Html($html);
         }
 
-        return _Html($this->toHtml());
+        // In editor mode, overlay a transparent div so clicks land on the wrapper (selecting the
+        // block) instead of being captured by the Scribe iframe.
+        return _Rows(
+            _Div()->class('absolute w-[92%] h-full')->style('min-height:740px;'),
+            _Html($html),
+        );
     }
 
+    protected function toElementHtml(): string
+    {
+        $contentId = htmlspecialchars((string) $this->content, ENT_QUOTES);
+
+        return view('cms::items.scribe-preview', [
+            'uniqueId' => uniqid('scribe-item-'),
+            'height' => $this->pageItem?->styles?->content?->height_raw ?: 740,
+            'scribeEmbedUrl' => 'https://scribehow.com/embed/'.$contentId.'?as=scrollable&skipIntro=true&removeLogo=true',
+            'spinner' => _Spinner('w-16 h-16')->__toHtml(),
+        ])->render();
+    }
+
+    // iframes aren't supported in email clients — render a CTA link to the Scribe page instead.
     public function toHtml(): string
     {
-        $height = $this->pageItem?->styles?->content?->height_raw ?: 740;
-        $uniqueId = uniqid('scribe-item-');
-        
-        return '<div>
-            <div id="loading-'.$uniqueId.'" style="display: flex; justify-content:center; margin-top: 50px;">' . _Spinner('w-16 h-16')->__toHtml() . '</div>
-            <iframe onload="$(\'#loading-'.$uniqueId.'\').fadeOut()" src="https://scribehow.com/embed/' .
-            $this->content .
-            '?as=scrollable&skipIntro=true&removeLogo=true" width="100%" frameborder="0" height="' . $height . '"></iframe>
-        </div>';
+        return view('cms::items.scribe-email', [
+            'scribeUrl' => 'https://scribehow.com/shared/'.htmlspecialchars($this->content, ENT_QUOTES),
+            'label' => __('cms::cms.view-guide'),
+        ])->render();
     }
 
     public function blockTypeEditorStylesElement()

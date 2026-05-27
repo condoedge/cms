@@ -10,6 +10,7 @@ class ElementType1Item extends GroupPageItemType
     public const ITEM_NAME = 'newsletter.group';
     public const ITEM_TITLE = 'cms::cms.items.element-type-1';
     public const ITEM_DESCRIPTION = 'cms::cms.items.element-type-1-desc';
+    public const ITEM_ICON = 'element-3';
 
     const GROUP_ITEMS_TYPES = [
         H2Item::class,

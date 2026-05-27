@@ -149,6 +149,27 @@ class Page extends PageModel
         return $this->getStyleProperty('content_max_width_raw') ?: 700;
     }
 
+    public function getFontFamily()
+    {
+        $key = $this->getStyleProperty('font_family');
+
+        if (!$key || $key === 'system') {
+            return config('page-editor.default_font_family');
+        }
+
+        $families = [
+            'arial' => "Arial, Helvetica, sans-serif",
+            'helvetica' => "Helvetica, Arial, sans-serif",
+            'georgia' => "Georgia, 'Times New Roman', serif",
+            'times' => "'Times New Roman', Times, serif",
+            'verdana' => "Verdana, Geneva, sans-serif",
+            'trebuchet' => "'Trebuchet MS', Helvetica, sans-serif",
+            'tahoma' => "Tahoma, Geneva, sans-serif",
+        ];
+
+        return $families[$key] ?? config('page-editor.default_font_family');
+    }
+
     /* SCOPES */
     public function scopeKnowledgeAssociatedToRoute($query, $route)
     {

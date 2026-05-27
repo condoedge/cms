@@ -12,6 +12,7 @@ class DividerItem extends PageItemType
     public const ITEM_NAME = 'divider';
     public const ITEM_TITLE = 'cms::cms.items.divider';
     public const ITEM_DESCRIPTION = 'cms::cms.items.divider-desc';
+    public const ITEM_ICON = 'minus';
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()
@@ -55,18 +56,13 @@ class DividerItem extends PageItemType
 
     public function toHtml(): string
     {
-        $style = $this->styles->divider_style ?: 'solid';
-        $thickness = $this->styles->divider_thickness_raw ?: 1;
-        $color = $this->styles->divider_color ?: '#d5d5d5';
-        $width = $this->styles->divider_width_raw ?: 100;
-
-        return '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="' . $this->styles . '">
-            <tr>
-                <td align="center">
-                    <div style="width: ' . $width . '%; border-top: ' . $thickness . 'px ' . $style . ' ' . $color . '; line-height: 0; font-size: 0;">&nbsp;</div>
-                </td>
-            </tr>
-        </table>';
+        return view('cms::items.divider', [
+            'itemStyles' => (string) $this->styles,
+            'style' => $this->styles->divider_style ?: 'solid',
+            'thickness' => $this->styles->divider_thickness_raw ?: 1,
+            'color' => $this->styles->divider_color ?: '#d5d5d5',
+            'width' => $this->styles->divider_width_raw ?: 100,
+        ])->render();
     }
 
     protected function dividerStyles(): string

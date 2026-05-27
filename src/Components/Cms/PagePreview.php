@@ -2,6 +2,7 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageItemModel;
 use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
@@ -15,12 +16,13 @@ class PagePreview extends Query
     public $containerClass = 'flex flex-col external-container';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
+    public $noItemsFound = '';
 
     protected $panelId;
     protected $withEditor = false;
 
     public $orderable = 'order';
-	public $dragHandle = '.cursor-move';
+	public $dragHandle = '.vlBlockDragHandle';
 
     protected $prefixGroup = "";
 
@@ -31,45 +33,60 @@ class PagePreview extends Query
         $this->withEditor = $this->prop('with_editor');
 
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
-        $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
-        // if(!$this->withEditor) $this->onLoad(fn($e) => $e->run('() => {$("body").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
+        $this->style = $this->withEditor ? 'width: 100%;' : 'width: 100%;';
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
-            $this->onLoad(fn($e) => $e->run('() => {$(".external-container").css("background-color", "'. $this->page->getExteriorBackgroundColor() .'")}'));
-        }
+            // json_encode keeps colors/sizes from breaking out of the JS string literal even if
+            // they ever contained quotes or backslashes.
+            $exterior = json_encode($this->page->getExteriorBackgroundColor());
+            $content = json_encode($this->page->getContentBackgroundColor());
+            $maxWidth = json_encode($this->page->getContentMaxWidth().'px');
 
-        $contentMaxWidth = $this->page->getContentMaxWidth();
-        if ($this->withEditor) {
-            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "width": "100%"})}'));
-        } else {
-            $this->onLoad(fn($e) => $e->run('() => {$(".vlQueryWrapperPagePreview").css({"background-color": "'. $this->page->getContentBackgroundColor() .'", "max-width": "'. $contentMaxWidth .'px", "margin": "0 auto"})}'));
+            $this->onLoad(fn ($e) => $e->run(
+                "() => { \$('.external-container').css('background-color', {$exterior});"
+                ." \$('.vlQueryWrapperPagePreview').css({'background-color': {$content}, 'max-width': {$maxWidth}, 'margin': '0 auto'}); }"
+            ));
         }
     }
 
     public function top()
     {
-        if (!$this->withEditor) return _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>');
+        if (!$this->withEditor) {
+            return $this->responsiveColumnsStyle();
+        }
+
+        $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 
         return _Rows(
-            _Html('<style>@media (max-width: 600px) { .vlFlexResponsiveColumns { flex-direction: column !important; } }</style>'),
-            _FlexBetween(
-                !$this->page->id ? null : _Link('cms::cms.preview-in-browser')->icon('eye')->outlined()->class('p-2 flex items-center gap-1 text-sm')->href('page.preview', ['page_id' => $this->page->id])->inNewTab(),
-                _Flex(
-                    _Link()->icon('device-mobile')->balloon('cms::cms.preview-mobile', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "375px" ? "100%" : "375px"; el.style.margin = "0 auto"; }'),
-                    _Link()->icon('device-tablet')->balloon('cms::cms.preview-tablet', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = el.style.maxWidth === "768px" ? "100%" : "768px"; el.style.margin = "0 auto"; }'),
-                    _Link()->icon('desktop-computer')->balloon('cms::cms.preview-desktop', 'down')
-                        ->class('p-2 text-gray-500 hover:text-gray-800')
-                        ->run('() => { const el = document.querySelector(".vlQueryWrapperPagePreview"); el.style.maxWidth = "100%"; }'),
-                )->class('gap-1'),
-            )->class('mb-2'),
-            _Button('cms::cms.add-zone')->icon('plus')->class('w-full mb-2')->selfGet('getPageItemForm', ['page_id' => $this->page->id])->inPanel($this->panelId),
+            $this->responsiveColumnsStyle(),
+            !$hasItems ? null : _Html('')->class('pt-2'),
         );
+    }
+
+    // Static CSS (no interpolation). Inline so the public preview keeps working when
+    // the host hasn't imported resources/scss/page-editor.scss.
+    protected function responsiveColumnsStyle()
+    {
+        return _Html('<style>@media (max-width:600px){.vlFlexResponsiveColumns{flex-direction:column !important;}}</style>');
+    }
+
+    public function bottom()
+    {
+        if (!$this->withEditor) return null;
+
+        $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
+
+        if (!$hasItems) {
+            return _Rows(
+                _Html()->icon(_Sax('add-square', 48))->class('text-gray-300 mb-3'),
+                _Html('cms::cms.empty-canvas-title')->class('text-base font-semibold text-gray-400 mb-1'),
+                _Html('cms::cms.empty-canvas-desc')->class('text-sm text-gray-400 text-center'),
+            )->class('vlEmptyCanvas');
+        }
+
+        return null;
     }
 
     public function query()
@@ -82,7 +99,6 @@ class PagePreview extends Query
         $pageItemType = $pageItem?->getPageItemType();
 
         if (Features::hasFeature('teams')) {
-            $team = $pageItem->team;
             $team = $pageItem->page->team;
 
             $pageItemType?->setVariables([
@@ -94,9 +110,8 @@ class PagePreview extends Query
         }
 
         $pageItemType?->setEditPanelId($this->panelId);
-        $el = $pageItemType?->toPreviewElement($this->withEditor);
 
-        return $el;
+        return $pageItemType?->toPreviewElement($this->withEditor);
     }
 
     public function getPageItemForm()
@@ -130,24 +145,7 @@ class PagePreview extends Query
     {
         $pageItem = PageItemModel::findOrFail(request('item_id'));
 
-        $newItem = $pageItem->replicate();
-        $newItem->order = $pageItem->page->pageItems()->count();
-        $newItem->save(['skip_validation' => true]);
-
-        if ($pageItem->styles) {
-            $newStyles = $pageItem->styles->replicate();
-            $newItem->styles()->save($newStyles);
-        }
-
-        $pageItem->groupPageItems()->each(function ($groupItem) use ($newItem) {
-            $newGroupItem = $groupItem->replicate();
-            $newGroupItem->group_page_item_id = $newItem->id;
-            $newGroupItem->save(['skip_validation' => true]);
-
-            if ($groupItem->styles) {
-                $newGroupStyles = $groupItem->styles->replicate();
-                $newGroupItem->styles()->save($newGroupStyles);
-            }
-        });
+        app(PageBlockService::class)->copyToPage($pageItem, $pageItem->page);
     }
+
 }

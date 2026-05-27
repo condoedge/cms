@@ -9,6 +9,7 @@ class CKItem extends PageItemType
     public const ITEM_NAME = 'ck';
     public const ITEM_TITLE = 'cms::cms.items.text-editor';
     public const ITEM_DESCRIPTION = 'cms::cms.items.text-subtitles-lists-and-more';
+    public const ITEM_ICON = 'text';
     public const CUSTOM_CLASSES = false;
 
     public function __construct(\Anonimatrix\PageEditor\Models\PageItem $pageItem, $interactsWithPageItem = true)
@@ -32,7 +33,7 @@ class CKItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
+            _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name($this->formPrefix . 'link-color', false)->class('mb-2 whiteField'),
         );
     }
 
@@ -48,9 +49,9 @@ class CKItem extends PageItemType
     {
         $this->styles->removeProperties(['text-align']);
 
-        $text = replaceAllMentionsCms($this->content, $this->variables);
+        $text = replaceAllMentions($this->content, $this->variables);
 
-        return '<div style="' . $this->styles . '" class="'. $this->classes . ' ckEditor">' . $text . '</div>';
+        return '<div style="' . $this->styles . '">' . $text . '</div>';
     }
 
     public function beforeMountInGroup($groupItem)

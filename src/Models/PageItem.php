@@ -142,7 +142,7 @@ class PageItem extends PageItemModel
             return;
         }
 
-        return \Storage::url($this->image['path']);
+        return \Storage::disk('public')->url($this->image['path']);
     }
 
     public function getStyleProperty($property)

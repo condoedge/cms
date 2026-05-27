@@ -14,6 +14,7 @@ class ImgItem extends PageItemType
     public const ITEM_NAME = 'img';
     public const ITEM_TITLE = 'cms::cms.items.image';
     public const ITEM_DESCRIPTION = 'cms::cms.items.add-an-image-to-the-block';
+    public const ITEM_ICON = 'gallery';
 
     public const ASPECT_RATIO_FREE = 'free';
     public const ASPECT_RATIO_ORIGINAL = 'original';
@@ -49,9 +50,17 @@ class ImgItem extends PageItemType
 
         if ($this->valueTitle) $altEl = $altEl->default(json_decode($this->valueTitle));
 
+        $linkEl = _Input('cms::cms.image-link-url')->name($this->nameContent, $this->interactsWithPageItem)
+            ->type('url')
+            ->placeholder('https://')
+            ->class('mt-2');
+
+        if ($this->valueContent) $linkEl = $linkEl->default($this->valueContent);
+
         return _Rows(
             $item,
             $altEl,
+            $linkEl,
         );
     }
 
@@ -68,16 +77,26 @@ class ImgItem extends PageItemType
 
     protected function sizeStyles()
     {
+        $maxWidth = (int) ($this->pageItem->getStyleProperty('max_width_raw') ?: 100);
+
+        $inputId = 'vlImgWidth-'.uniqid();
+        $labelId = $inputId.'-label';
+
         return _Rows(
-            _Toggle('cms::newsletter.page-item-height-auto')->name('height-auto', false)->value((bool) ($this?->styles->height_auto_raw ?? true))->class('whiteField')
-                ->toggleId('item-height-px-input', $this?->styles->height_auto_raw ?? true),
-
-            _InputNumber('cms::newsletter.page-item-height-px')->name('height', false)->value((int) ($this?->styles->height_raw ?: 200))->class('whiteField')->id('item-height-px-input'),
-
-            _InputNumber('cms::newsletter.page-item-width-px')->name('width', false)->value((int) ($this?->styles->width_raw ?: null))->class('whiteField') ,
-            _Panel(
-                static::getDefaultMaxWidth($this->pageItem->getStyleProperty('max_width_raw') ?: 80),
-            )->id(static::PANEL_MAX_WIDTH_ID),
+            _Html('cms::cms.image-width')->class('vlStyleSubLabel'),
+            _Flex(
+                _Input()->name($this->formPrefix . 'max-width', false)
+                    ->type('range')
+                    ->value($maxWidth)
+                    ->id($inputId)
+                    ->class('flex-1')
+                    ->attr(['min' => 10, 'max' => 100, 'step' => 5])
+                    ->onInput(fn ($e) => $e->run(
+                        '() => { var i=document.getElementById("'.$inputId.'");var l=document.getElementById("'.$labelId.'");if(i&&l)l.textContent=i.value+"%"; }'
+                    )),
+                _Html($maxWidth.'%')->id($labelId)->class('text-sm font-semibold text-gray-700 w-10 text-right'),
+            )->class('items-center gap-3'),
+            _Hidden()->name($this->formPrefix . 'height-auto', false)->value(1),
         );
     }
 
@@ -104,8 +123,6 @@ class ImgItem extends PageItemType
         return [
             'cover' => __('cms::cms.object-fit-cover'),
             'contain' => __('cms::cms.object-fit-contain'),
-            'fill' => __('cms::cms.object-fit-fill'),
-            'none' => __('cms::cms.object-fit-none'),
         ];
     }
 
@@ -138,13 +155,13 @@ class ImgItem extends PageItemType
 
         $maxWidth = $default && !$image ? $default : $maxWidth;
 
-        return _InputNumber('cms::newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth))->class('whiteField');
+        return _InputNumber('cms::newsletter.page-item-max-width-percent')->name($nameProperty, false)->value((int) ($maxWidth));
     }
 
     protected function cornerRadiusStyle()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name($this->formPrefix . 'border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
         );
     }
 
@@ -171,7 +188,7 @@ class ImgItem extends PageItemType
 
     protected function saveImageStylesToModel($styleModel)
     {
-        $imageStyles = ['object-fit', 'aspect-ratio'];
+        $imageStyles = ['object-fit', 'aspect-ratio', 'max-width', 'border-radius', 'align-items'];
 
         foreach ($imageStyles as $style) {
             $value = request($this->formPrefix . $style);
@@ -188,13 +205,18 @@ class ImgItem extends PageItemType
         $styles = $this->imgStyles();
 
         $el = !$this->content?->image ? null : _Rows(
-            _Img()->src(\Storage::url($this->content->image_preview['path']))
+            _Img()->src(\Storage::disk('public')->url($this->content->image_preview['path']))
                 ->style($styles)
                 ->attr(['alt' => $this->content->title ?: ''])
         )->class('w-full');
 
         if(!$withEditor && $el) {
-            $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+            $linkUrl = $this->pageItem->content;
+            if ($linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL)) {
+                $el = $el->attr(['title' => $linkUrl]);
+            } else {
+                $el = $el->onClick(fn($e) => $e->get('page-editor.get-full-view', ['path' => $this->content->image['path']])->inModal());
+            }
         }
 
         return $el;
@@ -203,32 +225,38 @@ class ImgItem extends PageItemType
     public static function getFullView()
     {
         return _Rows(
-            _Img()->src(\Storage::url(request('path'))),
+            _Img()->src(\Storage::disk('public')->url(request('path'))),
         )->class('w-full overflow-y-auto mini-scroll')->style('max-height: 95vh');
     }
 
     public function toHtml(): string
     {
-        $imageUrl = $this->content?->image;
-        if (!$imageUrl) {
+        if (!$this->content?->image) {
             return '';
         }
 
         $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
         $altText = htmlspecialchars($this->content->title ?: '', ENT_QUOTES);
-
-        $styles = $this->imgStylesForEmail();
+        $imgStyles = $this->imgStylesForEmail();
         $align = $this->styles->getRawProperty('align-items') ?? 'center';
 
         $this->styles->removeProperties(['height', 'width', 'max-width', 'min-height', 'background-repeat', 'background-size', 'border-radius', 'object-fit', 'aspect-ratio']);
         $this->styles->replaceProperty('width', '100% !important');
         $this->styles->replaceProperty('display', null);
 
-        return $this->alignElement(
-            "<img src=\"{$imageUrl}\" alt=\"{$altText}\" style=\"{$styles}\" />",
-            $align,
-            $this->styles,
-        );
+        $linkUrl = $this->pageItem->content;
+        $hasValidLink = $linkUrl && filter_var($linkUrl, FILTER_VALIDATE_URL);
+
+        $imgTag = view('cms::items.image-email', [
+            'imageUrl' => $imageUrl,
+            'altText' => $altText,
+            'imgStyles' => $imgStyles,
+            'widthAttr' => $this->styles->width_raw ? (int) $this->styles->width_raw : '100%',
+            'heightAttr' => ($this->styles->height_auto_raw ?? true) ? 'auto' : (int) $this->styles->height_raw,
+            'linkUrl' => $hasValidLink ? htmlspecialchars($linkUrl, ENT_QUOTES) : null,
+        ])->render();
+
+        return $this->alignElement($imgTag, $align, $this->styles);
     }
 
     public function rules()

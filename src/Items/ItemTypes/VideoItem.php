@@ -12,6 +12,7 @@ class VideoItem extends PageItemType
     public const ITEM_NAME = 'video';
     public const ITEM_TITLE = 'cms::cms.items.video';
     public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-video';
+    public const ITEM_ICON = 'video-play';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -36,8 +37,8 @@ class VideoItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 80)->class('whiteField'),
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 100),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
             $this->justifyStylesEls(),
         );
     }
@@ -103,10 +104,13 @@ class VideoItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        return _Html($this->toHtml());
+        return _Html($this->toElementHtml());
     }
 
-    public function toHtml(): string
+    /**
+     * Render the video for the editor preview (iframe/video embeds).
+     */
+    protected function toElementHtml(): string
     {
         $type = $this->detectVideoType();
 
@@ -121,16 +125,52 @@ class VideoItem extends PageItemType
         return $this->renderVideoFile();
     }
 
+    // Thumbnail + link for embeds; plain CTA link for file videos. Email clients can't render <iframe>/<video>.
+    public function toHtml(): string
+    {
+        $type = $this->detectVideoType();
+        $embedId = $this->extractEmbedId();
+        $videoStyles = $this->videoStyles();
+
+        if ($type === 'youtube' && $embedId) {
+            $thumbnailUrl = 'https://img.youtube.com/vi/'.$embedId.'/maxresdefault.jpg';
+            $videoUrl = 'https://www.youtube.com/watch?v='.$embedId;
+        } elseif ($type === 'vimeo' && $embedId) {
+            $thumbnailUrl = 'https://vumbnail.com/'.$embedId.'.jpg';
+            $videoUrl = 'https://vimeo.com/'.$embedId;
+        } else {
+            $videoUrl = \Storage::disk('public')->url($this->content);
+
+            return $this->centerElement(
+                view('cms::items.video-file', [
+                    'videoUrl' => htmlspecialchars($videoUrl, ENT_QUOTES),
+                    'label' => __('cms::cms.watch-video'),
+                ])->render(),
+                (string) $this->styles,
+            );
+        }
+
+        return $this->centerElement(
+            view('cms::items.video-embed', [
+                'videoUrl' => htmlspecialchars($videoUrl, ENT_QUOTES),
+                'thumbnailUrl' => htmlspecialchars($thumbnailUrl, ENT_QUOTES),
+                'alt' => __('cms::cms.watch-video'),
+                'videoStyles' => $videoStyles,
+            ])->render(),
+            (string) $this->styles,
+        );
+    }
+
     protected function renderYoutubeEmbed(): string
     {
         $embedId = $this->extractEmbedId();
         if (!$embedId) return '';
 
-        $videoStyles = $this->videoStyles();
-
-        return '<div style="' . $this->styles . ' display:flex; flex-direction: column; align-items: center;">
-            <iframe src="https://www.youtube.com/embed/' . $embedId . '" style="width: 100%; aspect-ratio: 16/9; ' . $videoStyles . '" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-        </div>';
+        return view('cms::items.video-youtube-preview', [
+            'embedId' => $embedId,
+            'wrapperStyles' => (string) $this->styles,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
     }
 
     protected function renderVimeoEmbed(): string
@@ -138,21 +178,20 @@ class VideoItem extends PageItemType
         $embedId = $this->extractEmbedId();
         if (!$embedId) return '';
 
-        $videoStyles = $this->videoStyles();
-
-        return '<div style="' . $this->styles . ' display:flex; flex-direction: column; align-items: center;">
-            <iframe src="https://player.vimeo.com/video/' . $embedId . '" style="width: 100%; aspect-ratio: 16/9; ' . $videoStyles . '" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
-        </div>';
+        return view('cms::items.video-vimeo-preview', [
+            'embedId' => $embedId,
+            'wrapperStyles' => (string) $this->styles,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
     }
 
     protected function renderVideoFile(): string
     {
-        $videoStyles = $this->videoStyles();
-
-        return '<video style="' . $videoStyles .  '"  class="'. $this->classes . '" autoplay="" loop="" muted="" playsinline="" controlslist="nodownload,nofullscreen,noremoteplayback">
-            <source src="' . \Storage::url($this->content) . '" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>';
+        return view('cms::items.video-file-preview', [
+            'src' => \Storage::disk('public')->url($this->content),
+            'classes' => $this->classes,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
     }
 
     public function defaultStyles($pageItem): string

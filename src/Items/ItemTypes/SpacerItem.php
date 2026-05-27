@@ -12,6 +12,7 @@ class SpacerItem extends PageItemType
     public const ITEM_NAME = 'spacer';
     public const ITEM_TITLE = 'cms::cms.items.spacer';
     public const ITEM_DESCRIPTION = 'cms::cms.items.spacer-desc';
+    public const ITEM_ICON = 'arrow-swap-horizontal';
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()
@@ -45,6 +46,6 @@ class SpacerItem extends PageItemType
     {
         $height = $this->styles->height_raw ?: 40;
 
-        return '<div style="height: ' . $height . 'px; width: 100%; line-height: ' . $height . 'px; font-size: 0;">&nbsp;</div>';
+        return '<div style="height: ' . $height . 'px; width: 100%; line-height: ' . $height . 'px; font-size: 0; mso-line-height-rule: exactly;">&nbsp;</div>';
     }
 }

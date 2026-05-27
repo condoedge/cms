@@ -12,6 +12,7 @@ class HeaderItem extends PageItemType
     public const ITEM_NAME = 'header';
     public const ITEM_TITLE = 'cms::cms.items.image-header';
     public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-image';
+    public const ITEM_ICON = 'image';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -105,75 +106,43 @@ class HeaderItem extends PageItemType
 
     protected function toElement($withEditor = null)
     {
-        $height = $this->styles->height_raw ?: 300;
-        $textColor = $this->styles->header_text_color ?: '#ffffff';
-        $textPosition = $this->styles->header_text_position ?: 'center';
-        $bgSize = $this->styles->object_fit ?: 'cover';
-        $overlayStyle = $this->buildOverlayStyle();
-
-        $bgStyle = !$this->content->image ? '' : "background-image: url('" . \Storage::url($this->content->image['path']) . "');";
+        $hasOverlay = (bool) ($this->styles->header_overlay_raw ?: false);
 
         return _Rows(
-            _Html('
-                <div style="position: relative; width: 100%; height: ' . $height . 'px; ' . $bgStyle . ' background-size: ' . $bgSize . '; background-position: center; background-repeat: no-repeat; display: flex; align-items: ' . $textPosition . '; justify-content: center;">
-                    ' . $overlayStyle . '
-                    <div style="position: relative; z-index: 1; color: ' . $textColor . '; text-align: center; font-size: 1.5rem; padding: 20px;">' . ($this->content->title ?: '') . '</div>
-                </div>
-            '),
+            _Html(view('cms::items.header-preview', [
+                'imageUrl' => $this->content->image ? \Storage::disk('public')->url($this->content->image['path']) : null,
+                'height' => $this->styles->height_raw ?: 300,
+                'textColor' => $this->styles->header_text_color ?: '#ffffff',
+                'textPosition' => $this->styles->header_text_position ?: 'center',
+                'bgSize' => $this->styles->object_fit ?: 'cover',
+                'title' => $this->content->title ?: '',
+                'hasOverlay' => $hasOverlay,
+                'overlayColor' => $hasOverlay ? ($this->styles->header_overlay_color ?: '#000000') : '',
+                'overlayOpacity' => $hasOverlay ? (((int) ($this->styles->header_overlay_opacity_raw ?: 40)) / 100) : 0,
+            ])->render()),
         );
     }
 
     public function toHtml(): string
     {
-        $imageUrl = $this->content?->image;
-        if (!$imageUrl) {
+        if (!$this->content?->image) {
             return '';
         }
 
-        $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
-        $height = $this->styles->height_raw ?: 300;
-        $textColor = $this->styles->header_text_color ?: '#ffffff';
-        $title = $this->content->title ?: '';
         $textPosition = $this->styles->header_text_position ?: 'center';
-        $verticalAlign = match($textPosition) {
-            'flex-start' => 'top',
-            'flex-end' => 'bottom',
-            default => 'middle',
-        };
 
-        $overlayBg = $this->getOverlayRgba();
-
-        // VML fallback for Outlook + standard background-image for other clients
-        return '<!--[if mso]>
-        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' . $height . 'px;">
-            <v:fill type="frame" src="' . $imageUrl . '" />
-            <v:textbox inset="0,0,0,0" style="mso-fit-shape-to-text:false">
-        <![endif]-->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image: url(\'' . $imageUrl . '\'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-            <tr>
-                <td height="' . $height . '" align="center" valign="' . $verticalAlign . '" style="padding: 20px; color: ' . $textColor . '; font-size: 1.5rem; text-align: center;' . ($overlayBg ? ' background-color: ' . $overlayBg . ';' : '') . '">
-                    ' . $title . '
-                </td>
-            </tr>
-        </table>
-        <!--[if mso]>
-            </v:textbox>
-        </v:rect>
-        <![endif]-->';
-    }
-
-    protected function buildOverlayStyle(): string
-    {
-        $hasOverlay = (bool) ($this->styles->header_overlay_raw ?: false);
-
-        if (!$hasOverlay) {
-            return '';
-        }
-
-        $overlayColor = $this->styles->header_overlay_color ?: '#000000';
-        $overlayOpacity = ((int) ($this->styles->header_overlay_opacity_raw ?: 40)) / 100;
-
-        return '<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: ' . $overlayColor . '; opacity: ' . $overlayOpacity . ';"></div>';
+        return view('cms::items.header', [
+            'imageUrl' => \Storage::disk('public')->url($this->content->image['path']),
+            'height' => $this->styles->height_raw ?: 300,
+            'textColor' => $this->styles->header_text_color ?: '#ffffff',
+            'title' => $this->content->title ?: '',
+            'verticalAlign' => match ($textPosition) {
+                'flex-start' => 'top',
+                'flex-end' => 'bottom',
+                default => 'middle',
+            },
+            'overlayBg' => $this->getOverlayRgba(),
+        ])->render();
     }
 
     protected function getOverlayRgba(): string

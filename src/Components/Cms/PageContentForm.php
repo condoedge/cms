@@ -14,12 +14,28 @@ class PageContentForm extends Form
     protected $withDesign = true;
     protected $prefixGroup = "";
 
+    protected $usePageEditor = true;
+
     public function created()
     {
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
     public function render()
+    {
+        if ($this->usePageEditor && $this->model?->id) {
+            return $this->pageEditorRender();
+        }
+
+        return $this->legacyRender();
+    }
+
+    protected function pageEditorRender()
+    {
+        return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
+    }
+
+    protected function legacyRender()
     {
         return _Rows(
             $this->top(),

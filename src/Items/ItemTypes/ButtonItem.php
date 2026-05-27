@@ -13,6 +13,7 @@ class ButtonItem extends PageItemType
     public const ITEM_NAME = 'button';
     public const ITEM_TITLE = 'cms::cms.items.button';
     public const ITEM_DESCRIPTION = 'cms::cms.items.button';
+    public const ITEM_ICON = 'mouse-square';
 
     public const SIZE_SMALL = 'small';
     public const SIZE_MEDIUM = 'medium';
@@ -46,7 +47,7 @@ class ButtonItem extends PageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _Select('cms::cms.button-size')->name('button-size', false)
+            _Select('cms::cms.button-size')->name($this->formPrefix . 'button-size', false)
                 ->options(static::getSizeOptions())
                 ->default($this->styles->button_size ?: static::SIZE_MEDIUM)
                 ->class('whiteField'),
@@ -59,9 +60,23 @@ class ButtonItem extends PageItemType
 
         $styleModel = $this->pageItem->getOrCreateStyles();
 
-        PageStyle::setStylesToModel($styleModel);
+        if ($this->interactsWithPageItem) {
+            PageStyle::setStylesToModel($styleModel);
+        } else {
+            $this->saveButtonStylesToModel($styleModel);
+        }
 
         $styleModel->save();
+    }
+
+    protected function saveButtonStylesToModel($styleModel)
+    {
+        $value = request($this->formPrefix . 'button-size');
+
+        if (!is_null($value)) {
+            $suffix = config('page-editor.automapping_styles.button-size', '');
+            $styleModel->content->replaceProperty('button-size', $value . $suffix);
+        }
     }
 
     public static function getSizeOptions(): array
@@ -96,17 +111,32 @@ class ButtonItem extends PageItemType
 
     public function toHtml(): string
     {
-        $originalStyles = $this->styles;
-        $tdStyles = collect($this->styles->getProperties(['color', 'background-color', 'border-color', 'text-decoration', 'width', 'max-width', 'border-radius', 'margin']))->map(function ($value, $key) {
-            return $key . ': ' . $value . ';';
-        })->implode(' ');
-        $originalStyles->removeProperties([ 'margin', 'width']);
+        if (!$this->content->href || !$this->content->title) {
+            return '';
+        }
 
-        $buttonWidth = $this->getButtonWidth();
+        $buttonWidthPx = $this->getButtonWidthPx();
+        $borderRadius = (int) ($this->styles->border_radius_raw ?: 5);
 
-        return !$this->content->href || !$this->content->title ? '' : str_replace("\r\n", '', $this->centerElement($this->centerElement(
-            '<a target="_blank" href="' . $this->content->href . '" style="' . $originalStyles . 'width: 100% !important;" class="'. $this->classes . '">' . $this->content->title . '</a>'
-        , $tdStyles, $buttonWidth, tableStyles: 'width:' . $buttonWidth . ' !important;'), tableStyles: 'padding: 10px 0 !important; table-layout:fixed;'));
+        return view('cms::items.button', [
+            'href' => htmlspecialchars($this->content->href, ENT_QUOTES),
+            'title' => htmlspecialchars($this->content->title, ENT_QUOTES),
+            'bgColor' => $this->styles->background_color ?: '#2563eb',
+            'textColor' => $this->styles->color ?: '#ffffff',
+            'borderRadius' => $borderRadius,
+            'fontSize' => (int) ($this->styles->font_size_raw ?: 14),
+            'padding' => $this->styles->padding ?: '15px 4px',
+            'buttonWidth' => $this->getButtonWidth(),
+            'buttonWidthPx' => $buttonWidthPx,
+            'arcsize' => $buttonWidthPx > 0 ? (int) round(($borderRadius / $buttonWidthPx) * 100) : 10,
+        ])->render();
+    }
+
+    protected function getButtonWidthPx(): int
+    {
+        $pct = (int) str_replace('%', '', $this->getButtonWidth());
+
+        return (int) round(config('page-editor.email_container_width', 600) * $pct / 100);
     }
 
     public function rules()

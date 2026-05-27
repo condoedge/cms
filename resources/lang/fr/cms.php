@@ -22,6 +22,7 @@ return [
     "exterior-background-color" => "Couleur de fond extérieure",
     "first-save-page" => "Sauvegarder pour continuer",
     "font-size" => "Grandeur de la police",
+    "image-width" => "Largeur de l'image",
     "font-size-number" => "Taille de la police du numéro",
     "gray" => "Gris",
     "green" => "Vert",

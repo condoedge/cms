@@ -10,6 +10,7 @@ class WhatsNewCardItem extends GroupPageItemType
     public const ITEM_NAME = 'newsletter.whats-new-card';
     public const ITEM_TITLE = 'cms::cms.items.whats-new-card';
     public const ITEM_DESCRIPTION = 'cms::cms.items.whats-new-card-desc';
+    public const ITEM_ICON = 'card';
 
     const GROUP_ITEMS_TYPES = [
         ImgItem::class,
@@ -31,12 +32,12 @@ class WhatsNewCardItem extends GroupPageItemType
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _InputNumber('newsletter.page-item-height-px')->name('img-height', false)->value((int) ($this?->styles->img_height_raw ?: 200))->class('whiteField'),
-            _InputNumber('newsletter.page-item-width-px')->name('img-width', false)->value((int) ($this?->styles->img_width_raw ?: null))->class('whiteField'),
+            _InputNumber('newsletter.page-item-height-px')->name('img-height', false)->value((int) ($this?->styles->img_height_raw ?: 200)),
+            _InputNumber('newsletter.page-item-width-px')->name('img-width', false)->value((int) ($this?->styles->img_width_raw ?: null)),
             _Panel(
                 ImgItem::getDefaultMaxWidth($this->pageItem->getStyleProperty('img_max_width_raw') ?: 80, 'img-max-width'),
             )->id(ImgItem::PANEL_MAX_WIDTH_ID),
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('img-border-radius', false)->value((int) $this->styles->img_border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name('img-border-radius', false)->value((int) $this->styles->img_border_radius_raw ?: 0),
         );
     }
 

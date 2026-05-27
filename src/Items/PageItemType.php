@@ -16,6 +16,7 @@ abstract class PageItemType
     public const ITEM_NAME = 'default';
     public const ITEM_TITLE = 'newsletter.default';
     public const ITEM_DESCRIPTION = 'newsletter.a-default-page-item';
+    public const ITEM_ICON = 'document-text';
     public const SPECIFIC_GROUP = '';
 
     protected string | object $content;
@@ -82,9 +83,10 @@ abstract class PageItemType
 
         $html = $this->addIdToRootTag($html, $uniqueId);
         $mobileStringStyles = $this->responsiveStyles($uniqueId);
+        $visibilityStyles = $this->visibilityStyles($uniqueId);
 
         return $this->getGridSteblingsHtml(
-            $mobileStringStyles . $html,
+            $visibilityStyles . $mobileStringStyles . $html,
         );
     }
 
@@ -124,29 +126,35 @@ abstract class PageItemType
 
     final protected function toElementWithStyles($withEditor = null)
     {
-        if(static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
+        if (static::DISABLE_AUTO_STYLES) return $this->toElement($withEditor);
 
         $uniqueId = uniqid('page-item-type-');
 
         return _Rows(
-            _Html($this->responsiveStyles($uniqueId)), // TODO WE MUST ADD A BETTER WAY TO ADD THIS. It's just a quick fix to add margin differents into desktop and mobile
+            _Html($this->responsiveStyles($uniqueId)),
             $this->toElement($withEditor)?->style((string) $this->styles)?->class($this->classes)->id($uniqueId),
         )->class('w-full');
     }
 
+    // Mobile-only media query; visibility rules are intentionally omitted from the editor preview.
     protected function responsiveStyles($uniqueId)
     {
-        $mobileStringStyles = $this->styles->getMobileStringStyles();
+        return $this->renderItemStyles($uniqueId, includeVisibility: false);
+    }
 
-        return "
-            <style>
-                @media (max-width: 768px) {
-                    #$uniqueId {
-                        $mobileStringStyles
-                    }
-                }
-            </style>
-        ";
+    protected function visibilityStyles($uniqueId)
+    {
+        return $this->renderItemStyles($uniqueId, includeMobile: false);
+    }
+
+    protected function renderItemStyles(string $uniqueId, bool $includeMobile = true, bool $includeVisibility = true): string
+    {
+        return view('cms::partials.item-styles', [
+            'uniqueId' => $uniqueId,
+            'mobileStyles' => $includeMobile ? $this->styles->getMobileStringStyles() : '',
+            'hideOnMobile' => $includeVisibility && $this->styles->getRawProperty('hide-on-mobile'),
+            'hideOnDesktop' => $includeVisibility && $this->styles->getRawProperty('hide-on-desktop'),
+        ])->render();
     }
 
     final public function toElementWrap($withEditor = null)
@@ -179,23 +187,92 @@ abstract class PageItemType
     {
         $itemType = $item->getPageItemType();
         $itemType?->setVariables($this->variables);
-        $el = $itemType?->toElementWithStyles($withEditor);
-
-        if (!$el) {
-            $el = _Rows(_Html('')->class('min-h-[60px]'))->class('w-full');
+        try {
+            $el = $itemType?->toElementWithStyles($withEditor);
+            $hasContent = $itemType?->toElement($withEditor) !== null;
+        } catch (\Throwable $e) {
+            $el = null;
+            $hasContent = false;
         }
 
-        return !$withEditor ? $el : _Flex(
+        if (!$el || !$hasContent) {
+            $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
+            $el = _Rows(
+                _Div(
+                    _Html($typeName.' — '.__('cms::cms.click-to-edit'))
+                )->class('vlEmptyBlockPlaceholder'),
+            )->class('w-full');
+        }
+
+        if (!$withEditor) return $el;
+
+        $isPageEditor = $this->isPageEditorContext();
+
+        if ($isPageEditor) {
+            return $this->pageEditorPreviewItem($item, $itemType, $el);
+        }
+
+        return $this->legacyPreviewItem($item, $itemType, $el);
+    }
+
+    protected function pageEditorPreviewItem($item, $itemType, $el)
+    {
+        $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
+
+        return _Rows(
+            $itemType?->pageEditorBlockActions($this->editPanelId),
+            _Rows($el)->class('w-full vlPageBlockContent'),
+        )->class('vlPageBlock')
+         ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName])
+         ->onClick
+         ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
+         ->inPanel($this->editPanelId);
+    }
+
+    protected function legacyPreviewItem($item, $itemType, $el)
+    {
+        return _Flex(
             $itemType?->adminPreviewOptions($this->editPanelId),
             _Rows($el)
                 ->class('border-2 border-dashed border-gray-300 hover:border-blue-600 w-full')
-                ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
+                ->onClick->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
                 ->inPanel($this->editPanelId),
         )->class('group relative mb-3 mt-10 w-full')->style('flex-grow: 1');
     }
 
+    protected function isPageEditorContext()
+    {
+        return $this->editPanelId === \Anonimatrix\PageEditor\Components\Cms\PageEditorLayout::PROPERTY_PANEL;
+    }
+
     /**
-     * Get the admin options for the preview.
+     * Floating action toolbar for the email editor canvas.
+     */
+    public function pageEditorBlockActions($editPanelId = '')
+    {
+        $canSwitch = $this->pageItem->page_item_id && !$this->pageItem->pageItems()->count();
+        $canAddColumn = !$this->pageItem->page_item_id;
+
+        return _Flex(
+            _Html()->icon(_Sax('menu',16))->class('vlBlockActionBtn vlBlockDragHandle'),
+            _Html(__(static::ITEM_TITLE))->class('vlBlockTypeLabel'),
+            _Link()->icon(_Sax('copy',16))->class('vlBlockActionBtn')
+                ->balloon('cms::cms.duplicate-block', 'down')
+                ->selfPost('duplicatePageItem', ['item_id' => $this->pageItem->id])
+                ->refresh(),
+            _Link()->icon(_Sax('edit-2',16))->class('vlBlockActionBtn')
+                ->balloon('cms::cms.edit-block', 'down')
+                ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
+                ->inPanel($editPanelId)
+                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }')),
+            _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
+                ->byKey($this->pageItem)->browse()
+                ->balloon('cms::cms.delete-block', 'down'),
+        )->class('vlBlockActions');
+    }
+
+    /**
+     * Get the admin options for the preview (legacy layout).
      */
     public function adminPreviewOptions($editPanelId = '')
     {
@@ -209,7 +286,7 @@ abstract class PageItemType
     }
 
     /**
-     * Get the admin buttons for the preview.
+     * Get the admin buttons for the preview (legacy layout).
      */
     public function actionsButtons($editPanelId = '')
     {
@@ -238,7 +315,7 @@ abstract class PageItemType
     }
 
     /**
-     * Get the admin button to move the order of the item.
+     * Get the admin button to move the order of the item (legacy layout).
      */
     public function moveOrderButton($editPanelId = '')
     {
@@ -248,7 +325,7 @@ abstract class PageItemType
     }
 
     /**
-     * Generate a group of buttons for the admin preview.
+     * Generate a group of buttons for the admin preview (legacy layout).
      */
     public function adminButtonsGroup($els = [])
     {
@@ -331,6 +408,8 @@ abstract class PageItemType
 
         $columnCount = 1 + $gridSteblings->count();
         $colWidth = round(100 / $columnCount);
+        $colWidthPx = round(config('page-editor.email_container_width', 600) * $colWidth / 100);
+        $uniqueId = uniqid('grid-cols-');
 
         $columns = '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $html . '</td>';
         $columns .= $gridSteblings->map(function ($el) use ($colWidth) {
@@ -341,12 +420,18 @@ abstract class PageItemType
         return '
             <style>
                 @media (max-width: 600px) {
-                    .responsive-columns td { display: block !important; width: 100% !important; }
+                    .' . $uniqueId . ' td { display: block !important; width: 100% !important; }
                 }
             </style>
-            <table class="responsive-columns" width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+            <!--[if mso]>
+            <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="' . $colWidthPx . '" valign="top">
+            <![endif]-->
+            <table role="presentation" class="' . $uniqueId . '" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
                 <tr>' . $columns . '</tr>
-            </table>';
+            </table>
+            <!--[if mso]>
+            </td></tr></table>
+            <![endif]-->';
     }
 
     /** STYLES */
@@ -413,12 +498,12 @@ abstract class PageItemType
     protected function justifyStylesEls()
     {
         return _Rows(
-            _ButtonGroup('newsletter.page-item-justify')->class('mt-4')->name('align-items', false)->options([
-                'start' => __('cms::cms.left'),
-                'center' => __('cms::cms.center'),
-                'end' => __('cms::cms.right'),
-            ])->optionClass('px-4 py-2 text-center cursor-pointer')
-            ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
+            _ButtonGroup('newsletter.page-item-justify')->name($this->formPrefix . 'align-items', false)->options([
+                'start' => _Html()->icon(_Sax('textalign-left', 16)),
+                'center' => _Html()->icon(_Sax('textalign-center', 16)),
+                'end' => _Html()->icon(_Sax('textalign-right', 16)),
+            ])->optionClass('vlAlignBtn')
+            ->selectedClass('vlAlignBtnActive', 'vlAlignBtnInactive')
             ->value($this->styles->align_items ?: 'center'),
         );
     }
@@ -535,17 +620,17 @@ abstract class PageItemType
     /* TABLES HTML HELPERS */
     protected function alignElement($el, $align = 'center', $styles = '', $width = '100%', $tableStyles = '')
     {
-        $backgroundPattern = "/background-color: (.*?);/i";
         $matches = [];
-        $bgColor = preg_match($backgroundPattern, $styles, $matches) ? $matches[1] : null;
-        
-        return '<table width="'.$width.'" border="0" cellspacing="0" cellpadding="0" style="'.$tableStyles.'">
-            <tr>
-                <td align="' . $align . '" style="'. $styles .'" bgcolor="'.$bgColor.'">
-                    ' . $el . '
-                </td>
-            </tr>
-        </table>';
+        $bgColor = preg_match('/background-color:\s*(.*?);/i', (string) $styles, $matches) ? $matches[1] : null;
+
+        return view('cms::partials.align-table', [
+            'content' => $el,
+            'align' => $align,
+            'cellStyles' => (string) $styles,
+            'width' => $width,
+            'tableStyles' => $tableStyles,
+            'bgColor' => $bgColor,
+        ])->render();
     }
 
     protected function centerElement($el, $styles = '', $width = '100%', $tableStyles = '')
