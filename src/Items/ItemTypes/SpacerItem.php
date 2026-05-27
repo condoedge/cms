@@ -12,7 +12,7 @@ class SpacerItem extends PageItemType
     public const ITEM_NAME = 'spacer';
     public const ITEM_TITLE = 'cms::cms.items.spacer';
     public const ITEM_DESCRIPTION = 'cms::cms.items.spacer-desc';
-    public const ITEM_ICON = 'arrow-swap';
+    public const ITEM_ICON = 'arrow-swap-horizontal';
     public const ONLY_CUSTOM_STYLES = true;
 
     public function blockTypeEditorElement()

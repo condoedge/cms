@@ -33,7 +33,7 @@ class PagePreview extends Query
         $this->withEditor = $this->prop('with_editor');
 
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
-        $this->style = $this->withEditor ? 'max-height: 100vh; width: 100%;' : 'width: 100%;';
+        $this->style = $this->withEditor ? 'width: 100%;' : 'width: 100%;';
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 

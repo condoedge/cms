@@ -19,7 +19,7 @@ class PageItemForm extends Form
     public const COPY_BLOCK_PANEL_ID = 'copyBlockPanel';
 
     // Sentinel block_type that means "copy from another page" — not a real item type.
-    public const COPY_BLOCK_TYPE = self::COPY_BLOCK_TYPE;
+    public const COPY_BLOCK_TYPE = '__copy__';
 
     protected $prefixGroup = "";
 

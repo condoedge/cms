@@ -23,9 +23,7 @@ class BlockLibraryPanel extends Form
             _SwipeableTabs(
                 _Tab($this->blocksTab())->label('cms::cms.blocks')->class('vlBlockLibTabContent'),
                 _Tab($this->designTab())->label('cms::cms.design')->class('vlBlockLibTabContent'),
-            )->class('vlBlockLibTabs px-6 pt-2')->config([
-                'tabParamKey' => 'block_lib_tab',
-            ]),
+            )->class('vlBlockLibTabs px-6 py-2')->tabParamKey('block_lib_tab'),
         )->class('vlBlockLibPanel');
     }
 
