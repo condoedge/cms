@@ -3,7 +3,7 @@
    ============================================ */
 
 /* Editor Wrapper */
-.vlEmailEditorWrapper {
+.vlPageEditorWrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -347,7 +347,7 @@
 }
 
 /* ---- Block selection & hover in canvas ---- */
-.vlEmailBlock {
+.vlPageBlock {
     border: 2px solid transparent;
     border-radius: 4px;
     transition: border-color 0.15s, box-shadow 0.15s;
@@ -359,12 +359,12 @@
         border-color: #93c5fd;
     }
     &:hover .vlEmptyBlockPlaceholder,
-    &.vlEmailBlockEmpty:hover::after {
+    &.vlPageBlockEmpty:hover::after {
         border-color: #93c5fd;
         background: #eff6ff;
         color: #6b7280;
     }
-    &.vlEmailBlockSelected {
+    &.vlPageBlockSelected {
         border-color: #2563eb !important;
         box-shadow: 0 0 0 1px #2563eb;
     }
@@ -384,8 +384,8 @@
     gap: 2px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.vlEmailBlock:hover .vlBlockActions,
-.vlEmailBlock.vlEmailBlockSelected .vlBlockActions {
+.vlPageBlock:hover .vlBlockActions,
+.vlPageBlock.vlPageBlockSelected .vlBlockActions {
     display: flex;
 }
 .vlBlockActionBtn {

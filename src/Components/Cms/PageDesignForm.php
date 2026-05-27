@@ -18,6 +18,6 @@ class PageDesignForm extends Form
 
     public function render()
     {
-        return PageEditor::getEmailEditorComponent($this->prefixGroup, $this->model?->id);
+        return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
     }
 }

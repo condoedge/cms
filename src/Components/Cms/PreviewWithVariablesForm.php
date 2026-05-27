@@ -46,7 +46,7 @@ class PreviewWithVariablesForm extends Modal
         }
 
         return _Rows(
-            ...$variables->map(fn($label, $key) =>
+            $variables->map(fn($label, $key) =>
                 _Input($label)
                     ->name('var_' . $key, false)
                     ->value($this->getSampleValue($key))

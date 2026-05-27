@@ -6,14 +6,14 @@ use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
-class EmailEditorLayout extends Form
+class PageEditorLayout extends Form
 {
-    public $id = 'email-editor-layout';
+    public $id = 'page-editor-layout';
     protected $prefixGroup = "";
 
-    public const PREVIEW_PANEL = 'email-editor-preview-panel';
-    public const PROPERTY_PANEL = 'email-editor-property-panel';
-    public const BLOCK_LIBRARY_PANEL = 'email-editor-block-library-panel';
+    public const PREVIEW_PANEL = 'page-editor-preview-panel';
+    public const PROPERTY_PANEL = 'page-editor-property-panel';
+    public const BLOCK_LIBRARY_PANEL = 'page-editor-block-library-panel';
 
     public function created()
     {
@@ -33,7 +33,7 @@ class EmailEditorLayout extends Form
             $this->emptyBlockPseudoStyle(),
             $this->topBar(),
             $this->editorBody(),
-        )->class('vlEmailEditorWrapper')->attr(['role' => 'application', 'aria-label' => __('cms::cms.email-editor')]);
+        )->class('vlPageEditorWrapper')->attr(['role' => 'application', 'aria-label' => __('cms::cms.page-editor')]);
     }
 
     protected function emptyState()
@@ -63,7 +63,7 @@ class EmailEditorLayout extends Form
     protected function drawerBackdrop()
     {
         return _Link()->class('vlDrawerBackdrop')
-            ->run('() => { if (window.vlEmailEditor) vlEmailEditor.closeDrawer() }');
+            ->run('() => { if (window.vlPageEditor) vlPageEditor.closeDrawer() }');
     }
 
     protected function leftPanel()
@@ -104,7 +104,7 @@ class EmailEditorLayout extends Form
             _Flex(
                 _Html('cms::cms.block-properties')->class('vlDrawerTitle'),
                 _Link()->icon('x')->class('vlDrawerClose')
-                    ->run('() => { vlEmailEditor.closeDrawer() }'),
+                    ->run('() => { vlPageEditor.closeDrawer() }'),
             )->class('vlDrawerHeader'),
             _Panel()->id(static::PROPERTY_PANEL),
         )->class('vlEditorRightPanel')->attr(['role' => 'complementary', 'aria-label' => __('cms::cms.block-properties')]);
@@ -116,12 +116,12 @@ class EmailEditorLayout extends Form
     {
         $label = e(__('cms::cms.click-to-edit'));
 
-        return _Html('<style>.vlEmailBlock.vlEmailBlockEmpty::after{content:attr(data-block-type) " — '.$label.'";}</style>');
+        return _Html('<style>.vlPageBlock.vlPageBlockEmpty::after{content:attr(data-block-type) " — '.$label.'";}</style>');
     }
 
     protected function bindEditorJs(): void
     {
-        $js = file_get_contents(__DIR__.'/../../../resources/js/email-editor.js');
+        $js = file_get_contents(__DIR__.'/../../../resources/js/page-editor.js');
         $panelId = json_encode(static::PROPERTY_PANEL);
 
         $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.'); }'));

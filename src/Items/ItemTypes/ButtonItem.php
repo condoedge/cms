@@ -132,14 +132,11 @@ class ButtonItem extends PageItemType
         ])->render();
     }
 
-    /**
-     * Get the button width in pixels (based on a 600px container).
-     */
     protected function getButtonWidthPx(): int
     {
         $pct = (int) str_replace('%', '', $this->getButtonWidth());
 
-        return (int) round(600 * $pct / 100);
+        return (int) round(config('page-editor.email_container_width', 600) * $pct / 100);
     }
 
     public function rules()

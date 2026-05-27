@@ -14,7 +14,7 @@ class PageContentForm extends Form
     protected $withDesign = true;
     protected $prefixGroup = "";
 
-    protected $useEmailEditor = true;
+    protected $usePageEditor = true;
 
     public function created()
     {
@@ -23,16 +23,16 @@ class PageContentForm extends Form
 
     public function render()
     {
-        if ($this->useEmailEditor && $this->model?->id) {
-            return $this->emailEditorRender();
+        if ($this->usePageEditor && $this->model?->id) {
+            return $this->pageEditorRender();
         }
 
         return $this->legacyRender();
     }
 
-    protected function emailEditorRender()
+    protected function pageEditorRender()
     {
-        return PageEditor::getEmailEditorComponent($this->prefixGroup, $this->model?->id);
+        return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
     }
 
     protected function legacyRender()

@@ -18,6 +18,9 @@ class PageItemForm extends Form
     public const ITEM_FORM_STYLES_ID = 'itemFormStyles';
     public const COPY_BLOCK_PANEL_ID = 'copyBlockPanel';
 
+    // Sentinel block_type that means "copy from another page" — not a real item type.
+    public const COPY_BLOCK_TYPE = self::COPY_BLOCK_TYPE;
+
     protected $prefixGroup = "";
 
     public function created()
@@ -68,7 +71,7 @@ class PageItemForm extends Form
     protected function blockTypeSelector($types)
     {
         if (!$this->model->id) {
-            $types = $types + ['__copy__' => __('cms::cms.copy-block-from-newsletter')];
+            $types = $types + [self::COPY_BLOCK_TYPE => __('cms::cms.copy-block-from-newsletter')];
         }
 
         return _Rows(
@@ -95,7 +98,7 @@ class PageItemForm extends Form
     protected function unifiedPropertyPanel()
     {
         $blockType = $this->model->getPageItemType();
-        $icon = $blockType ? (defined($blockType::class.'::ITEM_ICON') ? $blockType::ITEM_ICON : 'document-text') : 'document-text';
+        $icon = $blockType ? $blockType::ITEM_ICON : 'document-text';
         $title = $blockType ? __($blockType::ITEM_TITLE) : '';
 
         return _Rows(
@@ -107,8 +110,8 @@ class PageItemForm extends Form
                         _Html($title)->class('font-semibold text-sm'),
                     )->class('items-center gap-2'),
                     $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
-                        ->selfGet('getEmptyPropertyState')->inPanel(EmailEditorLayout::PROPERTY_PANEL)
-                        ->onSuccess(fn ($e) => $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.clearSelection() }')) : null,
+                        ->selfGet('getEmptyPropertyState')->inPanel(PageEditorLayout::PROPERTY_PANEL)
+                        ->onSuccess(fn ($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.clearSelection() }')) : null,
                 )->class('mb-3'),
                 _Hidden()->name('block_type')->value($this->model->block_type),
                 _Input('cms::cms.title-optional')->name('name_pi'),
@@ -137,7 +140,7 @@ class PageItemForm extends Form
 
     protected function saveButtons()
     {
-        $previewPanel = EmailEditorLayout::PREVIEW_PANEL;
+        $previewPanel = PageEditorLayout::PREVIEW_PANEL;
 
         return _Rows(
             _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
@@ -174,7 +177,7 @@ class PageItemForm extends Form
             $this->prefixGroup,
             [
                 'page_id' => $this->pageId,
-                'panel_id' => EmailEditorLayout::PROPERTY_PANEL,
+                'panel_id' => PageEditorLayout::PROPERTY_PANEL,
                 'with_editor' => true
             ]
         );
@@ -201,7 +204,7 @@ class PageItemForm extends Form
 
     public function itemForm()
     {
-        if(request('block_type') === '__copy__' || !$this->isValidBlockType()) {
+        if(request('block_type') === self::COPY_BLOCK_TYPE || !$this->isValidBlockType()) {
             return _Rows();
         }
 
@@ -245,7 +248,7 @@ class PageItemForm extends Form
 
     public function getCopyBlockPanel()
     {
-        if (request('block_type') !== '__copy__') {
+        if (request('block_type') !== self::COPY_BLOCK_TYPE) {
             return _Html('');
         }
 
@@ -290,7 +293,7 @@ class PageItemForm extends Form
 
         return _Button('cms::cms.copy-this-block')->icon('duplicate')
             ->selfPost('copyBlockToPage', ['item_id' => $itemId])
-            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(EmailEditorLayout::PROPERTY_PANEL) && $e->selfGet('getPagePreview')->inPanel(EmailEditorLayout::PREVIEW_PANEL))
+            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageEditorLayout::PROPERTY_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageEditorLayout::PREVIEW_PANEL))
             ->class('mt-2');
     }
 

@@ -206,23 +206,23 @@ abstract class PageItemType
 
         if (!$withEditor) return $el;
 
-        $isEmailEditor = $this->isEmailEditorContext();
+        $isPageEditor = $this->isPageEditorContext();
 
-        if ($isEmailEditor) {
-            return $this->emailEditorPreviewItem($item, $itemType, $el);
+        if ($isPageEditor) {
+            return $this->pageEditorPreviewItem($item, $itemType, $el);
         }
 
         return $this->legacyPreviewItem($item, $itemType, $el);
     }
 
-    protected function emailEditorPreviewItem($item, $itemType, $el)
+    protected function pageEditorPreviewItem($item, $itemType, $el)
     {
         $typeName = $itemType ? __(get_class($itemType)::ITEM_TITLE) : $item->block_type;
 
         return _Rows(
-            $itemType?->emailEditorBlockActions($this->editPanelId),
-            _Rows($el)->class('w-full vlEmailBlockContent'),
-        )->class('vlEmailBlock')
+            $itemType?->pageEditorBlockActions($this->editPanelId),
+            _Rows($el)->class('w-full vlPageBlockContent'),
+        )->class('vlPageBlock')
          ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName])
          ->onClick
          ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
@@ -240,15 +240,15 @@ abstract class PageItemType
         )->class('group relative mb-3 mt-10 w-full')->style('flex-grow: 1');
     }
 
-    protected function isEmailEditorContext()
+    protected function isPageEditorContext()
     {
-        return $this->editPanelId === \Anonimatrix\PageEditor\Components\Cms\EmailEditorLayout::PROPERTY_PANEL;
+        return $this->editPanelId === \Anonimatrix\PageEditor\Components\Cms\PageEditorLayout::PROPERTY_PANEL;
     }
 
     /**
      * Floating action toolbar for the email editor canvas.
      */
-    public function emailEditorBlockActions($editPanelId = '')
+    public function pageEditorBlockActions($editPanelId = '')
     {
         $canSwitch = $this->pageItem->page_item_id && !$this->pageItem->pageItems()->count();
         $canAddColumn = !$this->pageItem->page_item_id;
@@ -264,7 +264,7 @@ abstract class PageItemType
                 ->balloon('cms::cms.edit-block', 'down')
                 ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
                 ->inPanel($editPanelId)
-                ->onSuccess(fn($e) => $e->run('() => { if (window.vlEmailEditor) vlEmailEditor.openDrawer() }')),
+                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }')),
             _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
                 ->byKey($this->pageItem)->browse()
                 ->balloon('cms::cms.delete-block', 'down'),
@@ -408,7 +408,7 @@ abstract class PageItemType
 
         $columnCount = 1 + $gridSteblings->count();
         $colWidth = round(100 / $columnCount);
-        $colWidthPx = round(600 * $colWidth / 100);
+        $colWidthPx = round(config('page-editor.email_container_width', 600) * $colWidth / 100);
         $uniqueId = uniqid('grid-cols-');
 
         $columns = '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $html . '</td>';

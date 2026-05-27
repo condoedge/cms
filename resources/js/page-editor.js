@@ -1,7 +1,7 @@
 (function (propertyPanelId) {
-    if (window.vlEmailEditor) return;
+    if (window.vlPageEditor) return;
 
-    window.vlEmailEditor = {
+    window.vlPageEditor = {
         setDevice: function (device) {
             var frame = document.querySelector('.vlCanvasFrame');
             var toggles = document.querySelectorAll('.vlDeviceToggle');
@@ -14,17 +14,17 @@
         },
 
         selectBlock: function (blockEl) {
-            document.querySelectorAll('.vlEmailBlock').forEach(function (b) {
-                b.classList.remove('vlEmailBlockSelected');
+            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
+                b.classList.remove('vlPageBlockSelected');
             });
             if (blockEl) {
-                blockEl.classList.add('vlEmailBlockSelected');
+                blockEl.classList.add('vlPageBlockSelected');
                 this.openDrawer();
             }
         },
 
         getSelectedBlock: function () {
-            return document.querySelector('.vlEmailBlockSelected');
+            return document.querySelector('.vlPageBlockSelected');
         },
 
         showToast: function (message) {
@@ -87,21 +87,21 @@
         },
 
         clearSelection: function () {
-            document.querySelectorAll('.vlEmailBlock').forEach(function (b) {
-                b.classList.remove('vlEmailBlockSelected');
+            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
+                b.classList.remove('vlPageBlockSelected');
             });
         },
 
         waitAndClickBlock: function (blockId, attempts) {
             attempts = attempts || 0;
             if (attempts > 20) return;
-            var block = document.querySelector('.vlEmailBlock[data-block-id="' + blockId + '"]');
+            var block = document.querySelector('.vlPageBlock[data-block-id="' + blockId + '"]');
             if (block) {
                 block.click();
                 block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 sessionStorage.removeItem('vlPendingBlockId');
             } else {
-                setTimeout(function () { vlEmailEditor.waitAndClickBlock(blockId, attempts + 1); }, 300);
+                setTimeout(function () { vlPageEditor.waitAndClickBlock(blockId, attempts + 1); }, 300);
             }
         },
 
@@ -126,8 +126,8 @@
 
     document.addEventListener('click', function (e) {
         if (e.target.closest('.vlBlockActions')) return;
-        var block = e.target.closest('.vlEmailBlock');
-        if (block) { vlEmailEditor.selectBlock(block); }
+        var block = e.target.closest('.vlPageBlock');
+        if (block) { vlPageEditor.selectBlock(block); }
     }, true);
 
     document.addEventListener('keydown', function (e) {
@@ -142,21 +142,21 @@
         }
         if (isInput) return;
         if (e.key === 'Escape') {
-            vlEmailEditor.closeDrawer();
+            vlPageEditor.closeDrawer();
             return;
         }
         if (e.key === 'Delete' || e.key === 'Backspace') {
-            var selected = vlEmailEditor.getSelectedBlock();
+            var selected = vlPageEditor.getSelectedBlock();
             if (selected) {
                 var deleteBtn = selected.querySelector('.vlBlockActionBtnDanger');
                 if (deleteBtn) { e.preventDefault(); deleteBtn.click(); }
             }
         }
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            var selected = vlEmailEditor.getSelectedBlock();
+            var selected = vlPageEditor.getSelectedBlock();
             if (selected) {
                 e.preventDefault();
-                var blocks = Array.from(document.querySelectorAll('.vlEmailBlock'));
+                var blocks = Array.from(document.querySelectorAll('.vlPageBlock'));
                 var idx = blocks.indexOf(selected);
                 var next = e.key === 'ArrowDown' ? blocks[idx + 1] : blocks[idx - 1];
                 if (next) { next.click(); next.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
@@ -169,7 +169,7 @@
         if (!panel) { setTimeout(vlInitDrawerObserver, 500); return; }
         var observer = new MutationObserver(function () {
             if (panel.children.length > 0 && panel.innerHTML.trim() !== '') {
-                vlEmailEditor.openDrawer();
+                vlPageEditor.openDrawer();
             }
         });
         observer.observe(panel, { childList: true, subtree: true });
@@ -177,11 +177,11 @@
     vlInitDrawerObserver();
 
     function vlMarkEmptyBlocks() {
-        document.querySelectorAll('.vlEmailBlock').forEach(function (block) {
-            var content = block.querySelector('.vlEmailBlockContent');
+        document.querySelectorAll('.vlPageBlock').forEach(function (block) {
+            var content = block.querySelector('.vlPageBlockContent');
             if (!content) return;
             var isEmpty = content.offsetHeight < 10;
-            block.classList.toggle('vlEmailBlockEmpty', isEmpty);
+            block.classList.toggle('vlPageBlockEmpty', isEmpty);
         });
     }
     setTimeout(vlMarkEmptyBlocks, 800);
@@ -193,5 +193,5 @@
     if (canvas) canvasObs.observe(canvas, { childList: true, subtree: true });
 
     var pendingId = sessionStorage.getItem('vlPendingBlockId');
-    if (pendingId) vlEmailEditor.waitAndClickBlock(pendingId);
+    if (pendingId) vlPageEditor.waitAndClickBlock(pendingId);
 })

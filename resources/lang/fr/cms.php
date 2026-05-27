@@ -195,7 +195,7 @@ return [
     // Sprint 5 - Drag, Accessibilité, Variables
     "drop-here" => "Déposer le bloc ici",
     "skip-to-canvas" => "Aller au canevas",
-    "email-editor" => "Éditeur de courriel",
+    "page-editor" => "Éditeur de page",
     "canvas" => "Canevas",
     "block-properties" => "Propriétés du bloc",
     "toggle-blocks-panel" => "Afficher/masquer le panneau des blocs",

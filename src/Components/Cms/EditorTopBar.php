@@ -67,12 +67,12 @@ class EditorTopBar extends Form
                 ->balloon('cms::cms.preview-desktop', 'down')
                 ->class('vlDeviceToggle vlDeviceToggleActive')
                 ->attr(['data-device' => 'desktop'])
-                ->run('() => { vlEmailEditor.setDevice("desktop") }'),
+                ->run('() => { vlPageEditor.setDevice("desktop") }'),
             _Link()->icon(_Sax('mobile',20))
                 ->balloon('cms::cms.preview-mobile', 'down')
                 ->class('vlDeviceToggle')
                 ->attr(['data-device' => 'mobile'])
-                ->run('() => { vlEmailEditor.setDevice("mobile") }'),
+                ->run('() => { vlPageEditor.setDevice("mobile") }'),
         )->class('vlDeviceToggleGroup');
     }
 
@@ -94,11 +94,11 @@ class EditorTopBar extends Form
             _Link()->icon(_Sax('element-3', 18))
                 ->class('vlMobilePanelToggle vlEditorActionBtn')
                 ->attr(['aria-label' => __('cms::cms.toggle-blocks-panel')])
-                ->run('() => { vlEmailEditor.toggleMobilePanel("blocks") }'),
+                ->run('() => { vlPageEditor.toggleMobilePanel("blocks") }'),
             _Link()->icon(_Sax('setting-2', 18))
                 ->class('vlMobilePanelToggle vlEditorActionBtn')
                 ->attr(['aria-label' => __('cms::cms.toggle-properties-panel')])
-                ->run('() => { vlEmailEditor.toggleMobilePanel("properties") }'),
+                ->run('() => { vlPageEditor.toggleMobilePanel("properties") }'),
         )->class('items-center gap-1');
     }
 

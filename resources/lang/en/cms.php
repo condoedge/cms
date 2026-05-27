@@ -195,7 +195,7 @@ return [
     // Sprint 5 - Drag, Accessibility, Variables
     "drop-here" => "Drop block here",
     "skip-to-canvas" => "Skip to canvas",
-    "email-editor" => "Email editor",
+    "page-editor" => "Page editor",
     "canvas" => "Canvas",
     "block-properties" => "Block properties",
     "toggle-blocks-panel" => "Toggle blocks panel",

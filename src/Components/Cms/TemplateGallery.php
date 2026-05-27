@@ -61,7 +61,7 @@ class TemplateGallery extends Modal
     protected function templateGrid($templates)
     {
         return _Rows(
-            ...$templates->map(fn($template) => $this->templateCard($template)),
+            $templates->map(fn($template) => $this->templateCard($template)),
         )->class('flex flex-col gap-2');
     }
 
