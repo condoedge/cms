@@ -25,99 +25,189 @@ class StylePageItemForm extends Form
         $this->blockType = $this->prop('block_type') ?? $this->model->block_type;
     }
 
+    protected function isImageBlock()
+    {
+        $type = $this->model->getPageItemType();
+        return $type && defined(get_class($type).'::ITEM_NAME') && get_class($type)::ITEM_NAME === 'img';
+    }
+
     public function render()
     {
         $this->model->block_type = $this->blockType;
         $this->model->page_id = $this->pageId;
 
+        $isImage = $this->isImageBlock();
+
         return _Rows(
-            _Button('cms::cms.clear')->selfPost('clearStyles')->inPanel('item_styles_form')->class('mb-4'),
-            $this->model->getPageItemType() && $this->model->getPageItemType()::ONLY_CUSTOM_STYLES ? null : 
+            $this->model->getPageItemType() && $this->model->getPageItemType()::ONLY_CUSTOM_STYLES ? null :
             _Rows(
-                _InputNumber('cms::cms.font-size')->name('font-size', false)->default($this->model->getFontSize())->class('whiteField'),
+                $isImage ? null : $this->colorsSection(),
+                $isImage ? null : $this->typographySection(),
+                $this->spacingSection($isImage),
+                $this->blockSpecificStyles(),
+                $this->responsiveSection(),
+                $this->advancedSection(),
+            ),
+        );
+    }
+
+    protected function colorsSection()
+    {
+        $bgColor = $this->model->getBackgroundColor();
+        $isTransparent = $bgColor == 'transparent';
+
+        return _Rows(
+            _Html('cms::cms.colors')->class('vlStyleLabel mb-2'),
+            _Flex(
                 _Rows(
-                    _Html('cms::cms.background-color')->class('font-semibold mb-1 text-sm'),
-                    _Columns(
-                        _ButtonGroup()
-                        ->optionClass('px-4 py-2 text-center cursor-pointer')
-                        ->selectedClass('bg-level3 text-white font-medium', 'bg-gray-200 text-level3 font-medium')
-                        ->class('mb-1')->options([
+                    _Html('cms::cms.background-color')->class('vlStyleSubLabel'),
+                    _ButtonGroup()
+                        ->optionClass('vlBgOption')
+                        ->selectedClass('vlBgOptionActive', 'vlBgOptionInactive')
+                        ->options([
                             'transparent' => __('cms::cms.transparent'),
                             'color' => __('cms::cms.color'),
-                        ])->default($this->model->getBackgroundColor() == 'transparent' ? 'transparent' : 'color')->name('background-color-type', false)->selfGet('getBackgroundInputs')->inPanel('background_inputs'),
+                        ])->default($isTransparent ? 'transparent' : 'color')
+                        ->name('background-color-type', false)
+                        ->class('mb-2')
+                        ->onChange(fn($e) => $e->selfGet('getBackgroundInputs')->inPanel('background_inputs')),
                     _Panel(
-                        $this->model->getBackgroundColor() == 'transparent' ? null : 
-                            _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('whiteField'),
-                    )->id('background_inputs')
-                    ),
-                ),
-                _Columns(
-                    _Input('cms::cms.text-color')->type('color')->default($this->model->getTextColor())->name('color', false)->class('whiteField'),
-                )->class('!mb-0'),
-                _Select('cms::cms.text-align')->name('text-align', false)->default($this->model?->getStyleProperty('text_align') ?: 'center')
-                    ->options([
-                        'left' => __('cms::cms.left'),
-                        'center' => __('cms::cms.center'),
-                        'right' => __('cms::cms.right'),
-                    ])->class('whiteField'),
+                        $isTransparent ? _Hidden()->name('background-color', false)->value('transparent') :
+                            _Input()->type('color')->default($bgColor)->name('background-color', false)->class('vlColorInput'),
+                    )->id('background_inputs'),
+                )->class('flex-1'),
                 _Rows(
-                    $this->extraInputs(),
-                ),
-            )->class('bg-gray-100 p-4 rounded-lg mb-4'),
-            _Rows(
-                //_Html('cms::cms.custom-padding-and-styles')->class('font-semibold mb-4'),
+                    _Html('cms::cms.text-color')->class('vlStyleSubLabel'),
+                    _Input()->type('color')->default($this->model->getTextColor())->name('color', false)
+                        ->class('vlColorInput'),
+                )->class('flex-1'),
+            )->class('gap-3 !items-start'),
+        )->class('mb-3');
+    }
 
-                _Tabs(
-                    _Tab(
-                        _Html('cms::cms.padding-px')->class('font-semibold text-sm mb-1'),
-                        _Columns(
-                            _Input()->placeholder('cms::cms.padding-top')->name('padding-top', false)->default($this->model?->getStyleProperty('padding_top_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-right')->name('padding-right', false)->default($this->model?->getStyleProperty('padding_right_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-bottom')->name('padding-bottom', false)->default($this->model?->getStyleProperty('padding_bottom_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-left')->name('padding-left', false)->default($this->model?->getStyleProperty('padding_left_raw'))->class('whiteField'),
-                        ),
-                        _Html('cms::cms.margin-px')->class('font-semibold text-sm mb-1'),
-                        _Columns(
-                            _Input()->placeholder('cms::cms.margin-top')->name('margin-top', false)->default($this->model?->getStyleProperty('margin_top_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-right')->name('margin-right', false)->default($this->model?->getStyleProperty('margin_right_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-bottom')->name('margin-bottom', false)->default($this->model?->getStyleProperty('margin_bottom_raw'))->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-left')->name('margin-left', false)->default($this->model?->getStyleProperty('margin_left_raw'))->class('whiteField'),
-                        ),
-                    )->label('cms::cms.desktop')->class('mb-4'),
-                    _Tab(
-                        _Html('cms::cms.padding-px')->class('font-semibold text-sm mb-1'),
-                        _Columns(
-                            _Input()->placeholder('cms::cms.padding-top')->name('padding-top-mobile', false)->default($this->model?->getStyleProperty('padding_top_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-right')->name('padding-right-mobile', false)->default($this->model?->getStyleProperty('padding_right_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-bottom')->name('padding-bottom-mobile', false)->default($this->model?->getStyleProperty('padding_bottom_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.padding-left')->name('padding-left-mobile', false)->default($this->model?->getStyleProperty('padding_left_mobile_raw') ?? 0)->class('whiteField'),
-                        ),
-                        _Html('cms::cms.margin-px')->class('font-semibold text-sm mb-1'),
-                        _Columns(
-                            _Input()->placeholder('cms::cms.margin-top')->name('margin-top-mobile', false)->default($this->model?->getStyleProperty('margin_top_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-right')->name('margin-right-mobile', false)->default($this->model?->getStyleProperty('margin_right_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-bottom')->name('margin-bottom-mobile', false)->default($this->model?->getStyleProperty('margin_bottom_mobile_raw') ?? 0)->class('whiteField'),
-                            _Input()->placeholder('cms::cms.margin-left')->name('margin-left-mobile', false)->default($this->model?->getStyleProperty('margin_left_mobile_raw') ?? 0)->class('whiteField'),
-                        ),
-                    )->label('cms::cms.mobile')->class('mb-4'),
-                ),
-
-                // _Input()->placeholder('cms::cms.styles')
-                //     ->name('styles', false)
-                //     ->class('whiteField'),
-                _Input('cms::cms.classes')->name('classes')->class('whiteField'),
-
-                _Panel(
-                    !$this->model?->getPageItemType()?->blockTypeEditorStylesElement() ? null : _Rows(
-                        _Html('cms::cms.styles-for-item')->class('text font-semibold mb-1'),
-                        $this->model?->getPageItemType()?->blockTypeEditorStylesElement(),
-                    )->class('mt-2')
-                )->id(PageItemForm::ITEM_FORM_STYLES_ID),
-
-                _Input('cms::cms.constructed-styles')->class('disabled mt-2')->name('actual_styles', false)->value((string) $this->styleModel?->content)->attr(['disabled' => true]),
-
-            )->class('bg-gray-100 p-4 rounded-lg'),
+    protected function typographySection()
+    {
+        return _Rows(
+            _Flex(
+                _Rows(
+                    _Html('cms::cms.font-size')->class('vlStyleLabel'),
+                    _InputNumber()->name('font-size', false)->default($this->model->getFontSize()),
+                )->class('flex-1'),
+                _Rows(
+                    _Html('cms::cms.text-align')->class('vlStyleLabel'),
+                    _ButtonGroup()->name('text-align', false)
+                        ->default($this->model?->getStyleProperty('text_align') ?: 'center')
+                        ->options([
+                            'left' => _Html()->icon(_Sax('textalign-left', 16)),
+                            'center' => _Html()->icon(_Sax('textalign-center', 16)),
+                            'right' => _Html()->icon(_Sax('textalign-right', 16)),
+                        ])->optionClass('vlAlignBtn')
+                        ->selectedClass('vlAlignBtnActive', 'vlAlignBtnInactive'),
+                )->class('flex-1'),
+            )->class('gap-3 mb-3'),
+            $this->extraInputs(),
         );
+    }
+
+    protected function spacingSection($hidePadding = false)
+    {
+        return _Rows(
+            _Html('cms::cms.spacing')->class('vlStyleLabel mb-2'),
+            _Tabs(
+                _Tab(
+                    $this->spacingInputs('desktop', $hidePadding),
+                )->label('cms::cms.desktop')->class('vlSpacingTabContent'),
+                _Tab(
+                    $this->spacingInputs('mobile', $hidePadding),
+                )->label('cms::cms.mobile')->class('vlSpacingTabContent'),
+            )->class('vlSpacingTabs'),
+        )->class('mb-3');
+    }
+
+    protected function spacingInputs($device = 'desktop', $hidePadding = false)
+    {
+        $suffix = $device === 'mobile' ? '-mobile' : '';
+        $defaultVal = $device === 'mobile' ? 0 : null;
+
+        return _Rows(
+            $hidePadding ? null : _Html('cms::cms.padding-px')->class('vlStyleSubLabel'),
+            $hidePadding ? null : _Div(
+                _Input()->placeholder('↑ Top')->name('padding-top' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('padding_top' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('↓ Bottom')->name('padding-bottom' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('padding_bottom' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('← Left')->name('padding-left' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('padding_left' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('→ Right')->name('padding-right' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('padding_right' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+            )->class('vlSpacingControl vlSpacingPadding'),
+
+            _Html('cms::cms.margin-px')->class($hidePadding ? 'vlStyleSubLabel' : 'vlStyleSubLabel mt-3'),
+            _Div(
+                _Input()->placeholder('↑ Top')->name('margin-top' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('margin_top' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('↓ Bottom')->name('margin-bottom' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('margin_bottom' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('← Left')->name('margin-left' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('margin_left' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+                _Input()->placeholder('→ Right')->name('margin-right' . $suffix, false)
+                    ->default($this->model?->getStyleProperty('margin_right' . ($suffix ? '_mobile' : '') . '_raw') ?? $defaultVal)
+                    ->class('vlSpacingInput whiteField'),
+            )->class('vlSpacingControl vlSpacingMargin'),
+        );
+    }
+
+    protected function blockSpecificStyles()
+    {
+        $blockStylesEl = $this->model?->getPageItemType()?->blockTypeEditorStylesElement();
+
+        if (!$blockStylesEl) return null;
+
+        return _Rows(
+            _Html('cms::cms.block-options')->class('vlStyleLabel mb-2'),
+            $blockStylesEl,
+        )->class('mb-3');
+    }
+
+    protected function responsiveSection()
+    {
+        return _Rows(
+            _Html('cms::cms.responsive')->class('vlStyleLabel !mb-3'),
+            _Rows(
+                _Toggle('cms::cms.hide-on-mobile')->name('hide-on-mobile', false)
+                    ->value((bool) ($this->model?->getStyleProperty('hide_on_mobile_raw') ?? false))
+                    ->class('vlToggle w-full mb-3'),
+                _Toggle('cms::cms.hide-on-desktop')->name('hide-on-desktop', false)
+                    ->value((bool) ($this->model?->getStyleProperty('hide_on_desktop_raw') ?? false))
+                    ->class('vlToggle w-full'),
+            ),
+        )->class('mb-3');
+    }
+
+    protected function advancedSection()
+    {
+        return _Rows(
+            _Link('cms::cms.advanced')->class('vlStyleLabel vlAdvancedToggle')
+                ->id('advanced-toggle')
+                ->run('({el}) => {
+                    el = el("advanced-toggle").el;
+                    el.classList.toggle("vlAdvancedOpen");
+                    el.nextElementSibling.classList.toggle("hidden");
+                }'),
+            _Rows(
+                _Input('cms::cms.classes')->name('classes')->class('mb-2'),
+                _Link('cms::cms.clear-styles')->icon(_Sax('refresh', 14))
+                    ->selfPost('clearStyles')->inPanel('item_styles_form')
+                    ->class('vlClearStylesBtn'),
+            )->class('hidden'),
+        )->class('mb-3');
     }
 
     protected function extraInputs()
@@ -128,8 +218,10 @@ class StylePageItemForm extends Form
     public function getBackgroundInputs()
     {
         $type = request('background-color-type');
-        
-        return $type == 'transparent' ? _Hidden()->name('background-color', false)->value('transparent') : _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('mb-2 whiteField');
+
+        return $type == 'transparent'
+            ? _Hidden()->name('background-color', false)->value('transparent')
+            : _Input()->type('color')->default($this->model->getBackgroundColor())->name('background-color', false)->class('vlColorInput');
     }
 
     public function clearStyles()

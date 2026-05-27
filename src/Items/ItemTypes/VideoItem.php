@@ -4,6 +4,7 @@ namespace Anonimatrix\PageEditor\Items\ItemTypes;
 
 use Anonimatrix\PageEditor\Items\PageItemType;
 use Anonimatrix\PageEditor\Models\PageItem;
+use Anonimatrix\PageEditor\Support\Facades\PageStyle;
 
 class VideoItem extends PageItemType
 {
@@ -11,6 +12,7 @@ class VideoItem extends PageItemType
     public const ITEM_NAME = 'video';
     public const ITEM_TITLE = 'cms::cms.items.video';
     public const ITEM_DESCRIPTION = 'cms::cms.items.full-screen-top-of-page-video';
+    public const ITEM_ICON = 'video-play';
 
     public function __construct(PageItem $pageItem, $interactsWithPageItem = true)
     {
@@ -21,21 +23,35 @@ class VideoItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _Translatable('newsletter.video-url')
+        $item = _Translatable('cms::cms.video-url')
             ->name($this->nameTitle, $this->interactsWithPageItem);
 
         if($this->valueTitle) $item = $item->default($this->valueTitle);
-        
-        return $item;
+
+        return _Rows(
+            $item,
+            _Html('cms::cms.video-url-help')->class('text-xs text-gray-400 mt-1'),
+        );
     }
 
     public function blockTypeEditorStylesElement()
     {
         return _Rows(
-            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 80)->class('whiteField'),
-            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('whiteField'),
+            _InputNumber('cms::newsletter.page-item-max-width-percent')->name('max-width', false)->value((int) $this->styles->max_width_raw ?: 100),
+            _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0),
             $this->justifyStylesEls(),
         );
+    }
+
+    public function afterSave($model = null)
+    {
+        parent::afterSave($model);
+
+        $styleModel = $this->pageItem->getOrCreateStyles();
+
+        PageStyle::setStylesToModel($styleModel);
+
+        $styleModel->save();
     }
 
     protected function videoStyles()
@@ -48,17 +64,134 @@ class VideoItem extends PageItemType
         return "border-radius: {$borderRadius}; max-width: {$maxWidth};";
     }
 
-    protected function toElement($withEditor = null)
+    /**
+     * Detect the video source type from URL.
+     */
+    protected function detectVideoType(): string
     {
-        return _Html($this->toHtml());
+        $url = $this->content;
+
+        if (preg_match('/youtube\.com|youtu\.be/i', $url)) {
+            return 'youtube';
+        }
+
+        if (preg_match('/vimeo\.com/i', $url)) {
+            return 'vimeo';
+        }
+
+        return 'file';
     }
 
+    /**
+     * Extract the embed ID from a YouTube or Vimeo URL.
+     */
+    protected function extractEmbedId(): ?string
+    {
+        $url = $this->content;
+
+        // YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
+        if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+
+        // Vimeo: vimeo.com/ID
+        if (preg_match('/vimeo\.com\/(\d+)/', $url, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    protected function toElement($withEditor = null)
+    {
+        return _Html($this->toElementHtml());
+    }
+
+    /**
+     * Render the video for the editor preview (iframe/video embeds).
+     */
+    protected function toElementHtml(): string
+    {
+        $type = $this->detectVideoType();
+
+        if ($type === 'youtube') {
+            return $this->renderYoutubeEmbed();
+        }
+
+        if ($type === 'vimeo') {
+            return $this->renderVimeoEmbed();
+        }
+
+        return $this->renderVideoFile();
+    }
+
+    // Thumbnail + link for embeds; plain CTA link for file videos. Email clients can't render <iframe>/<video>.
     public function toHtml(): string
     {
-        return '<video style="' . $this->videoStyles() .  '"  class="'. $this->classes . '" autoplay="" loop="" muted="" playsinline="" controlslist="nodownload,nofullscreen,noremoteplayback">
-            <source src="'.asset($this->content).'" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>';
+        $type = $this->detectVideoType();
+        $embedId = $this->extractEmbedId();
+        $videoStyles = $this->videoStyles();
+
+        if ($type === 'youtube' && $embedId) {
+            $thumbnailUrl = 'https://img.youtube.com/vi/'.$embedId.'/maxresdefault.jpg';
+            $videoUrl = 'https://www.youtube.com/watch?v='.$embedId;
+        } elseif ($type === 'vimeo' && $embedId) {
+            $thumbnailUrl = 'https://vumbnail.com/'.$embedId.'.jpg';
+            $videoUrl = 'https://vimeo.com/'.$embedId;
+        } else {
+            $videoUrl = \Storage::disk('public')->url($this->content);
+
+            return $this->centerElement(
+                view('cms::items.video-file', [
+                    'videoUrl' => htmlspecialchars($videoUrl, ENT_QUOTES),
+                    'label' => __('cms::cms.watch-video'),
+                ])->render(),
+                (string) $this->styles,
+            );
+        }
+
+        return $this->centerElement(
+            view('cms::items.video-embed', [
+                'videoUrl' => htmlspecialchars($videoUrl, ENT_QUOTES),
+                'thumbnailUrl' => htmlspecialchars($thumbnailUrl, ENT_QUOTES),
+                'alt' => __('cms::cms.watch-video'),
+                'videoStyles' => $videoStyles,
+            ])->render(),
+            (string) $this->styles,
+        );
+    }
+
+    protected function renderYoutubeEmbed(): string
+    {
+        $embedId = $this->extractEmbedId();
+        if (!$embedId) return '';
+
+        return view('cms::items.video-youtube-preview', [
+            'embedId' => $embedId,
+            'wrapperStyles' => (string) $this->styles,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
+    }
+
+    protected function renderVimeoEmbed(): string
+    {
+        $embedId = $this->extractEmbedId();
+        if (!$embedId) return '';
+
+        return view('cms::items.video-vimeo-preview', [
+            'embedId' => $embedId,
+            'wrapperStyles' => (string) $this->styles,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
+    }
+
+    protected function renderVideoFile(): string
+    {
+        return view('cms::items.video-file-preview', [
+            'src' => \Storage::disk('public')->url($this->content),
+            'classes' => $this->classes,
+            'videoStyles' => $this->videoStyles(),
+        ])->render();
     }
 
     public function defaultStyles($pageItem): string

@@ -10,6 +10,7 @@ class ElementType1Item extends GroupPageItemType
     public const ITEM_NAME = 'newsletter.group';
     public const ITEM_TITLE = 'cms::cms.items.element-type-1';
     public const ITEM_DESCRIPTION = 'cms::cms.items.element-type-1-desc';
+    public const ITEM_ICON = 'element-3';
 
     const GROUP_ITEMS_TYPES = [
         H2Item::class,
@@ -26,7 +27,7 @@ class ElementType1Item extends GroupPageItemType
             H2Item::class => fn($pageItem, $parent) => $this->h2ItemStyles($pageItem, $parent),
             ButtonItem::class => fn($pageItem, $parent) => $this->buttonItemStyles($pageItem, $parent),
             CKItem::class => fn($pageItem, $parent) => $this->ckItemStyles($pageItem, $parent),
-            ImgItem::class => 'width: 600px !important; height: auto !important; margin-bottom: 10px !important; align-items: center;',
+            ImgItem::class => fn($pageItem, $parent) => $this->imgItemStyles($pageItem, $parent),
         ];
     }
 
@@ -54,6 +55,15 @@ class ElementType1Item extends GroupPageItemType
         $styles .= 'color: ' . $parentPageItem->getTextColor(). '!important ;';
 
         return $styles;
+    }
+
+    protected function imgItemStyles($pageItem, $parentPageItem)
+    {
+        $objectFit = $pageItem->styles?->content?->object_fit ?: 'cover';
+        $aspectRatio = $pageItem->styles?->content?->aspect_ratio;
+        $aspectRatioStyle = $aspectRatio && $aspectRatio !== ImgItem::ASPECT_RATIO_FREE ? 'aspect-ratio: ' . str_replace(':', '/', $aspectRatio) . ';' : '';
+
+        return 'width: 100% !important; height: auto !important; margin-bottom: 10px !important; align-items: center; object-fit: ' . $objectFit . '; ' . $aspectRatioStyle;
     }
 
     protected function buttonItemStyles($pageItem, $parentPageItem)

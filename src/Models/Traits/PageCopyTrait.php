@@ -19,6 +19,11 @@ trait PageCopyTrait
     {
         $newPage = $this->createPageCopy();
 
+        if ($this->styles) {
+            $newStyles = $this->styles->replicate();
+            $newPage->styles()->save($newStyles);
+        }
+
         $this->copyItemsPage($newPage->id);
 
         return $newPage;
@@ -29,7 +34,12 @@ trait PageCopyTrait
         $this->pageItems()->each(function($pageItem) use ($toPageId){
 			$newPageItem = $pageItem->replicate();
 			$newPageItem->page_id = $toPageId;
-			$newPageItem->save();
+			$newPageItem->save(['skip_validation' => true]);
+
+            if ($pageItem->styles) {
+                $newStyles = $pageItem->styles->replicate();
+                $newPageItem->styles()->save($newStyles);
+            }
 		});
     }
 }

@@ -2,6 +2,10 @@
 
 return [
     'default_page_group_type' => 'newsletter',
+
+    // Reference width (px) of the email content column. Used for px-based math (button widths,
+    // grid columns) since email clients can't be relied on for relative-unit layout.
+    'email_container_width' => 600,
     
     'models' => [
         'page' => \Anonimatrix\PageEditor\Models\Page::class,
@@ -17,26 +21,63 @@ return [
         'page-item-form' => \Anonimatrix\PageEditor\Components\Cms\PageItemForm::class,
         'page-preview' => \Anonimatrix\PageEditor\Components\Cms\PagePreview::class,
         'page-style-form' => \Anonimatrix\PageEditor\Components\Cms\PageStylingForm::class,
+        'page-editor-layout' => \Anonimatrix\PageEditor\Components\Cms\PageEditorLayout::class,
+        'block-library-panel' => \Anonimatrix\PageEditor\Components\Cms\BlockLibraryPanel::class,
+        'editor-top-bar' => \Anonimatrix\PageEditor\Components\Cms\EditorTopBar::class,
+        'template-gallery' => \Anonimatrix\PageEditor\Components\Cms\TemplateGallery::class,
+        'save-as-template' => \Anonimatrix\PageEditor\Components\Cms\SaveAsTemplateForm::class,
+        'send-test-email' => \Anonimatrix\PageEditor\Components\Cms\SendTestEmailForm::class,
+        'preview-with-variables' => \Anonimatrix\PageEditor\Components\Cms\PreviewWithVariablesForm::class,
     ],
 
     'types' => [
+        \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\H1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\NumberLineItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
-        \Anonimatrix\PageEditor\Items\ItemTypes\ImgItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\VideoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\CKItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ButtonItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\KompoItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\BoxedContentItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\OtherPageItem::class,
-        \Anonimatrix\PageEditor\Items\ItemTypes\ElementType1Item::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\WhatsNewCardItem::class,
         \Anonimatrix\PageEditor\Items\ItemTypes\ScribeItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\SpacerItem::class,
+        \Anonimatrix\PageEditor\Items\ItemTypes\DividerItem::class,
     ],
 
     'hidden_types' => [ // Won't be displayed, but it will work in groups
         \Anonimatrix\PageEditor\Items\ItemTypes\H2Item::class,
+    ],
+
+    // Block-library categories shown in the editor's left panel. Each category lists ITEM_NAME
+    // strings that belong to it; anything in `types` above that isn't claimed here flows into
+    // the implicit "other" bucket (labelled by `library_other_label`). To hide a type from the
+    // library only (still usable inside groups), add its ITEM_NAME to `library_hidden_types`.
+    'block_categories' => [
+        'content' => [
+            'label' => 'cms::cms.category-content',
+            'types' => ['h1', 'ck', 'button', 'header', 'number_line'],
+        ],
+        'layout' => [
+            'label' => 'cms::cms.category-layout',
+            'types' => ['spacer', 'divider', 'newsletter.group'],
+        ],
+        'media' => [
+            'label' => 'cms::cms.category-media',
+            'types' => ['video', 'img'],
+        ],
+    ],
+
+    'library_other_label' => 'cms::cms.category-other',
+
+    'library_hidden_types' => [
+        'komponent',
+        'boxed_content',
+        'article',
+        'newsletter.whats-new-card',
     ],
 
     'features' => [
@@ -106,6 +147,28 @@ return [
         'border-bottom-width' => 'px',
         'border-left-width' => 'px',
         'border-right-width' => 'px',
+
+        'object-fit' => '',
+        'aspect-ratio' => '',
+
+        'divider-style' => '',
+        'divider-thickness' => 'px',
+        'divider-color' => '',
+        'divider-width' => '%',
+
+        'header-text-color' => '',
+        'header-overlay' => '',
+        'header-overlay-color' => '',
+        'header-overlay-opacity' => '',
+        'header-text-position' => '',
+
+        'button-size' => '',
+
+        'content-max-width' => 'px',
+
+        'hide-on-mobile' => '',
+        'hide-on-desktop' => '',
+        'font-family' => '',
     ],
 
     'boxed_content' => [

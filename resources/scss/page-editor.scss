@@ -1,0 +1,900 @@
+/* ============================================
+   PAGE EDITOR - Email Editor Styles
+   ============================================ */
+
+/* Editor Wrapper */
+.vlPageEditorWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ---- Top Bar ---- */
+.vlEditorTopBar {
+    height: 60px;
+    min-height: 60px;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    z-index: 50;
+}
+.vlEditorTopBarBack {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #6b7280;
+    transition: all 0.15s;
+    &:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+}
+.vlEditorTopBarTitle {
+    min-width: 200px;
+    &:hover {
+        background: #f3f4f6 !important;
+    }
+    &:focus {
+        background: #ffffff !important;
+        box-shadow: 0 0 0 2px #3b82f6 !important;
+    }
+}
+
+/* ---- Device Toggles ---- */
+.vlDeviceToggleGroup {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 5px 3px;
+    gap: 2px;
+}
+.vlDeviceToggle {
+    width: 36px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: #9ca3af;
+    transition: all 0.15s;
+    cursor: pointer;
+    &:hover {
+        color: #6b7280;
+    }
+}
+.vlDeviceToggleActive {
+    background: #ffffff;
+    color: #111827 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* ---- Action Buttons ---- */
+.vlEditorActionBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    @apply text-sm;
+    font-weight: 500;
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.15s;
+    white-space: nowrap;
+    &:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+}
+.vlEditorPreviewBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    @apply text-sm;
+    font-weight: 500;
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.15s;
+    &:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+}
+.vlEditorSaveBtn {
+    padding: 10px 20px !important;
+    @apply text-sm #{!important};
+    font-weight: 600 !important;
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: all 0.15s !important;
+    &:hover {
+        background: #1d4ed8 !important;
+    }
+}
+
+/* ---- Editor Body - 3 Panel Layout ---- */
+.vlEditorBody {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ---- Left Panel ---- */
+.vlEditorLeftPanel {
+    width: 360px;
+    min-width: 360px;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-right: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ---- Block Library ---- */
+.vlBlockLibPanel {
+    height: 100%;
+}
+
+.vlBlockLibTabs > ul {
+    gap: 16px;
+}
+.vlBlockLibTabs > ul > li > a {
+    @apply text-sm;
+    font-weight: 600;
+    padding: 12px 0;
+}
+.vlBlockLibTabContent {
+    padding: 0;
+}
+
+.vlBlockCategoryLabel {
+    @apply text-xs;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 16px 4px 8px;
+    &:first-child {
+        padding-top: 4px;
+    }
+}
+.vlBlockGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.vlBlockCard {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px 8px !important;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 80px;
+    text-decoration: none !important;
+    gap: 6px;
+    &:hover {
+        border-color: #93c5fd !important;
+        background: #eff6ff;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+        transform: translateY(-1px);
+    }
+    &:active {
+        transform: translateY(0);
+    }
+    /* Icon inside the Link */
+    .vlIcon,
+    > div:first-child {
+        color: #6b7280;
+        margin: 0 !important;
+        order: -1;
+    }
+    &:hover .vlIcon,
+    &:hover > div:first-child {
+        color: #2563eb;
+    }
+}
+/* Label text inside the Link */
+.vlBlockCard,
+.vlBlockCard .vlLabel {
+    @apply text-sm #{!important};
+    font-weight: 500 !important;
+    color: #111827 !important;
+    text-align: center !important;
+    line-height: 1.2;
+}
+.vlBlockCardCopy {
+    grid-column: 1 / -1;
+    flex-direction: row !important;
+    gap: 8px !important;
+    min-height: auto;
+    padding: 10px 14px !important;
+    margin-top: 8px;
+    .vlLabel {
+        @apply text-sm #{!important};
+    }
+}
+
+/* ---- Center Panel - Canvas ---- */
+.vlEditorCenterPanel {
+    flex: 1;
+    padding: 16px;
+}
+.vlCanvasFrame {
+    margin: 0 auto;
+    min-height: 400px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 24px rgba(0,0,0,0.04);
+    border-radius: 4px;
+    transition: max-width 0.3s ease;
+}
+.vlCanvasFrame.vlMobilePreview {
+    max-width: 393px;
+    aspect-ratio: 393 / 852;
+    border-radius: 32px;
+    border: 8px solid #1f2937;
+    padding: 20px 0 20px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+    position: relative;
+    overflow-y: auto;
+    &::before {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: #374151;
+        border-radius: 2px;
+        margin: 0 auto 12px;
+    }
+}
+
+/* ---- Right Panel - Drawer ---- */
+.vlEditorRightPanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 560px;
+    height: 100vh;
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 60;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+    &.vlDrawerOpen {
+        transform: translateX(0);
+        box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+    }
+}
+.vlDrawerBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    &.vlDrawerBackdropVisible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+.vlDrawerHeader {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 14px 16px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.vlDrawerTitle {
+    @apply text-base;
+    font-weight: 600;
+    color: #111827;
+}
+.vlDrawerClose {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+}
+
+/* ---- Empty block placeholder ---- */
+.vlEmptyBlockPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+    background: #f9fafb;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 6px;
+    color: #9ca3af;
+    @apply text-sm;
+    padding: 12px;
+    margin: 4px;
+}
+
+/* ---- Block selection & hover in canvas ---- */
+.vlPageBlock {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    position: relative;
+    min-height: 48px;
+    animation: vlBlockFadeIn 0.2s ease;
+    &:hover {
+        border-color: #93c5fd;
+    }
+    &:hover .vlEmptyBlockPlaceholder,
+    &.vlPageBlockEmpty:hover::after {
+        border-color: #93c5fd;
+        background: #eff6ff;
+        color: #6b7280;
+    }
+    &.vlPageBlockSelected {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 1px #2563eb;
+    }
+}
+
+/* ---- Block action toolbar ---- */
+.vlBlockActions {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.vlPageBlock:hover .vlBlockActions,
+.vlPageBlock.vlPageBlockSelected .vlBlockActions {
+    display: flex;
+}
+.vlBlockActionBtn {
+    width: 30px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.1s;
+    @apply text-sm;
+    &:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+    &.vlBlockActionBtnDanger:hover {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+}
+.vlBlockDragHandle {
+    cursor: grab;
+    &:active {
+        cursor: grabbing;
+    }
+}
+.vlBlockTypeLabel {
+    @apply text-xs;
+    font-weight: 500;
+    color: #9ca3af;
+    padding: 0 6px;
+    white-space: nowrap;
+}
+
+/* ---- Toast notification ---- */
+.vlEditorToast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #065f46;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    @apply text-sm;
+    font-weight: 500;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 9999;
+    animation: vlToastIn 0.2s ease, vlToastOut 0.2s ease 2s forwards;
+}
+@keyframes vlToastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes vlToastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(8px); }
+}
+
+/* ---- Empty canvas state ---- */
+.vlEmptyCanvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    margin: 24px;
+    svg, i {
+        color: #d1d5db;
+        margin-bottom: 16px;
+    }
+}
+
+/* ---- Sortable placeholder ---- */
+.vlSortablePlaceholder {
+    height: 4px;
+    background: #2563eb;
+    border-radius: 2px;
+    margin: 6px 8px;
+    opacity: 0.8;
+}
+
+/* ---- Block animations ---- */
+@keyframes vlBlockFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.vlBlockRemoving {
+    animation: vlBlockFadeOut 0.2s ease forwards;
+    pointer-events: none;
+}
+@keyframes vlBlockFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.96); }
+}
+
+/* ---- Undo/Redo bar ---- */
+.vlUndoRedoGroup {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+.vlUndoRedoBtn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover:not(.vlUndoRedoBtnDisabled) {
+        background: #ffffff;
+        color: #111827;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+}
+.vlUndoRedoBtnDisabled {
+    color: #d1d5db !important;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ---- Loading overlay ---- */
+.vlPanelLoading {
+    position: relative;
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.7);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ---- Accessibility ---- */
+.vlBlockCard:focus-visible,
+.vlBlockActionBtn:focus-visible,
+.vlDeviceToggle:focus-visible,
+.vlEditorActionBtn:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+.vlSkipLink {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #2563eb;
+    color: #ffffff;
+    padding: 8px 16px;
+    z-index: 200;
+    @apply text-sm;
+    font-weight: 600;
+    border-radius: 0 0 8px 0;
+    transition: top 0.2s;
+    &:focus {
+        top: 0;
+    }
+}
+
+/* ---- Block Search ---- */
+.vlBlockSearchInput {
+    @apply text-sm #{!important};
+    padding: 12px 10px 12px 32px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+    background: #f9fafb !important;
+    width: 100%;
+    &:focus {
+        background: #ffffff !important;
+        border-color: #93c5fd !important;
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.08) !important;
+    }
+}
+.vlBlockSearchWrap {
+    position: relative;
+}
+.vlBlockSearchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+    .vlEditorLeftPanel {
+        width: 220px;
+        min-width: 220px;
+    }
+}
+@media (max-width: 900px) {
+    .vlEditorBody {
+        flex-direction: column;
+        position: relative;
+    }
+    .vlEditorLeftPanel {
+        width: 100%;
+        min-width: 100%;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        display: none;
+        &.vlPanelMobileOpen {
+            display: block;
+        }
+    }
+    .vlEditorCenterPanel {
+        padding: 16px;
+    }
+    .vlEditorRightPanel {
+        width: 100%;
+    }
+    .vlMobilePanelToggle {
+        display: flex !important;
+    }
+}
+@media (min-width: 901px) {
+    .vlMobilePanelToggle {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   RIGHT PANEL - Style Form (StylePageItemForm)
+   ============================================ */
+
+/* Adjust Kompo defaults inside drawer */
+.vlEditorRightPanel .vlFormField {
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+}
+.vlEditorRightPanel .vlFormLabel {
+    @apply text-sm #{!important};
+    color: #6b7280 !important;
+    margin-bottom: 2px !important;
+}
+/* Neutralize .whiteField on the drawer's white background — fields keep the
+   default gray background so their edges remain visible. */
+.vlEditorRightPanel .whiteField .vlInputWrapper {
+    background-color: var(--form-control-bg);
+}
+
+/* Style Labels */
+.vlStyleLabel {
+    @apply text-sm;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5;
+    margin-top: 0.75rem;
+}
+.vlStyleSubLabel {
+    @apply text-sm;
+    font-weight: 500;
+    color: #000000;
+    margin-bottom: 2px;
+}
+
+/* Color Inputs */
+.vlColorInput {
+    height: 36px !important;
+    cursor: pointer;
+    width: 100% !important;
+}
+
+
+/* Background Toggle */
+.vlBgOption {
+    padding: 14px 12px !important;
+    @apply text-base #{!important};
+    border-radius: 8px !important;
+    cursor: pointer;
+    text-align: center;
+}
+.vlBgOptionActive {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+.vlBgOptionInactive {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+}
+
+/* Alignment Buttons */
+.vlEditorRightPanel .vlButtonGroup .vlInputWrapper {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+.vlEditorRightPanel .vlButtonGroup .vlOptionCont {
+    display: flex !important;
+    gap: 4px !important;
+}
+.vlEditorRightPanel .vlButtonGroup .vlOptionCont > .vlOption + .vlOption {
+    border-left: none !important;
+}
+.vlAlignBtn {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    padding: 16px 0 !important;
+    > div {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+.vlAlignBtnActive {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+.vlAlignBtnInactive {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+}
+
+/* Spacing Visual Control */
+.vlSpacingTabs > ul > li {
+    margin-right: 8px !important;
+}
+.vlSpacingTabs > ul > li > a {
+    @apply text-sm #{!important};
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+    display: inline-block !important;
+}
+.vlSpacingTabContent {
+    padding: 8px 0 0 !important;
+}
+.vlSpacingControl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 8px;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 8px;
+}
+.vlSpacingPadding {
+    border-color: #93c5fd;
+    background: #f0f7ff;
+}
+.vlSpacingMargin {
+    border-color: #fdba74;
+    background: #fffbf0;
+}
+.vlSpacingCenter { display: contents; }
+.vlSpacingRow { display: contents; }
+.vlSpacingBox { display: none; }
+.vlSpacingInput {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+}
+.vlSpacingTop, .vlSpacingBottom {
+    width: 100% !important;
+}
+
+/* Toggle */
+.vlToggle {
+    @apply text-base #{!important};
+}
+.vlToggleFullWidth {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 8px 12px !important;
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+}
+
+/* Advanced Section */
+.vlAdvancedToggle {
+    cursor: pointer;
+    user-select: none;
+    &::after { content: " ▸"; }
+    &.vlAdvancedOpen::after { content: " ▾"; }
+}
+
+/* Clear Styles */
+.vlClearStylesBtn {
+    @apply text-sm #{!important};
+    color: #9ca3af !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    &:hover {
+        color: #dc2626 !important;
+    }
+}
+
+/* ============================================
+   RIGHT PANEL - Property Panel (PageItemForm)
+   ============================================ */
+.vlPropertyPanel {
+    padding: 0;
+}
+.vlPropertyHeader {
+    padding: 16px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 5;
+}
+.vlPropertySection {
+    border-bottom: 1px solid #f3f4f6;
+}
+.vlPropertySectionTitle {
+    @apply text-sm;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    padding: 14px 16px 8px;
+}
+.vlPropertySectionBody {
+    padding: 0 16px 16px;
+}
+.vlPropertyActions {
+    padding: 16px 16px;
+    position: sticky;
+    bottom: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+}
+.vlPropertySaveBtn {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    @apply text-base #{!important};
+    padding: 14px !important;
+    &:hover {
+        background: #1d4ed8 !important;
+    }
+}
+.vlPropertyDeleteBtn {
+    background: transparent !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+    border-radius: 8px !important;
+    @apply text-base #{!important};
+    padding: 14px !important;
+    &:hover {
+        background: #fef2f2 !important;
+    }
+}
+
+/* ============================================
+   Keyboard Shortcut Hint
+   ============================================ */
+.vlShortcutHint {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    background: #1f2937;
+    color: #d1d5db;
+    padding: 8px 14px;
+    border-radius: 8px;
+    @apply text-xs;
+    z-index: 9998;
+    display: flex;
+    gap: 16px;
+    kbd {
+        background: #374151;
+        padding: 1px 5px;
+        border-radius: 3px;
+        @apply text-xs;
+        font-family: inherit;
+        color: #e5e7eb;
+    }
+}
+
+/* ============================================
+   Override Kompo defaults inside editor
+   ============================================ */
+.vlEditorRightPanel .vlCard {
+    box-shadow: none !important;
+    border: none !important;
+}
+.vlEditorLeftPanel .vlTabPaneContent {
+    padding: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .vlFlexResponsiveColumns {
+        flex-direction: column !important;
+    }
+}
+
+.vlQueryWrapperPagePreview {
+    overflow-y: unset !important;
+    overflow-x: unset !important;
+}

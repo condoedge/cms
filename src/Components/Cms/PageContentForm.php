@@ -14,6 +14,8 @@ class PageContentForm extends Form
     protected $withDesign = true;
     protected $prefixGroup = "";
 
+    protected $usePageEditor = true;
+
     public function created()
     {
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
@@ -21,9 +23,30 @@ class PageContentForm extends Form
 
     public function render()
     {
+        if ($this->usePageEditor && $this->model?->id) {
+            return $this->pageEditorRender();
+        }
+
+        return $this->legacyRender();
+    }
+
+    protected function pageEditorRender()
+    {
+        return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
+    }
+
+    protected function legacyRender()
+    {
         return _Rows(
             $this->top(),
-            PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
+            _Tabs(
+                _Tab(
+                    PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->model?->id),
+                )->label('cms::cms.page-info'),
+                !$this->model?->id ? null : _Tab(
+                    PageEditor::getPageStyleFormComponent($this->prefixGroup, $this->model?->id),
+                )->label('cms::cms.page-styles'),
+            ),
             !$this->withDesign ? null : PageEditor::getPageDesignFormComponent($this->prefixGroup, $this->model?->id),
         );
     }
@@ -31,5 +54,14 @@ class PageContentForm extends Form
     protected function top()
     {
         return _Rows();
+    }
+
+    public function duplicatePage()
+    {
+        $page = PageModel::findOrFail(request('id'));
+
+        $newPage = $page->createPageCopyWithRelations();
+
+        return $newPage;
     }
 }
