@@ -1,4 +1,4 @@
-<?php
+F<?php
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
@@ -152,11 +152,7 @@ class EditorTopBar extends Form
         if (!$this->model->id) return;
 
         $title = request('title_display');
-<<<<<<< HEAD
         if ($title && $title !== __('cms::cms.untitled-page')) {
-=======
-        if ($title && $title !== __('cms::cms.untitled-email')) {
->>>>>>> 25c4c53c372cdba2037ab44d39cad29e9f27baae
             $this->model->title = $title;
             $this->model->save();
         }
@@ -182,7 +178,4 @@ class EditorTopBar extends Form
         return new TemplateGallery($this->model->id);
     }
 }
-<<<<<<< HEAD
  
-=======
->>>>>>> 25c4c53c372cdba2037ab44d39cad29e9f27baae
