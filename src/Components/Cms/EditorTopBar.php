@@ -1,4 +1,4 @@
-F<?php
+<?php
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
