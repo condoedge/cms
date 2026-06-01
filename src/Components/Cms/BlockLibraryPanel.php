@@ -2,6 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
@@ -63,25 +65,34 @@ class BlockLibraryPanel extends Form
 
     protected function blockCard($typeClass)
     {
-        $url = route('page-editor.add-block', [
-            'page_id' => $this->pageId,
-            'block_type' => $typeClass::ITEM_NAME,
-        ]);
-
+        // Create the block server-side and open its editor in the native drawer
+        // (same pattern as the canvas edit link), then refresh the canvas natively.
         return _Link($typeClass::ITEM_TITLE)
             ->icon(_Sax($typeClass::ITEM_ICON, 24))
             ->class('vlBlockCard')
-            ->run('() => {
-                fetch("'.$url.'", { credentials: "same-origin" })
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        if (!window.vlPageEditor) { window.location.reload(); return; }
-                        var blockId = data && data.id ? String(data.id) : null;
-                        if (blockId) sessionStorage.setItem("vlPendingBlockId", blockId);
-                        vlPageEditor.refreshPreview();
-                        if (blockId) vlPageEditor.waitAndClickBlock(blockId);
-                    });
-            }');
+            ->selfGet('addBlockAndEdit', ['block_type' => $typeClass::ITEM_NAME])
+            ->inDrawer()
+            ->onSuccess(fn ($e) => $e->selfGet('getPagePreview')->inPanel(PageEditorLayout::PREVIEW_PANEL));
+    }
+
+    public function addBlockAndEdit()
+    {
+        $page = PageModel::findOrFail($this->pageId);
+
+        $item = app(PageBlockService::class)->addBlock($page, request('block_type'));
+
+        return PageEditor::getPageItemFormComponent($this->prefixGroup, $item->id, [
+            'page_id' => $this->pageId,
+        ]);
+    }
+
+    public function getPagePreview()
+    {
+        return PageEditor::getPagePreviewComponent($this->prefixGroup, [
+            'page_id' => $this->pageId,
+            'panel_id' => PageEditorLayout::PROPERTY_PANEL,
+            'with_editor' => true,
+        ]);
     }
 
     protected function copyBlockCard()
@@ -91,8 +102,7 @@ class BlockLibraryPanel extends Form
             ->class('vlBlockCard vlBlockCardCopy')
             ->get('page-editor.copy-block-form', [
                 'page_id' => $this->pageId,
-            ])->inPanel(PageEditorLayout::PROPERTY_PANEL)
-            ->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }');
+            ])->inDrawer();
     }
 
     protected function designTab()

@@ -19,8 +19,7 @@ class SpacerItem extends PageItemType
     {
         return _Rows(
             _InputNumber('cms::cms.spacer-height')->name('height', false)
-                ->value((int) ($this->styles->height_raw ?: 40))
-                ->class('whiteField'),
+                ->value((int) ($this->styles->height_raw ?: 40)),
         );
     }
 

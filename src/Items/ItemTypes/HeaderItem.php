@@ -46,8 +46,7 @@ class HeaderItem extends PageItemType
     {
         return _Select('cms::cms.object-fit')->name($this->formPrefix . 'object-fit', false)
             ->options(static::getBackgroundSizeOptions())
-            ->default($this->styles->object_fit ?: 'cover')
-            ->class('whiteField');
+            ->default($this->styles->object_fit ?: 'cover');
     }
 
     public static function getBackgroundSizeOptions(): array
@@ -63,28 +62,22 @@ class HeaderItem extends PageItemType
     {
         return _Rows(
             _InputNumber('cms::cms.header-height')->name('height', false)
-                ->value((int) ($this->styles->height_raw ?: 300))
-                ->class('whiteField'),
+                ->value((int) ($this->styles->height_raw ?: 300)),
             _Input('cms::cms.header-text-color')->type('color')->name('header-text-color', false)
-                ->default($this->styles->header_text_color ?: '#ffffff')
-                ->class('whiteField'),
+                ->default($this->styles->header_text_color ?: '#ffffff'),
             _Toggle('cms::cms.header-overlay')->name('header-overlay', false)
-                ->value((bool) ($this->styles->header_overlay_raw ?: false))
-                ->class('whiteField'),
+                ->value((bool) ($this->styles->header_overlay_raw ?: false)),
             _Input('cms::cms.header-overlay-color')->type('color')->name('header-overlay-color', false)
-                ->default($this->styles->header_overlay_color ?: '#000000')
-                ->class('whiteField'),
+                ->default($this->styles->header_overlay_color ?: '#000000'),
             _InputNumber('cms::cms.header-overlay-opacity')->name('header-overlay-opacity', false)
-                ->value((int) ($this->styles->header_overlay_opacity_raw ?: 40))
-                ->class('whiteField'),
+                ->value((int) ($this->styles->header_overlay_opacity_raw ?: 40)),
             _Select('cms::cms.header-text-position')->name('header-text-position', false)
                 ->options([
                     'flex-start' => __('cms::cms.padding-top'),
                     'center' => __('cms::cms.center'),
                     'flex-end' => __('cms::cms.padding-bottom'),
                 ])
-                ->default($this->styles->header_text_position ?: 'center')
-                ->class('whiteField'),
+                ->default($this->styles->header_text_position ?: 'center'),
         );
     }
 

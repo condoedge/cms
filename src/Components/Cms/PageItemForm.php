@@ -92,7 +92,7 @@ class PageItemForm extends Form
             )->id('item_styles_form')->class('mt-2'),
             _Panel()->id(static::ITEM_FORM_STYLES_ID),
             $this->saveButtons(),
-        )->class('p-4');
+        )->class('p-4 vlEditorDrawer');
     }
 
     protected function unifiedPropertyPanel()
@@ -103,16 +103,12 @@ class PageItemForm extends Form
 
         return _Rows(
             // Block type header with title input
+            // Close is handled by the native drawer's own X + click-outside (->inDrawer()).
             _Rows(
-                _FlexBetween(
-                    _Flex(
-                        _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
-                        _Html($title)->class('font-semibold text-sm'),
-                    )->class('items-center gap-2'),
-                    $this->model->id ? _Link()->icon('x')->class('text-gray-400 hover:text-gray-600 p-1')
-                        ->selfGet('getEmptyPropertyState')->inPanel(PageEditorLayout::PROPERTY_PANEL)
-                        ->onSuccess(fn ($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.clearSelection() }')) : null,
-                )->class('mb-3'),
+                _Flex(
+                    _Html()->icon(_Sax($icon, 20))->class('text-blue-600'),
+                    _Html($title)->class('font-semibold text-sm'),
+                )->class('items-center gap-2 mb-3'),
                 _Hidden()->name('block_type')->value($this->model->block_type),
                 _Input('cms::cms.title-optional')->name('name_pi'),
             )->class('vlPropertyHeader vlPropertySection mb-4'),
@@ -135,7 +131,7 @@ class PageItemForm extends Form
 
             // Action buttons
             $this->saveButtons(),
-        )->class('vlPropertyPanel');
+        )->class('vlPropertyPanel vlEditorDrawer');
     }
 
     protected function saveButtons()
@@ -144,12 +140,12 @@ class PageItemForm extends Form
 
         return _Rows(
             _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
-                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel))
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel) && $e->closeDrawer())
                 ->alert('cms::cms.saved-successfully'),
             $this->model->id ? _DeleteButton('cms::cms.delete-block')
                 ->byKey($this->model)
                 ->class('vlPropertyDeleteBtn w-full mt-2')
-                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)) : null,
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel) && $e->closeDrawer()) : null,
         )->class('vlPropertyActions');
     }
 
@@ -293,7 +289,7 @@ class PageItemForm extends Form
 
         return _Button('cms::cms.copy-this-block')->icon('duplicate')
             ->selfPost('copyBlockToPage', ['item_id' => $itemId])
-            ->onSuccess(fn($e) => $e->selfGet('refreshItemForm')->inPanel(PageEditorLayout::PROPERTY_PANEL) && $e->selfGet('getPagePreview')->inPanel(PageEditorLayout::PREVIEW_PANEL))
+            ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel(PageEditorLayout::PREVIEW_PANEL) && $e->closeDrawer())
             ->class('mt-2');
     }
 

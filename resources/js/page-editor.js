@@ -1,4 +1,4 @@
-(function (propertyPanelId) {
+(function () {
     if (window.vlPageEditor) return;
 
     window.vlPageEditor = {
@@ -13,18 +13,23 @@
             else { frame.classList.remove('vlMobilePreview'); }
         },
 
+        // Highlight only. The block's editor opens through its native Kompo
+        // ->inDrawer() onClick action, not from JS.
         selectBlock: function (blockEl) {
             document.querySelectorAll('.vlPageBlock').forEach(function (b) {
                 b.classList.remove('vlPageBlockSelected');
             });
-            if (blockEl) {
-                blockEl.classList.add('vlPageBlockSelected');
-                this.openDrawer();
-            }
+            if (blockEl) blockEl.classList.add('vlPageBlockSelected');
         },
 
         getSelectedBlock: function () {
             return document.querySelector('.vlPageBlockSelected');
+        },
+
+        clearSelection: function () {
+            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
+                b.classList.remove('vlPageBlockSelected');
+            });
         },
 
         showToast: function (message) {
@@ -71,59 +76,16 @@
             else { window.location.reload(); }
         },
 
-        openDrawer: function () {
-            var panel = document.querySelector('.vlEditorRightPanel');
-            var backdrop = document.querySelector('.vlDrawerBackdrop');
-            if (panel) panel.classList.add('vlDrawerOpen');
-            if (backdrop) backdrop.classList.add('vlDrawerBackdropVisible');
-        },
-
-        closeDrawer: function () {
-            var panel = document.querySelector('.vlEditorRightPanel');
-            var backdrop = document.querySelector('.vlDrawerBackdrop');
-            if (panel) panel.classList.remove('vlDrawerOpen');
-            if (backdrop) backdrop.classList.remove('vlDrawerBackdropVisible');
-            this.clearSelection();
-        },
-
-        clearSelection: function () {
-            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
-                b.classList.remove('vlPageBlockSelected');
-            });
-        },
-
-        waitAndClickBlock: function (blockId, attempts) {
-            attempts = attempts || 0;
-            if (attempts > 20) return;
-            var block = document.querySelector('.vlPageBlock[data-block-id="' + blockId + '"]');
-            if (block) {
-                block.click();
-                block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                sessionStorage.removeItem('vlPendingBlockId');
-            } else {
-                setTimeout(function () { vlPageEditor.waitAndClickBlock(blockId, attempts + 1); }, 300);
-            }
-        },
-
         toggleMobilePanel: function (panel) {
             if (panel === 'blocks') {
                 var leftPanel = document.querySelector('.vlEditorLeftPanel');
                 if (leftPanel) leftPanel.classList.toggle('vlPanelMobileOpen');
-            } else if (panel === 'properties') { this.openDrawer(); }
+            }
         }
     };
 
-    // Portal the drawer + backdrop into <body> so position:fixed escapes any
-    // ancestor with a transform that would otherwise become the containing block.
-    function vlPortalDrawer() {
-        var drawer = document.querySelector('.vlEditorRightPanel');
-        var backdrop = document.querySelector('.vlDrawerBackdrop');
-        if (!drawer || !backdrop) { setTimeout(vlPortalDrawer, 200); return; }
-        if (drawer.parentElement !== document.body) document.body.appendChild(drawer);
-        if (backdrop.parentElement !== document.body) document.body.appendChild(backdrop);
-    }
-    vlPortalDrawer();
-
+    // Highlight the clicked block. The drawer itself is opened by the block's
+    // native Kompo onClick (->inDrawer()).
     document.addEventListener('click', function (e) {
         if (e.target.closest('.vlBlockActions')) return;
         var block = e.target.closest('.vlPageBlock');
@@ -141,10 +103,6 @@
             return;
         }
         if (isInput) return;
-        if (e.key === 'Escape') {
-            vlPageEditor.closeDrawer();
-            return;
-        }
         if (e.key === 'Delete' || e.key === 'Backspace') {
             var selected = vlPageEditor.getSelectedBlock();
             if (selected) {
@@ -164,18 +122,6 @@
         }
     });
 
-    function vlInitDrawerObserver() {
-        var panel = document.getElementById(propertyPanelId);
-        if (!panel) { setTimeout(vlInitDrawerObserver, 500); return; }
-        var observer = new MutationObserver(function () {
-            if (panel.children.length > 0 && panel.innerHTML.trim() !== '') {
-                vlPageEditor.openDrawer();
-            }
-        });
-        observer.observe(panel, { childList: true, subtree: true });
-    }
-    vlInitDrawerObserver();
-
     function vlMarkEmptyBlocks() {
         document.querySelectorAll('.vlPageBlock').forEach(function (block) {
             var content = block.querySelector('.vlPageBlockContent');
@@ -191,7 +137,4 @@
     });
     var canvas = document.querySelector('.vlCanvasFrame');
     if (canvas) canvasObs.observe(canvas, { childList: true, subtree: true });
-
-    var pendingId = sessionStorage.getItem('vlPendingBlockId');
-    if (pendingId) vlPageEditor.waitAndClickBlock(pendingId);
 })

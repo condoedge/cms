@@ -226,7 +226,7 @@ abstract class PageItemType
          ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName])
          ->onClick
          ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
-         ->inPanel($this->editPanelId);
+         ->inDrawer();
     }
 
     protected function legacyPreviewItem($item, $itemType, $el)
@@ -263,8 +263,7 @@ abstract class PageItemType
             _Link()->icon(_Sax('edit-2',16))->class('vlBlockActionBtn')
                 ->balloon('cms::cms.edit-block', 'down')
                 ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
-                ->inPanel($editPanelId)
-                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }')),
+                ->inDrawer(),
             _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
                 ->byKey($this->pageItem)->browse()
                 ->balloon('cms::cms.delete-block', 'down'),

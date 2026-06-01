@@ -26,16 +26,13 @@ class CopyBlockForm extends Form
             ->toArray();
 
         return _Rows(
-            _Flex(
-                _Html('cms::cms.copy-block-from-newsletter')->class('font-semibold text-sm'),
-                _Link()->icon('x')->class('text-gray-400 hover:text-gray-600')
-                    ->run('() => { if (window.vlPageEditor) vlPageEditor.closeDrawer() }'),
-            )->class('justify-between items-center mb-4'),
+            // Close is handled by the native drawer's own X + click-outside (->inDrawer()).
+            _Html('cms::cms.copy-block-from-newsletter')->class('font-semibold text-sm mb-4'),
             _Select('cms::cms.select-newsletter')->name('select_newsletter', false)
                 ->options($pageOptions)
                 ->selfGet('getBlockOptions')->inPanel('copy-block-items-panel'),
             _Panel()->id('copy-block-items-panel')->class('mt-3'),
-        )->class('p-4');
+        )->class('p-4 vlEditorDrawer');
     }
 
     public function getBlockOptions()
@@ -50,7 +47,7 @@ class CopyBlockForm extends Form
                 ->options($options),
             _Button('cms::cms.copy-this-block')->icon('duplicate')
                 ->selfPost('copyBlock')->withAllFormValues()
-                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.refreshPreview() }'))
+                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.refreshPreview() }') && $e->closeDrawer())
                 ->class('mt-3 w-full'),
         );
     }

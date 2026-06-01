@@ -46,8 +46,7 @@ class BoxedContentItem extends PageItemType
             _Select('cms::cms.preset-color')
                 ->options($colorOptions)
                 ->default($this->styles->preset_color ?? collect($colorOptions)->keys()->first())
-                ->name('preset-color', false)
-                ->class('whiteField'),
+                ->name('preset-color', false),
             _Input('cms::cms.link-color')->type('color')->default($this->pageItem->getLinkColor())->name('link-color', false)->class('mb-2 whiteField'),
             _InputNumber('newsletter.page-item-corner-radius-px')->name('border-radius', false)->value((int) $this->styles->border_radius_raw ?: 0)->class('mb-2 whiteField'),
             _Rows(

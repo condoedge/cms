@@ -52,18 +52,12 @@ class PageEditorLayout extends Form
 
     protected function editorBody()
     {
+        // The block-property editor opens in the native Kompo drawer (->inDrawer()),
+        // mounted once at the app root, so there is no persistent right panel/backdrop here.
         return _Div(
             $this->leftPanel(),
             $this->centerPanel(),
-            $this->drawerBackdrop(),
-            $this->rightPanel(),
         )->class('vlEditorBody');
-    }
-
-    protected function drawerBackdrop()
-    {
-        return _Link()->class('vlDrawerBackdrop')
-            ->run('() => { if (window.vlPageEditor) vlPageEditor.closeDrawer() }');
     }
 
     protected function leftPanel()
@@ -98,18 +92,6 @@ class PageEditorLayout extends Form
             ->attr(['role' => 'main', 'aria-label' => __('cms::cms.canvas')]);
     }
 
-    protected function rightPanel()
-    {
-        return _Div(
-            _Flex(
-                _Html('cms::cms.block-properties')->class('vlDrawerTitle'),
-                _Link()->icon('x')->class('vlDrawerClose')
-                    ->run('() => { vlPageEditor.closeDrawer() }'),
-            )->class('vlDrawerHeader'),
-            _Panel()->id(static::PROPERTY_PANEL),
-        )->class('vlEditorRightPanel')->attr(['role' => 'complementary', 'aria-label' => __('cms::cms.block-properties')]);
-    }
-
     // Pseudo-element content needs translation interpolation; can't be inlined onto an element.
     // Kept narrow: only the ::after rule.
     protected function emptyBlockPseudoStyle()
@@ -122,8 +104,7 @@ class PageEditorLayout extends Form
     protected function bindEditorJs(): void
     {
         $js = file_get_contents(__DIR__.'/../../../resources/js/page-editor.js');
-        $panelId = json_encode(static::PROPERTY_PANEL);
 
-        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.'); }'));
+        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')(); }'));
     }
 }

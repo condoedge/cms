@@ -49,8 +49,7 @@ class ButtonItem extends PageItemType
         return _Rows(
             _Select('cms::cms.button-size')->name($this->formPrefix . 'button-size', false)
                 ->options(static::getSizeOptions())
-                ->default($this->styles->button_size ?: static::SIZE_MEDIUM)
-                ->class('whiteField'),
+                ->default($this->styles->button_size ?: static::SIZE_MEDIUM),
         );
     }
 

@@ -24,17 +24,13 @@ class DividerItem extends PageItemType
                     'dashed' => __('cms::cms.divider-dashed'),
                     'dotted' => __('cms::cms.divider-dotted'),
                 ])
-                ->default($this->styles->divider_style ?: 'solid')
-                ->class('whiteField'),
+                ->default($this->styles->divider_style ?: 'solid'),
             _InputNumber('cms::cms.divider-thickness')->name('divider-thickness', false)
-                ->value((int) ($this->styles->divider_thickness_raw ?: 1))
-                ->class('whiteField'),
+                ->value((int) ($this->styles->divider_thickness_raw ?: 1)),
             _Input('cms::cms.divider-color')->type('color')->name('divider-color', false)
-                ->default($this->styles->divider_color ?: '#d5d5d5')
-                ->class('whiteField'),
+                ->default($this->styles->divider_color ?: '#d5d5d5'),
             _InputNumber('cms::cms.divider-width')->name('divider-width', false)
-                ->value((int) ($this->styles->divider_width_raw ?: 100))
-                ->class('whiteField'),
+                ->value((int) ($this->styles->divider_width_raw ?: 100)),
         );
     }
 
