@@ -502,7 +502,7 @@ abstract class PageItemType
                 'start' => _Html()->icon(_Sax('textalign-left', 16)),
                 'center' => _Html()->icon(_Sax('textalign-center', 16)),
                 'end' => _Html()->icon(_Sax('textalign-right', 16)),
-            ])->optionClass('vlAlignBtn')
+            ])->optionClass('vlAlignBtn mb-4')
             ->selectedClass('vlAlignBtnActive', 'vlAlignBtnInactive')
             ->value($this->styles->align_items ?: 'center'),
         );

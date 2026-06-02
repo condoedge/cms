@@ -117,21 +117,23 @@ class PageItemForm extends Form
                 _Input('cms::cms.title-optional')->name('name_pi'),
             )->class('vlPropertyHeader vlPropertySection mb-4'),
 
-            // Content section
-            _Rows(
-                $blockType ? $blockType->blockTypeEditorElement() : null,
-            )->class('vlPropertySection vlPropertySectionBody mb-4'),
+            // Per-card settings (block sub-items — Group blocks only): each one its own white card.
+            $blockType ? _Rows($blockType->blockTypeEditorElement())->class('vlPropertySection mb-4') : null,
 
-            // Style section (colors, typography, spacing, responsive, advanced — all inside StylePageItemForm)
+            // General settings (block-wide style: colors, typography, spacing, responsive, advanced).
+            // Visually offset on a gray surface with a section label so the operator can tell at a
+            // glance that these apply to the whole block, not to any one sub-item.
             _Rows(
-                _Html('cms::cms.style')->class('vlPropertySectionTitle'),
+                _Flex(
+                    _Html('cms::cms.general-settings')
+                        ->class('text-xs font-semibold uppercase tracking-wider text-gray-500'),
+                    _Html()->class('flex-1 border-t border-gray-200'),
+                )->class('items-center gap-3 mb-3'),
                 _Rows(
-                    _Panel(
-                        $this->getStyleFormComponent(),
-                    )->id('item_styles_form'),
+                    _Panel($this->getStyleFormComponent())->id('item_styles_form'),
                     _Panel()->id(static::ITEM_FORM_STYLES_ID),
-                )->class('vlPropertySectionBody'),
-            )->class('vlPropertySection'),
+                )->class('bg-gray-100 rounded-xl p-3'),
+            )->class('vlPropertySection mb-4'),
 
             // Action buttons
             $this->saveButtons(),
@@ -144,12 +146,14 @@ class PageItemForm extends Form
 
         return _Rows(
             _SubmitButton('cms::cms.save')->class('vlPropertySaveBtn w-full')
-                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel))
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)
+                    && $e->run('() => { if (window.vlPageEditor) vlPageEditor.markClean() }'))
                 ->alert('cms::cms.saved-successfully'),
             $this->model->id ? _DeleteButton('cms::cms.delete-block')
                 ->byKey($this->model)
                 ->class('vlPropertyDeleteBtn w-full mt-2')
-                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)) : null,
+                ->onSuccess(fn($e) => $e->selfGet('getPagePreview')->inPanel($previewPanel)
+                    && $e->run('() => { if (window.vlPageEditor) vlPageEditor.markClean() }')) : null,
         )->class('vlPropertyActions');
     }
 

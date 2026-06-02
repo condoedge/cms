@@ -247,8 +247,12 @@
     transition: max-width 0.3s ease;
 }
 .vlCanvasFrame.vlMobilePreview {
-    max-width: 393px;
-    aspect-ratio: 393 / 852;
+    /* iPhone 17 (6.3" ProMotion display, 2025): 402 × 874 CSS pixels.
+       !important because PageEditorLayout sets an inline max-width from the
+       newsletter's content-max-width — that wins over a class rule and would
+       leave the mobile frame wider than the iPhone we're emulating. */
+    max-width: 402px !important;
+    aspect-ratio: 402 / 874;
     border-radius: 32px;
     border: 8px solid #1f2937;
     padding: 20px 0 20px;
@@ -623,20 +627,77 @@
    RIGHT PANEL - Style Form (StylePageItemForm)
    ============================================ */
 
-/* Adjust Kompo defaults inside drawer */
+/* Adjust Kompo defaults inside drawer — generous vertical rhythm so each
+   control stands on its own and labels visually attach to their field
+   rather than floating between two of them. */
 .vlEditorRightPanel .vlFormField {
     margin-top: 0 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 16px !important;
+}
+.vlEditorRightPanel .vlFormField:last-child {
+    margin-bottom: 0 !important;
 }
 .vlEditorRightPanel .vlFormLabel {
     @apply text-sm #{!important};
     color: #6b7280 !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 6px !important;
 }
-/* Neutralize .whiteField on the drawer's white background — fields keep the
-   default gray background so their edges remain visible. */
+/* Neutralize .whiteField on the drawer's white background: per project rule
+   ("whiteField only on colored backgrounds"), we strip the white fill and
+   replace it with a clean white-on-white look + a thin gray border so the
+   field's edges remain visible against the drawer's white card surface. */
 .vlEditorRightPanel .whiteField .vlInputWrapper {
-    background-color: var(--form-control-bg);
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+}
+.vlEditorRightPanel .whiteField .vlInputWrapper:focus-within {
+    border-color: #2563eb !important;
+}
+
+/* Image-width range slider: drop the field box so the native slider sits flush
+   (no odd gray box / unstyled thumb) and pick up the editor's blue accent. */
+.vlEditorRightPanel .vlFormField:has(input[type="range"]) .vlInputWrapper {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+/* Native slider tinted with the editor's blue — proper native thumb, no custom
+   track/JS. accent-color fills only up to the thumb, so there's a small native gap
+   after it at max (removing that needs a custom track, which we keep out). */
+.vlEditorRightPanel input[type="range"] {
+    width: 100%;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+/* CKEditor inside the drawer: VlCKEditorTemplate.vue wraps everything in a
+   div.card-gray-100.p-4 — strip that gray card AND the inner gray
+   vlInputWrapper Kompo adds, so the editor sits flush in its containing
+   _PageEditorSection card. Bump min-height so the editing area is 2× taller. */
+.vlEditorRightPanel .card-gray-100,
+.vlEditorRightPanel .vlTranslatableEditor .vlInputWrapper,
+.vlEditorRightPanel .ck.ck-editor__main,
+.vlEditorRightPanel .ck.ck-content {
+    background-color: #ffffff !important;
+    border: none !important;
+}
+.vlEditorRightPanel .card-gray-100 {
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+.vlEditorRightPanel .ck.ck-content {
+    min-height: 240px !important;
+}
+
+/* Push the Collapsible's auto-rendered chevron away from the right edge
+   *outside* of its rotating wrapper, so the rotation animation doesn't drag
+   any margin with it. The header is the first direct child of the
+   Collapsible's outer wrapper (Vue template structure). */
+.vlPageEditorCollapsible > div:first-child {
+    padding-right: 1rem;
 }
 
 /* Style Labels */
@@ -649,11 +710,21 @@
     margin-bottom: 0.5;
     margin-top: 0.75rem;
 }
+/* Sub-label for hand-built sections (slider, color pickers, etc.) that don't
+   use Kompo's auto-rendered vlFormLabel. Mirrors the vertical rhythm of the
+   auto labels so the sections sit at the same distance from the field above. */
 .vlStyleSubLabel {
     @apply text-sm;
     font-weight: 500;
-    color: #000000;
-    margin-bottom: 2px;
+    color: #6b7280 !important;
+    margin-top: 16px !important;
+    margin-bottom: 6px !important;
+}
+/* But not if it's the first child of its section — that spacing belongs to
+   the section padding, not the label. */
+.vlEditorRightPanel .vlStyleSubLabel:first-child,
+.vlEditorRightPanel *:first-child > .vlStyleSubLabel {
+    margin-top: 0;
 }
 
 /* Color Inputs */
@@ -798,18 +869,21 @@
    RIGHT PANEL - Property Panel (PageItemForm)
    ============================================ */
 .vlPropertyPanel {
-    padding: 0;
+    padding: 0 24px;
 }
 .vlPropertyHeader {
-    padding: 16px 16px;
+    padding: 16px 0;
     border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
     background: #ffffff;
     z-index: 5;
+    margin: 0 -24px;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 .vlPropertySection {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: none;
 }
 .vlPropertySectionTitle {
     @apply text-sm;
@@ -817,17 +891,20 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #6b7280;
-    padding: 14px 16px 8px;
+    padding: 14px 0 8px;
 }
 .vlPropertySectionBody {
-    padding: 0 16px 16px;
+    padding: 0 0 16px;
 }
 .vlPropertyActions {
-    padding: 16px 16px;
+    padding: 16px 0;
     position: sticky;
     bottom: 0;
     background: #ffffff;
     border-top: 1px solid #e5e7eb;
+    margin: 0 -24px;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 .vlPropertySaveBtn {
     background: #2563eb !important;

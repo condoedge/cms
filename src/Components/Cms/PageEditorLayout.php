@@ -123,7 +123,8 @@ class PageEditorLayout extends Form
     {
         $js = file_get_contents(__DIR__.'/../../../resources/js/page-editor.js');
         $panelId = json_encode(static::PROPERTY_PANEL);
+        $dirtyMsg = json_encode(__('cms::cms.unsaved-changes-confirm'));
 
-        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.'); }'));
+        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.', '.$dirtyMsg.'); }'));
     }
 }
