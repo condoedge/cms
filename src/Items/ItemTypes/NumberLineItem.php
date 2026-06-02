@@ -63,11 +63,28 @@ class NumberLineItem extends PageItemType
 
     public function toHtml(): string
     {
-        return $this->openCloseTag("
-            <div style=\"display: flex; justify-content:center;\">
-                <div style=\"color: white; text-align: center; font-size: 1.5rem;\">{$this->content->number}</div>
-            </div>
-        ");
+        // Table-based layout (email clients don't support flexbox). The number
+        // badge + the content text sit in two cells, mirroring toElement().
+        $bgColor = $this->pageItem->getStyleProperty('bg_number_color') ?: '#000000';
+        $fontSize = $this->pageItem->getStyleProperty('font_size_number') ?: '18px';
+        $size = $this->pageItem->getStyleProperty('bg_size_number') ?: '32px';
+        $number = e($this->content->number);
+        $text = $this->content->content;
+
+        $badge = '<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">'
+            . '<tr><td align="center" valign="middle" width="' . $size . '" height="' . $size . '" '
+            . 'style="width:' . $size . ';height:' . $size . ';background-color:' . $bgColor . ';border-radius:50%;'
+            . 'color:#ffffff;text-align:center;font-size:' . $fontSize . ';line-height:' . $size . ';mso-line-height-rule:exactly;">'
+            . $number . '</td></tr></table>';
+
+        return $this->openCloseTag(
+            '<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">'
+            . '<tr>'
+            . '<td valign="middle" width="' . $size . '" style="padding-right:16px;">' . $badge . '</td>'
+            . '<td valign="middle">' . $text . '</td>'
+            . '</tr>'
+            . '</table>'
+        );
     }
 
     public function rules()
