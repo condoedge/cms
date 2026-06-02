@@ -209,4 +209,17 @@ return [
     "var-team-name" => "Nom de l'organisation",
     "watch-video" => "Regarder la vidéo",
     "view-guide" => "Voir le guide",
+
+    // New newsletter chooser
+    "choose-template" => "Choisir un modèle",
+    "choose-template-desc" => "Sélectionnez un point de départ pour votre infolettre.",
+    "quick-start" => "Démarrer rapidement",
+    "my-templates" => "Mes modèles",
+    "blank-newsletter" => "Vierge",
+    "blank-newsletter-desc" => "Commencer avec une page vide.",
+    "global-template" => "Modèle",
+    "team-template" => "Modèle de l'équipe",
+    "untitled-template" => "Modèle sans titre",
+    "untitled-newsletter" => "Infolettre sans titre",
+    "untitled-from-template" => "Sans titre — :name",
 ];
