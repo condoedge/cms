@@ -30,7 +30,6 @@ class PageEditorLayout extends Form
 
         return _Rows(
             _Link('cms::cms.skip-to-canvas')->href('#'.static::PREVIEW_PANEL)->class('vlSkipLink'),
-            $this->emptyBlockPseudoStyle(),
             $this->topBar(),
             $this->editorBody(),
         )->class('vlPageEditorWrapper')->attr(['role' => 'application', 'aria-label' => __('cms::cms.page-editor')]);
@@ -108,15 +107,6 @@ class PageEditorLayout extends Form
             )->class('vlDrawerHeader'),
             _Panel()->id(static::PROPERTY_PANEL),
         )->class('vlEditorRightPanel')->attr(['role' => 'complementary', 'aria-label' => __('cms::cms.block-properties')]);
-    }
-
-    // Pseudo-element content needs translation interpolation; can't be inlined onto an element.
-    // Kept narrow: only the ::after rule.
-    protected function emptyBlockPseudoStyle()
-    {
-        $label = e(__('cms::cms.click-to-edit'));
-
-        return _Html('<style>.vlPageBlock.vlPageBlockEmpty::after{content:attr(data-block-type) " — '.$label.'";}</style>');
     }
 
     protected function bindEditorJs(): void

@@ -16,6 +16,7 @@ class PagePreview extends Query
     public $containerClass = 'flex flex-col external-container';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
+    public $itemsWrapperStyle = '';
     public $noItemsFound = '';
 
     protected $panelId;
@@ -33,43 +34,31 @@ class PagePreview extends Query
         $this->withEditor = $this->prop('with_editor');
 
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
-        $this->style = $this->withEditor ? 'width: 100%;' : 'width: 100%;';
+        $this->style = 'width: 100%;';
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
-            // json_encode keeps colors/sizes from breaking out of the JS string literal even if
-            // they ever contained quotes or backslashes.
-            $exterior = json_encode($this->page->getExteriorBackgroundColor());
-            $content = json_encode($this->page->getContentBackgroundColor());
-            $maxWidth = json_encode($this->page->getContentMaxWidth().'px');
+            // On the public path PagePreview owns its backgrounds; in the editor they come
+            // from PageEditorLayout's wrapping divs instead. Render them as server-side Kompo
+            // styles (no flash, no global jQuery, scoped to this instance): the exterior color
+            // on the query root, the content frame (bg + width) on the items wrapper.
+            $this->style .= 'background-color:'.$this->page->getExteriorBackgroundColor().';';
 
-            $this->onLoad(fn ($e) => $e->run(
-                "() => { \$('.external-container').css('background-color', {$exterior});"
-                ." \$('.vlQueryWrapperPagePreview').css({'background-color': {$content}, 'max-width': {$maxWidth}, 'margin': '0 auto'}); }"
-            ));
+            $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
+                .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
         }
     }
 
     public function top()
     {
         if (!$this->withEditor) {
-            return $this->responsiveColumnsStyle();
+            return null;
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 
-        return _Rows(
-            $this->responsiveColumnsStyle(),
-            !$hasItems ? null : _Html('')->class('pt-2'),
-        );
-    }
-
-    // Static CSS (no interpolation). Inline so the public preview keeps working when
-    // the host hasn't imported resources/scss/page-editor.scss.
-    protected function responsiveColumnsStyle()
-    {
-        return _Html('<style>@media (max-width:600px){.vlFlexResponsiveColumns{flex-direction:column !important;}}</style>');
+        return $hasItems ? _Html('')->class('pt-2') : null;
     }
 
     public function bottom()

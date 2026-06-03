@@ -355,6 +355,9 @@
     position: relative;
     min-height: 48px;
     animation: vlBlockFadeIn 0.2s ease;
+    &.vlPageBlockEmpty::after {
+        content: attr(data-block-type) " — " attr(data-empty-label);
+    }
     &:hover {
         border-color: #93c5fd;
     }

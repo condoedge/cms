@@ -223,7 +223,7 @@ abstract class PageItemType
             $itemType?->pageEditorBlockActions($this->editPanelId),
             _Rows($el)->class('w-full vlPageBlockContent'),
         )->class('vlPageBlock')
-         ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName])
+         ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName, 'data-empty-label' => __('cms::cms.click-to-edit')])
          ->onClick
          ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
          ->inPanel($this->editPanelId);
@@ -417,21 +417,11 @@ abstract class PageItemType
             return '<td style="width: ' . $colWidth . '%; vertical-align: top;">' . $childHtml . '</td>';
         })->join('');
 
-        return '
-            <style>
-                @media (max-width: 600px) {
-                    .' . $uniqueId . ' td { display: block !important; width: 100% !important; }
-                }
-            </style>
-            <!--[if mso]>
-            <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="' . $colWidthPx . '" valign="top">
-            <![endif]-->
-            <table role="presentation" class="' . $uniqueId . '" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
-                <tr>' . $columns . '</tr>
-            </table>
-            <!--[if mso]>
-            </td></tr></table>
-            <![endif]-->';
+        return view('cms::partials.grid-columns', [
+            'uniqueId' => $uniqueId,
+            'colWidthPx' => $colWidthPx,
+            'columns' => $columns,
+        ])->render();
     }
 
     /** STYLES */
