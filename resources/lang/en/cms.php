@@ -215,4 +215,17 @@ return [
     "var-team-name" => "Organization name",
     "watch-video" => "Watch video",
     "view-guide" => "View guide",
+
+    // New newsletter chooser
+    "choose-template" => "Choose a template",
+    "choose-template-desc" => "Pick a starting point for your newsletter.",
+    "quick-start" => "Quick start",
+    "my-templates" => "My templates",
+    "blank-newsletter" => "Blank",
+    "blank-newsletter-desc" => "Start with an empty page.",
+    "global-template" => "Template",
+    "team-template" => "Team template",
+    "untitled-template" => "Untitled template",
+    "untitled-newsletter" => "Untitled newsletter",
+    "untitled-from-template" => "Untitled — :name",
 ];
