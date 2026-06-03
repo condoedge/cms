@@ -97,7 +97,7 @@ class ImgItem extends PageItemType
                 _Html($maxWidth.'%')->id($labelId)->class('text-sm font-semibold text-gray-700 w-10 text-right'),
             )->class('items-center gap-3'),
             _Hidden()->name($this->formPrefix . 'height-auto', false)->value(1),
-        );
+        )->class('mt-4');
     }
 
     protected function objectFitStyle()
@@ -167,8 +167,57 @@ class ImgItem extends PageItemType
 
     public function beforeSave($model = null)
     {
-        $model->manualUploadImage(request()->file('image'), 'image_preview', 800);
-        $model->manualUploadImage(request()->file('image'), 'image', 1600);
+        $upload = request()->file('image');
+
+        if (!$upload || !$upload->isValid()) {
+            // No new upload: if any code path (e.g. Kompo's form binding) blanked
+            // the existing image attributes on a text-only edit, restore them
+            // from the model's original DB values so the saved record keeps the
+            // previously-uploaded image.
+            $this->preserveExistingImageAttributes($model);
+            return;
+        }
+
+        // Clone the temp file because Intervention/GD leaves the UploadedFile
+        // in a state the second call mis-reads as "directory".
+        $previewCopy = $this->cloneUploadedImage($upload);
+        $fullCopy = $this->cloneUploadedImage($upload);
+        $model->manualUploadImage($previewCopy, 'image_preview', 800);
+        $model->manualUploadImage($fullCopy, 'image', $model->getNewsletterMaxImageWidth());
+    }
+
+    protected function preserveExistingImageAttributes($model): void
+    {
+        if (!$model || !$model->exists) return;
+
+        foreach (['image', 'image_preview'] as $attr) {
+            if (empty($model->getAttribute($attr)) && !empty($model->getOriginal($attr))) {
+                $model->setRawAttributes(array_merge(
+                    $model->getAttributes(),
+                    [$attr => $model->getOriginal($attr)]
+                ));
+            }
+        }
+    }
+
+    protected function cloneUploadedImage(\Illuminate\Http\UploadedFile $file): \Illuminate\Http\UploadedFile
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'cms_img_');
+
+        $sourcePath = $file->getRealPath();
+        if (is_string($sourcePath) && is_file($sourcePath)) {
+            copy($sourcePath, $tmp);
+        } else {
+            file_put_contents($tmp, $file->getContent());
+        }
+
+        return new \Illuminate\Http\UploadedFile(
+            $tmp,
+            $file->getClientOriginalName(),
+            $file->getClientMimeType(),
+            UPLOAD_ERR_OK,
+            true
+        );
     }
 
     public function afterSave($model = null)

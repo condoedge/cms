@@ -16,6 +16,7 @@ class PagePreview extends Query
     public $containerClass = 'flex flex-col external-container';
     public $paginationType = 'Scroll';
 	public $itemsWrapperClass = 'px-0 overflow-x-auto overflow-y-auto mini-scroll';
+    public $itemsWrapperStyle = '';
     public $noItemsFound = '';
 
     protected $panelId;
@@ -33,43 +34,69 @@ class PagePreview extends Query
         $this->withEditor = $this->prop('with_editor');
 
         $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
-        $this->style = $this->withEditor ? 'width: 100%;' : 'width: 100%;';
+        $this->style = 'width: 100%;';
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
 
         if (!$this->withEditor) {
-            // json_encode keeps colors/sizes from breaking out of the JS string literal even if
-            // they ever contained quotes or backslashes.
-            $exterior = json_encode($this->page->getExteriorBackgroundColor());
-            $content = json_encode($this->page->getContentBackgroundColor());
-            $maxWidth = json_encode($this->page->getContentMaxWidth().'px');
+            // On the public path PagePreview owns its backgrounds; in the editor they come
+            // from PageEditorLayout's wrapping divs instead. Render them as server-side Kompo
+            // styles (no flash, no global jQuery, scoped to this instance): the exterior color
+            // on the query root, the content frame (bg + width) on the items wrapper.
+            $this->style .= 'background-color:'.$this->page->getExteriorBackgroundColor().';';
 
-            $this->onLoad(fn ($e) => $e->run(
-                "() => { \$('.external-container').css('background-color', {$exterior});"
-                ." \$('.vlQueryWrapperPagePreview').css({'background-color': {$content}, 'max-width': {$maxWidth}, 'margin': '0 auto'}); }"
-            ));
+            $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
+                .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
         }
     }
 
     public function top()
     {
         if (!$this->withEditor) {
-            return $this->responsiveColumnsStyle();
+            return $this->standalonePreviewDeviceToggle();
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
 
-        return _Rows(
-            $this->responsiveColumnsStyle(),
-            !$hasItems ? null : _Html('')->class('pt-2'),
-        );
+        return $hasItems ? _Html('')->class('pt-2') : null;
     }
 
-    // Static CSS (no interpolation). Inline so the public preview keeps working when
-    // the host hasn't imported resources/scss/page-editor.scss.
-    protected function responsiveColumnsStyle()
+    /**
+     * Desktop / mobile toggle for the standalone preview page (opened in a new tab
+     * from the editor). Self-contained: each button carries its own handler via run()
+     * so the standalone route needs no editor JS (page-editor.js isn't loaded there).
+     * Reuses the editor's .vlDeviceToggle* styling from page-editor.scss.
+     */
+    protected function standalonePreviewDeviceToggle()
     {
-        return _Html('<style>@media (max-width:600px){.vlFlexResponsiveColumns{flex-direction:column !important;}}</style>');
+        return _Flex(
+            _Flex(
+                _Link()->icon(_Sax('monitor', 20))
+                    ->balloon('cms::cms.preview-desktop', 'down')
+                    ->class('vlDeviceToggle vlDeviceToggleActive')
+                    ->attr(['data-device' => 'desktop'])
+                    ->run($this->deviceToggleJs('desktop')),
+                _Link()->icon(_Sax('mobile', 20))
+                    ->balloon('cms::cms.preview-mobile', 'down')
+                    ->class('vlDeviceToggle')
+                    ->attr(['data-device' => 'mobile'])
+                    ->run($this->deviceToggleJs('mobile')),
+            )->class('vlDeviceToggleGroup'),
+        )->class('vlPreviewToggleBar');
+    }
+
+    // Per-button toggle handler: sets the active state and resizes the preview wrapper.
+    // Inline (not via a shared helper) because the standalone preview route loads no
+    // editor JS; the buttons' styling lives in page-editor.scss.
+    protected function deviceToggleJs(string $device): string
+    {
+        $width = $device === 'mobile' ? '393px' : ((int) $this->page->getContentMaxWidth()).'px';
+
+        return "() => {"
+            ."document.querySelectorAll('.vlDeviceToggle').forEach(t => t.classList.remove('vlDeviceToggleActive'));"
+            ."var a = document.querySelector(\"[data-device='{$device}']\"); if (a) a.classList.add('vlDeviceToggleActive');"
+            ."var w = document.querySelector('.vlQueryWrapperPagePreview'); if (w) w.style.maxWidth = '{$width}';"
+        ."}";
     }
 
     public function bottom()

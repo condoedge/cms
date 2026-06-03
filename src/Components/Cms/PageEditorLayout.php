@@ -30,7 +30,6 @@ class PageEditorLayout extends Form
 
         return _Rows(
             _Link('cms::cms.skip-to-canvas')->href('#'.static::PREVIEW_PANEL)->class('vlSkipLink'),
-            $this->emptyBlockPseudoStyle(),
             $this->topBar(),
             $this->editorBody(),
         )->class('vlPageEditorWrapper')->attr(['role' => 'application', 'aria-label' => __('cms::cms.page-editor')]);
@@ -110,20 +109,12 @@ class PageEditorLayout extends Form
         )->class('vlEditorRightPanel')->attr(['role' => 'complementary', 'aria-label' => __('cms::cms.block-properties')]);
     }
 
-    // Pseudo-element content needs translation interpolation; can't be inlined onto an element.
-    // Kept narrow: only the ::after rule.
-    protected function emptyBlockPseudoStyle()
-    {
-        $label = e(__('cms::cms.click-to-edit'));
-
-        return _Html('<style>.vlPageBlock.vlPageBlockEmpty::after{content:attr(data-block-type) " — '.$label.'";}</style>');
-    }
-
     protected function bindEditorJs(): void
     {
         $js = file_get_contents(__DIR__.'/../../../resources/js/page-editor.js');
         $panelId = json_encode(static::PROPERTY_PANEL);
+        $dirtyMsg = json_encode(__('cms::cms.unsaved-changes-confirm'));
 
-        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.'); }'));
+        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.', '.$dirtyMsg.'); }'));
     }
 }

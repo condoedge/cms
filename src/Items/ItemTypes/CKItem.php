@@ -21,7 +21,7 @@ class CKItem extends PageItemType
 
     public function blockTypeEditorElement()
     {
-        $item = _CKEditorPageItem('Content')->name($this->nameContent, $this->interactsWithPageItem)
+        $item = _CKEditorPageItem('cms::cms.content')->name($this->nameContent, $this->interactsWithPageItem)
             ->withoutHeight()
             ->prependToolbar(['fontColor', 'fontBackgroundColor']);
 
