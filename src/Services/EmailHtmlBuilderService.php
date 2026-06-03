@@ -2,6 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Services;
 
+use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
+
 class EmailHtmlBuilderService
 {
     public function buildFromPage($page, ?array $variables = null): string
@@ -34,7 +36,7 @@ class EmailHtmlBuilderService
     ): string {
         $consolidated = $this->consolidateStyles($content);
 
-        return view('cms::emails.layout', [
+        $html = view('cms::emails.layout', [
             'lang' => app()->getLocale(),
             'content' => $consolidated['html'],
             'inlineCss' => $consolidated['css'],
@@ -46,6 +48,26 @@ class EmailHtmlBuilderService
             'maxWidth' => $maxWidth,
             'fontFamily' => $fontFamily,
         ])->render();
+
+        return $this->inlineStyles($html);
+    }
+
+    // Inline the <style> rules onto each element. Outlook (Word engine) and
+    // Gmail (which can strip <style> on clipping/forwarding) honour inline
+    // styles far more reliably than a <style> block. @media and pseudo rules
+    // can't be inlined and are preserved in the kept <style> block for the
+    // clients (Apple/iOS) that do use them.
+    protected function inlineStyles(string $html): string
+    {
+        $inlined = (new CssToInlineStyles())->convert($html);
+
+        // The inliner's DOM serialization drops the doctype; re-add it so clients
+        // render in standards mode (quirks mode breaks the box model on Outlook.com).
+        if (stripos($inlined, '<!doctype') === false) {
+            $inlined = "<!DOCTYPE html>\n" . $inlined;
+        }
+
+        return $inlined;
     }
 
     // Pulls every inline <style> tag into one block so Gmail's 8192-char per-style cap isn't tripped.
