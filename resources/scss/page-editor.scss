@@ -270,6 +270,17 @@
     }
 }
 
+/* ---- Standalone preview device toggle (page.preview route) — reuses .vlDeviceToggle* ---- */
+.vlPreviewToggleBar {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+.vlQueryWrapperPagePreview {
+    transition: max-width 0.3s ease;
+}
+
 /* ---- Right Panel - Drawer ---- */
 .vlEditorRightPanel {
     position: fixed;

@@ -47,43 +47,13 @@ class PagePreview extends Query
 
             $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
                 .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
-            // Initial CSS setup + bind the device toggle here. _Html()-injected
-            // <script> tags don't execute (innerHTML strips them), so the toggle
-            // listener has to be wired up via this onLoad hook instead.
-            $deviceJs = <<<JS
-() => {
-    \$('.external-container').css('background-color', {$exterior});
-    \$('.vlQueryWrapperPagePreview').css({'background-color': {$content}, 'max-width': {$maxWidth}, 'margin': '0 auto'});
-
-    if (window.__vlStandalonePreviewBound) return;
-    window.__vlStandalonePreviewBound = true;
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest('.vlStandaloneDeviceBtn');
-        if (!btn) return;
-        var d = btn.getAttribute('data-d');
-        var c = document.querySelector('.external-container');
-        if (c) c.classList.toggle('vlStandalonePreviewMobile', d === 'mobile');
-        document.querySelectorAll('.vlStandaloneDeviceBtn').forEach(function (b) {
-            b.classList.toggle('vlStandaloneDeviceBtnActive', b.getAttribute('data-d') === d);
-        });
-    });
-}
-JS;
-
-            $this->onLoad(fn ($e) => $e->run($deviceJs));
         }
-
-        $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
-                .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
     }
 
     public function top()
     {
         if (!$this->withEditor) {
-            return _Rows(
-                $this->responsiveColumnsStyle(),
-                $this->standalonePreviewDeviceToggle(),
-            );
+            return $this->standalonePreviewDeviceToggle();
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
@@ -92,72 +62,41 @@ JS;
     }
 
     /**
-     * Desktop / mobile toggle for the standalone preview page (opened in a new
-     * tab from the editor). Mobile applies an iPhone 17 frame (402 × 874) on the
-     * preview wrapper, identical proportions to the in-editor mobile preview.
-     * Implemented as inline HTML + JS so it works without depending on the
-     * host's compiled editor stylesheet/JS bundle.
+     * Desktop / mobile toggle for the standalone preview page (opened in a new tab
+     * from the editor). Self-contained: each button carries its own handler via run()
+     * so the standalone route needs no editor JS (page-editor.js isn't loaded there).
+     * Reuses the editor's .vlDeviceToggle* styling from page-editor.scss.
      */
     protected function standalonePreviewDeviceToggle()
     {
-        $desktopLabel = __('cms::cms.preview-desktop');
-        $mobileLabel = __('cms::cms.preview-mobile');
+        return _Flex(
+            _Flex(
+                _Link()->icon(_Sax('monitor', 20))
+                    ->balloon('cms::cms.preview-desktop', 'down')
+                    ->class('vlDeviceToggle vlDeviceToggleActive')
+                    ->attr(['data-device' => 'desktop'])
+                    ->run($this->deviceToggleJs('desktop')),
+                _Link()->icon(_Sax('mobile', 20))
+                    ->balloon('cms::cms.preview-mobile', 'down')
+                    ->class('vlDeviceToggle')
+                    ->attr(['data-device' => 'mobile'])
+                    ->run($this->deviceToggleJs('mobile')),
+            )->class('vlDeviceToggleGroup'),
+        )->class('vlPreviewToggleBar');
+    }
 
-        $style = <<<CSS
-            <style>
-            .vlStandalonePreviewBar {
-                display: flex; justify-content: center; gap: 4px;
-                padding: 12px; background: #f3f4f6; border-radius: 8px;
-                margin: 0 auto 16px; max-width: 240px;
-            }
-            .vlStandaloneDeviceBtn {
-                display: inline-flex; align-items: center; gap: 6px;
-                padding: 6px 12px; border-radius: 6px;
-                font-size: 13px; font-weight: 500; color: #6b7280;
-                background: transparent; border: 0; cursor: pointer;
-                transition: all .15s;
-            }
-            .vlStandaloneDeviceBtn:hover { color: #111827; }
-            .vlStandaloneDeviceBtnActive {
-                background: #ffffff; color: #111827;
-                box-shadow: 0 1px 2px rgba(0,0,0,.06);
-            }
-            .vlStandalonePreviewMobile .vlQueryWrapperPagePreview {
-                max-width: 402px !important;
-                min-height: 874px;
-                border: 8px solid #1f2937;
-                border-radius: 32px;
-                padding: 20px 0;
-                box-shadow: 0 25px 50px -12px rgba(0,0,0,.15);
-                margin: 0 auto !important;
-                overflow-y: auto;
-            }
-            .vlStandalonePreviewMobile .vlQueryWrapperPagePreview::before {
-                content: "";
-                display: block;
-                width: 40px; height: 4px;
-                background: #374151; border-radius: 2px;
-                margin: 0 auto 12px;
-            }
-            </style>
-        CSS;
+    // Per-button toggle handler: sets the active state and resizes the preview wrapper.
+    // Inline (not via a shared helper) because the standalone preview route loads no
+    // editor JS; the buttons' styling lives in page-editor.scss.
+    protected function deviceToggleJs(string $device): string
+    {
+        $width = $device === 'mobile' ? '393px' : ((int) $this->page->getContentMaxWidth()).'px';
 
-        $svgDesktop = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
-        $svgMobile = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>';
-
-        // Click listener for these buttons is wired up via onLoad() in
-        // created() — inline <script> tags here would not execute.
-        return _Html(
-            $style .
-            '<div class="vlStandalonePreviewBar">' .
-                '<button type="button" class="vlStandaloneDeviceBtn vlStandaloneDeviceBtnActive" data-d="desktop">' .
-                    $svgDesktop . '<span>' . e($desktopLabel) . '</span>' .
-                '</button>' .
-                '<button type="button" class="vlStandaloneDeviceBtn" data-d="mobile">' .
-                    $svgMobile . '<span>' . e($mobileLabel) . '</span>' .
-                '</button>' .
-            '</div>'
-        );
+        return "() => {"
+            ."document.querySelectorAll('.vlDeviceToggle').forEach(t => t.classList.remove('vlDeviceToggleActive'));"
+            ."var a = document.querySelector(\"[data-device='{$device}']\"); if (a) a.classList.add('vlDeviceToggleActive');"
+            ."var w = document.querySelector('.vlQueryWrapperPagePreview'); if (w) w.style.maxWidth = '{$width}';"
+        ."}";
     }
 
     public function bottom()
