@@ -90,7 +90,24 @@ class HeaderItem extends PageItemType
 
     public function beforeSave($model = null)
     {
-        $model->manualUploadImage(request()->file('image'), 'image', 1600);
+        $upload = request()->file('image');
+
+        if (!$upload || !$upload->isValid()) {
+            // Preserve the existing image on text-only edits in case Kompo's
+            // form binding blanks the model's image attribute when no new file
+            // was submitted.
+            if ($model && $model->exists
+                && empty($model->getAttribute('image'))
+                && !empty($model->getOriginal('image'))) {
+                $model->setRawAttributes(array_merge(
+                    $model->getAttributes(),
+                    ['image' => $model->getOriginal('image')]
+                ));
+            }
+            return;
+        }
+
+        $model->manualUploadImage($upload, 'image', $model->getNewsletterMaxImageWidth());
     }
 
     public function afterSave($model = null)

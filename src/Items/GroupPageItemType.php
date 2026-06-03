@@ -31,7 +31,12 @@ class GroupPageItemType extends PageItemType
     {
         parent::__construct($pageItem);
 
-        $this->groupItems = $this->pageItem->groupPageItems()->get();
+        // Sort by the logical `order` column so render output and indexed
+        // lookups (afterSave matches by ->order) stay aligned with the
+        // GROUP_ITEMS_TYPES sequence regardless of insertion / id ordering.
+        $this->groupItems = $this->pageItem->groupPageItems()
+            ->orderBy('order')
+            ->get();
 
         $this->groupItemsStyles = collect(static::GROUP_ITEMS_TYPES)->mapWithKeys(function($groupItemType){
             return [$groupItemType => $this->defaultParentStylesConstructor()];
@@ -40,6 +45,29 @@ class GroupPageItemType extends PageItemType
 
     public function beforeSave($model = null)
     {}
+
+    protected function cloneUploadedFile(UploadedFile $file): UploadedFile
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'cms_img_');
+
+        // getRealPath() can return false or a path that's no longer a regular
+        // file (e.g. after Intervention's first pass). Guard with is_file()
+        // and fall back to streaming the contents via the framework helper.
+        $sourcePath = $file->getRealPath();
+        if (is_string($sourcePath) && is_file($sourcePath)) {
+            copy($sourcePath, $tmp);
+        } else {
+            file_put_contents($tmp, $file->getContent());
+        }
+
+        return new UploadedFile(
+            $tmp,
+            $file->getClientOriginalName(),
+            $file->getClientMimeType(),
+            UPLOAD_ERR_OK,
+            true
+        );
+    }
 
     public function afterSave($model = null)
     {
@@ -50,7 +78,14 @@ class GroupPageItemType extends PageItemType
             $content = request($i . '_content');
             $image = request($i . '_image');
 
-            $item = $this->groupItems[$i] ?? PageItemModel::make();
+            // Match by logical `order` (matches what blockTypeEditorElement uses
+            // when rendering). Indexing by Collection position breaks once items
+            // get re-ordered, soft-deleted, or inserted in a different sequence
+            // than GROUP_ITEMS_TYPES — which is when previously-saved images
+            // would silently land on the wrong row and the right row would be
+            // replaced by a fresh blank model.
+            $item = $this->groupItems->first(fn ($existing) => $existing->order == $i)
+                ?? PageItemModel::make();
 
             $instance = new $groupItemType($item, false);
 
@@ -59,12 +94,21 @@ class GroupPageItemType extends PageItemType
             $item->block_type = $groupItemType::ITEM_NAME;
             $item->order = $i;
             $item->page_id = $model->page_id;
-            // $item->styles = (static::GROUP_ITEMS_STYLES[$groupItemType] ?? '') . ';';
 
-            if($image && $image instanceof UploadedFile) {
-                $item->manualUploadImage($image, 'image_preview', 800);
-                $item->manualUploadImage($image, 'image', 1600);
+            $hasNewUpload = $image instanceof UploadedFile && $image->isValid();
+
+            if ($hasNewUpload) {
+                // Snapshot the upload to a fresh temp file for each call.
+                // Intervention/GD reads the tmp file in the first call, after
+                // which the UploadedFile's internal state becomes unreliable.
+                $previewCopy = $this->cloneUploadedFile($image);
+                $fullCopy = $this->cloneUploadedFile($image);
+                $item->manualUploadImage($previewCopy, 'image_preview', 800);
+                $item->manualUploadImage($fullCopy, 'image', $item->getNewsletterMaxImageWidth());
             }
+            // No new upload -> keep whatever image/image_preview were already on
+            // the model. Eloquent's dirty tracking handles this naturally because
+            // we never touched those attributes above.
 
             $instance->setPrefixFormNames($i . '_');
             $instance->beforeSave($item);
@@ -75,7 +119,10 @@ class GroupPageItemType extends PageItemType
         $this->groupItems = $model->groupPageItems()->saveMany($groupItemsToSave);
 
         collect(static::GROUP_ITEMS_TYPES)->map(function ($groupItemType, $i) use ($model) {
-            $item = $this->groupItems[$i];
+            // Same order-based lookup as above so the post-save hooks operate on
+            // the same row we just wrote, not an arbitrary Collection position.
+            $item = $this->groupItems->first(fn ($existing) => $existing->order == $i);
+            if (!$item) return;
 
             $instance = new $groupItemType($item, false);
 
@@ -100,44 +147,48 @@ class GroupPageItemType extends PageItemType
                 $instance->setFormValues($attrs['title'], $attrs['content'], $actualItem->image);
             }
 
+            $icon = defined($groupItemType.'::ITEM_ICON') ? $groupItemType::ITEM_ICON : 'document-text';
+
             return $this->collapsibleSection(
                 __($groupItemType::ITEM_TITLE),
                 _Rows(
                     $instance->blockTypeEditorElement(),
                     $instance->blockTypeEditorStylesElement(),
-                    $this->subItemPaddingInputs($i, $actualItem),
+                    $this->subSectionDivider(__('cms::cms.spacing')),
+                    $this->subItemPaddingTabs($i, $actualItem),
                 ),
+                $icon,
             );
         });
 
         return _Rows(...$sections);
     }
 
-    protected function subItemPaddingInputs($index, $actualItem = null)
+    protected function subItemPaddingTabs($index, $actualItem = null)
     {
         $prefix = $index . '_';
 
-        return $this->collapsibleSection(
-            __('cms::cms.spacing'),
-            _Rows(
+        return _Tabs(
+            _Tab(
                 $this->subItemPaddingTab($prefix, 'desktop', $actualItem),
+            )->label('cms::cms.desktop')->class('vlSpacingTabContent'),
+            _Tab(
                 $this->subItemPaddingTab($prefix, 'mobile', $actualItem),
-            ),
-        )->class('mt-2');
+            )->label('cms::cms.mobile')->class('vlSpacingTabContent'),
+        )->class('vlSpacingTabs');
     }
 
-    // Section header styling (uppercase, gray, hover-darken) is conveyed via Tailwind classes on
-    // the title element; expand/collapse is owned by the _Collapsible Vue component.
-    protected function collapsibleSection(string $title, $body)
+    protected function collapsibleSection(string $title, $body, ?string $icon = null)
     {
-        $titleEl = _Flex(
-            _Html($title)->class('text-xs font-semibold uppercase tracking-wider text-gray-600'),
-        )->class('items-center gap-2 py-2.5 cursor-pointer hover:text-gray-800');
+        return _PageEditorSection($title, $body, $icon);
+    }
 
-        return _Collapsible($body)
-            ->titleLabel($titleEl)
-            ->withIcon('chevron-up', 'text-gray-400 text-xs')
-            ->class('border-b border-gray-200');
+    // Inline divider with a small label, used inside a card to mark the start of a sub-section
+    // (e.g. "Spacing") without nesting another collapsible.
+    protected function subSectionDivider(string $label)
+    {
+        return _Html($label)
+            ->class('text-xs font-semibold uppercase tracking-wider text-gray-500 mt-8 mb-4 pt-6 border-t border-gray-200');
     }
 
     protected function subItemPaddingTab($prefix, $device, $actualItem = null)
@@ -151,15 +202,13 @@ class GroupPageItemType extends PageItemType
         $paddingLeft = $actualItem?->getStyleProperty('padding_left' . $styleSuffix . '_raw') ?? $defaultVal;
         $paddingRight = $actualItem?->getStyleProperty('padding_right' . $styleSuffix . '_raw') ?? $defaultVal;
 
-        $label = $device === 'mobile' ? __('cms::cms.mobile') : __('cms::cms.desktop');
-
         return _Rows(
-            _Html($label)->class('vlStyleSubLabel mt-1'),
+            _Html('cms::cms.padding-px')->class('vlStyleSubLabel'),
             _Div(
-                _Input()->placeholder('↑')->name($prefix . 'padding-top' . $suffix, false)->default($paddingTop)->class('vlSpacingInput'),
-                _Input()->placeholder('↓')->name($prefix . 'padding-bottom' . $suffix, false)->default($paddingBottom)->class('vlSpacingInput'),
-                _Input()->placeholder('←')->name($prefix . 'padding-left' . $suffix, false)->default($paddingLeft)->class('vlSpacingInput'),
-                _Input()->placeholder('→')->name($prefix . 'padding-right' . $suffix, false)->default($paddingRight)->class('vlSpacingInput'),
+                _Input()->placeholder('cms::cms.spacing-top')->name($prefix . 'padding-top' . $suffix, false)->default($paddingTop)->class('vlSpacingInput'),
+                _Input()->placeholder('cms::cms.spacing-bottom')->name($prefix . 'padding-bottom' . $suffix, false)->default($paddingBottom)->class('vlSpacingInput'),
+                _Input()->placeholder('cms::cms.spacing-left')->name($prefix . 'padding-left' . $suffix, false)->default($paddingLeft)->class('vlSpacingInput'),
+                _Input()->placeholder('cms::cms.spacing-right')->name($prefix . 'padding-right' . $suffix, false)->default($paddingRight)->class('vlSpacingInput'),
             )->class('vlSpacingControl vlSpacingPadding'),
         );
     }
