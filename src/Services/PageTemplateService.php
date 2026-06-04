@@ -3,12 +3,42 @@
 namespace Anonimatrix\PageEditor\Services;
 
 use Anonimatrix\PageEditor\Support\Facades\Features\Features;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 
 class PageTemplateService
 {
     public function __construct(
         protected PageBlockService $blockService,
     ) {
+    }
+
+    /**
+     * Spawn a fresh newsletter Page for the current team / user. If a template
+     * id is given, the template's blocks + styles are applied to the new page
+     * (immutable-fork semantics — the source template is not touched).
+     *
+     * The new page's title defaults to either the template title or a generic
+     * "Untitled" placeholder; the user can rename it from the editor.
+     */
+    public function createNewsletterFromTemplate(?int $templateId = null, ?string $title = null)
+    {
+        $template = $templateId
+            ? PageModel::where('is_template', true)->findOrFail($templateId)
+            : null;
+
+        $page = PageModel::make();
+        $page->title = $title
+            ?? ($template?->title ? __('cms::cms.untitled-from-template', ['name' => $template->title]) : __('cms::cms.untitled-newsletter'));
+        $page->is_template = false;
+        $page->published_at = null;
+        $page->sent_at = null;
+        $page->save();
+
+        if ($template) {
+            $this->applyTemplateToPage($template, $page);
+        }
+
+        return $page;
     }
 
     public function createTemplateFromPage($source, string $name)
