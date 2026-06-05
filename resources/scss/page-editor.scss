@@ -1025,3 +1025,27 @@
         flex-basis: 100%;
     }
 }
+
+/* ---- Shared template cards (PageTemplateChooser + TemplateGallery modals) ---- */
+/* vlChooserThumb/vlChooserCard were referenced in PHP but defined in no SCSS, so
+   the thumbnail box had no height — its centered icon / 100%-height <img>
+   collapsed to a thin strip. Give the thumb a real aspect-ratio box to fill.
+   Both the chooser and the gallery now share these classes for a cohesive look. */
+.vlChooserThumb {
+    aspect-ratio: 16 / 10;
+    min-height: 120px;
+    width: 100%;
+}
+.vlChooserThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.vlChooserCard {
+    cursor: pointer;
+}
+.vlChooserCard:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}

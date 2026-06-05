@@ -23,6 +23,9 @@ class PageTemplateChooser extends Modal
 {
     public $id = 'new-newsletter-chooser';
 
+    // Wider than the base Modal's max-w-xl — the body is a 2-column card grid.
+    public $class = 'overflow-y-auto mini-scroll max-w-3xl';
+
     public $_Title = 'cms::cms.choose-template';
 
     protected $noHeaderButtons = true;
@@ -88,6 +91,8 @@ class PageTemplateChooser extends Modal
             ? asset($template->template_thumbnail)
             : null;
 
+        $blockCount = $template->orderedMainPageItems()->count();
+
         $badgeLabel = $isGlobal ? $this->globalBadgeLabel() : 'cms::cms.team-template';
         $badgeClass = $isGlobal
             ? 'bg-blue-50 text-blue-700'
@@ -102,14 +107,25 @@ class PageTemplateChooser extends Modal
             _Rows(
                 _FlexBetween(
                     _Html($template->title ?: __('cms::cms.untitled-template'))->class('text-sm font-semibold text-gray-900'),
-                    $isGlobal ? null : _Link()->icon(_Sax('trash', 14))
-                        ->class('text-gray-300 hover:text-red-600 shrink-0')
-                        ->balloon('cms::cms.delete-template', 'down')
-                        ->selfPost('deleteTeamTemplate', ['template_id' => $template->id])
-                        ->refresh($this->id),
+                    $isGlobal ? null : _Flex(
+                        // Super-admins can promote a team template to GLOBAL (all
+                        // teams). Gated again server-side in makeTemplateGlobal().
+                        $this->canMakeGlobal() ? _Link()->icon(_Sax('cloud-add', 14))
+                            ->class('text-gray-300 hover:text-blue-600 shrink-0')
+                            ->balloon('cms::cms.make-template-global', 'down')
+                            ->selfPost('makeTemplateGlobal', ['template_id' => $template->id])
+                            ->refresh($this->id) : null,
+                        _Link()->icon(_Sax('trash', 14))
+                            ->class('text-gray-300 hover:text-red-600 shrink-0')
+                            ->balloon('cms::cms.delete-template', 'down')
+                            ->selfPost('deleteTeamTemplate', ['template_id' => $template->id])
+                            ->refresh($this->id),
+                    )->class('items-center gap-2 shrink-0'),
                 )->class('items-start gap-2'),
                 _Html('<span class="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full ' . $badgeClass . '">' . e(__($badgeLabel)) . '</span>')
                     ->class('mt-1'),
+                _Html(trans_choice('cms::cms.template-block-count', $blockCount, ['count' => $blockCount]))
+                    ->class('text-xs text-gray-400 mt-1'),
             )->class('p-3'),
         )
             ->class('vlChooserCard cursor-pointer rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:shadow-md transition-all overflow-hidden')
@@ -134,6 +150,20 @@ class PageTemplateChooser extends Modal
             ->findOrFail(request('template_id'));
 
         $template->forceDelete();
+    }
+
+    public function makeTemplateGlobal()
+    {
+        if (!$this->canMakeGlobal()) return;
+
+        $template = PageModel::where('is_template', true)->findOrFail(request('template_id'));
+
+        app(PageTemplateService::class)->makeTemplateGlobal($template);
+    }
+
+    protected function canMakeGlobal(): bool
+    {
+        return function_exists('isSuperAdmin') && isSuperAdmin();
     }
 
     protected function globalTemplates()

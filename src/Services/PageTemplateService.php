@@ -89,7 +89,7 @@ class PageTemplateService
         return $page;
     }
 
-    public function createTemplateFromPage($source, string $name)
+    public function createTemplateFromPage($source, string $name, bool $global = false)
     {
         $template = $source->replicate();
         $template->title = $name;
@@ -104,10 +104,34 @@ class PageTemplateService
 
         $template->save();
 
+        if ($global) {
+            $this->makeTemplateGlobal($template);
+        }
+
         $this->replicatePageStyles($source, $template);
         $this->blockService->copyAllItemsToPage($source, $template);
 
         return $template;
+    }
+
+    /**
+     * Promote a template to GLOBAL scope (team_id NULL → visible to every team).
+     * Uses a query-builder update to BYPASS Page::beforeSave, which re-stamps the
+     * current team_id on every model save (so a normal save could never produce a
+     * global template). Authorization is the CALLER's responsibility — only a
+     * super-admin should be allowed to invoke this.
+     */
+    public function makeTemplateGlobal($template): void
+    {
+        $id = is_object($template) ? $template->id : $template;
+
+        PageModel::where('id', $id)
+            ->where('is_template', true)
+            ->update(['team_id' => null]);
+
+        if (is_object($template)) {
+            $template->team_id = null;
+        }
     }
 
     public function applyTemplateToPage($template, $targetPage): void

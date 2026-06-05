@@ -13,6 +13,9 @@ class TemplateGallery extends Modal
 
     public $_Title = 'cms::cms.template-gallery';
 
+    // Match the chooser's widened modal; the body is a 2-column card grid.
+    public $class = 'overflow-y-auto mini-scroll max-w-3xl';
+
     protected $prefixGroup = "";
     protected $noHeaderButtons = true;
     protected $targetPageId;
@@ -56,40 +59,41 @@ class TemplateGallery extends Modal
     protected function templateGrid($templates)
     {
         return _Rows(
-            $templates->map(fn($template) => $this->templateCard($template)),
-        )->class('flex flex-col gap-2');
+            ...$templates->map(fn($template) => $this->templateCard($template))->all(),
+        )->class('grid grid-cols-1 md:grid-cols-2 gap-3');
     }
 
     protected function templateCard($template)
     {
         $blockCount = $template->orderedMainPageItems()->count();
 
-        return _FlexBetween(
-            _Flex(
-                _Rows(
-                    _Html()->icon(_Sax('document-text', 24))->class('text-gray-400'),
-                )->class('w-10 h-10 min-w-[40px] bg-gray-100 rounded-lg flex items-center justify-center'),
-                _Rows(
-                    _Html($template->title ?: __('cms::cms.untitled-email'))->class('text-sm font-medium text-gray-800'),
-                    _Html(trans_choice('cms::cms.template-block-count', $blockCount, ['count' => $blockCount]))
-                        ->class('text-xs text-gray-400 mt-0.5'),
-                ),
-            )->class('items-center gap-3 min-w-0 flex-1'),
-            _Flex(
+        $thumbnailUrl = $template->template_thumbnail
+            ? asset($template->template_thumbnail)
+            : null;
+
+        return _Rows(
+            _Rows(
+                $thumbnailUrl
+                    ? _Html('<img src="' . e($thumbnailUrl) . '" alt="" />')
+                    : _Html()->icon(_Sax('document-text', 32))->class('text-gray-300'),
+            )->class('vlChooserThumb bg-gray-50 flex items-center justify-center overflow-hidden'),
+            _Rows(
+                _FlexBetween(
+                    _Html($template->title ?: __('cms::cms.untitled-template'))->class('text-sm font-semibold text-gray-900 truncate'),
+                    _Link()->icon(_Sax('trash', 14))
+                        ->class('text-gray-300 hover:text-red-600 shrink-0')
+                        ->balloon('cms::cms.delete-template', 'down')
+                        ->selfPost('deleteTemplate', ['template_id' => $template->id])
+                        ->refresh(),
+                )->class('items-start gap-2'),
+                _Html(trans_choice('cms::cms.template-block-count', $blockCount, ['count' => $blockCount]))
+                    ->class('text-xs text-gray-400 mt-0.5'),
                 _Button('cms::cms.use-template')
-                    ->class('text-xs')
+                    ->class('mt-3 w-full')
                     ->selfPost('createFromTemplate', ['template_id' => $template->id])
-                    // Full reload: applying a template re-bootstraps the whole editor — it adds
-                    // blocks and applies page-level styling (exterior bg, max-width) that live on
-                    // the editor wrapper, outside any panel this modal can target after closing.
                     ->onSuccess(fn($e) => $e->closeModal()->run('() => { window.location.reload(); }')),
-                _Link()->icon(_Sax('trash', 16))
-                    ->class('text-gray-400 hover:text-red-600')
-                    ->balloon('cms::cms.delete-template', 'down')
-                    ->selfPost('deleteTemplate', ['template_id' => $template->id])
-                    ->refresh(),
-            )->class('items-center gap-2 flex-shrink-0'),
-        )->class('p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all');
+            )->class('p-3'),
+        )->class('vlChooserCard rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:shadow-md transition-all overflow-hidden');
     }
 
     public function createFromTemplate()
