@@ -2,6 +2,8 @@
 
 namespace Anonimatrix\PageEditor\Components\Cms;
 
+use Anonimatrix\PageEditor\Services\PageBlockService;
+use Anonimatrix\PageEditor\Support\Facades\Models\PageModel;
 use Anonimatrix\PageEditor\Support\Facades\PageEditor;
 use Kompo\Form;
 
@@ -63,25 +65,30 @@ class BlockLibraryPanel extends Form
 
     protected function blockCard($typeClass)
     {
-        $url = route('page-editor.add-block', [
-            'page_id' => $this->pageId,
-            'block_type' => $typeClass::ITEM_NAME,
-        ]);
-
         return _Link($typeClass::ITEM_TITLE)
             ->icon(_Sax($typeClass::ITEM_ICON, 24))
             ->class('vlBlockCard')
-            ->run('() => {
-                fetch("'.$url.'", { credentials: "same-origin" })
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        if (!window.vlPageEditor) { window.location.reload(); return; }
-                        var blockId = data && data.id ? String(data.id) : null;
-                        if (blockId) sessionStorage.setItem("vlPendingBlockId", blockId);
-                        vlPageEditor.refreshPreview();
-                        if (blockId) vlPageEditor.waitAndClickBlock(blockId);
-                    });
-            }');
+            ->openInEditorDrawer('addBlock', [
+                'page_id' => $this->pageId,
+                'block_type' => $typeClass::ITEM_NAME,
+            ]);
+    }
+
+    public function addBlock()
+    {
+        $pageId = request('page_id');
+        $blockType = request('block_type');
+
+        $page = PageModel::findOrFail($pageId);
+        $blockService = app(PageBlockService::class);
+        $item = $blockService->addBlock($page, $blockType);
+
+        return _Rows(
+            PageEditor::getPageItemFormComponent(null, $item->id, [
+                'page_id' => $pageId,
+                'update_order' => !$item->id,
+            ]),
+        );
     }
 
     protected function copyBlockCard()
@@ -89,10 +96,20 @@ class BlockLibraryPanel extends Form
         return _Link('cms::cms.copy-block-from-newsletter')
             ->icon(_Sax('copy', 24))
             ->class('vlBlockCard vlBlockCardCopy')
-            ->get('page-editor.copy-block-form', [
+            ->openInEditorDrawer('copyBlock', [
                 'page_id' => $this->pageId,
-            ])->inPanel(PageEditorLayout::PROPERTY_PANEL)
-            ->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }');
+            ]);
+    }
+
+    public function copyBlock()
+    {
+        return _Rows(
+            PageEditor::getPageItemFormComponent(null, null, [
+                'page_id' => $this->pageId,
+                'update_order' => true,
+                'preset_copy' => true,
+            ]),
+        );
     }
 
     protected function designTab()

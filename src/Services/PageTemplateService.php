@@ -13,6 +13,54 @@ class PageTemplateService
     }
 
     /**
+     * Single source of truth for listing reusable templates (is_template = true).
+     * Encapsulates the team/global filtering + ordering that the two template
+     * UIs (apply-to-page gallery, create-from-template chooser) previously
+     * duplicated inline with divergent rules.
+     *
+     * Scopes (parameterized because the two UIs intentionally differ):
+     *  - 'all'    : combined global + team list, ordered by updated_at desc.
+     *               When $teamId is given, limits to (team_id = $teamId OR global);
+     *               when null, returns every template (no team filter).
+     *               => TemplateGallery (apply a template to the current page).
+     *  - 'global' : non-team templates only (team_id IS NULL), ordered by order,id.
+     *               => PageTemplateChooser "Quick start" section.
+     *  - 'team'   : a specific team's templates (team_id = $teamId), updated_at desc.
+     *               => PageTemplateChooser "My templates" section.
+     *
+     * $teamId is supplied by the caller so the existing team-id source per UI is
+     * preserved verbatim (no change to which value identifies "my team").
+     */
+    public function listableTemplates(string $scope = 'all', $teamId = null)
+    {
+        $query = PageModel::where('is_template', true);
+
+        if ($scope === 'global') {
+            return $query->whereNull('team_id')
+                ->orderBy('order')
+                ->orderBy('id')
+                ->get();
+        }
+
+        if ($scope === 'team') {
+            return $query->where('team_id', $teamId)
+                ->orderByDesc('updated_at')
+                ->get();
+        }
+
+        // 'all' — combined list. Only constrain by team when a team id is given
+        // (teams feature on); otherwise list all templates.
+        if (!is_null($teamId)) {
+            $query->where(function ($q) use ($teamId) {
+                $q->where('team_id', $teamId)
+                  ->orWhereNull('team_id');
+            });
+        }
+
+        return $query->orderByDesc('updated_at')->get();
+    }
+
+    /**
      * Spawn a fresh newsletter Page for the current team / user. If a template
      * id is given, the template's blocks + styles are applied to the new page
      * (immutable-fork semantics — the source template is not touched).

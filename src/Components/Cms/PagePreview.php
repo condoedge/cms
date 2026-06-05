@@ -22,6 +22,21 @@ class PagePreview extends Query
     protected $panelId;
     protected $withEditor = false;
 
+    public $perPage = 1000; // all items, pagination disabled
+
+    // True only for the in-drawer live-preview full-page tab (a fixed-width
+    // column). When set: suppress the standalone device toggle (its JS uses
+    // GLOBAL selectors and would cross-control the main editor canvas) and skip
+    // the exterior background so the narrow column shows just the content frame.
+    // Never set on the standalone preview route.
+    protected $inDrawer = false;
+
+    // Live-preview pending override: the id of the saved row whose unsaved
+    // request() edits should be swapped in (or 'new' to append an unsaved
+    // block at the end). Null on every normal/public render. Read-only —
+    // PagePreview never persists the hydrated transient model.
+    protected $pendingItemId = null;
+
     public $orderable = 'order';
 	public $dragHandle = '.vlBlockDragHandle';
 
@@ -32,8 +47,9 @@ class PagePreview extends Query
         $this->page = $this->prop('page_id') ? PageModel::findOrFail($this->prop('page_id')) : PageModel::make();
         $this->panelId = $this->prop('panel_id') ?: $this->panelId;
         $this->withEditor = $this->prop('with_editor');
+        $this->pendingItemId = $this->prop('pending_item_id');
+        $this->inDrawer = (bool) $this->prop('in_drawer');
 
-        $this->perPage = $this->withEditor ? 10 : $this->page->orderedMainPageItems()->count();
         $this->style = 'width: 100%;';
 
         $this->itemsWrapperClass .= ' vlQueryWrapperPagePreview';
@@ -43,7 +59,12 @@ class PagePreview extends Query
             // from PageEditorLayout's wrapping divs instead. Render them as server-side Kompo
             // styles (no flash, no global jQuery, scoped to this instance): the exterior color
             // on the query root, the content frame (bg + width) on the items wrapper.
-            $this->style .= 'background-color:'.$this->page->getExteriorBackgroundColor().';';
+            //
+            // In the drawer (narrow fixed-width column) skip the exterior background so the
+            // column shows just the content frame; keep the content frame everywhere.
+            if (!$this->inDrawer) {
+                $this->style .= 'background-color:'.$this->page->getExteriorBackgroundColor().';';
+            }
 
             $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
                 .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
@@ -53,7 +74,10 @@ class PagePreview extends Query
     public function top()
     {
         if (!$this->withEditor) {
-            return $this->standalonePreviewDeviceToggle();
+            // In the drawer the toggle would cross-control the main editor canvas
+            // (its JS uses global selectors) and a fixed-width column has nothing
+            // to toggle anyway — so render no toggle there.
+            return $this->inDrawer ? null : $this->standalonePreviewDeviceToggle();
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
@@ -101,6 +125,13 @@ class PagePreview extends Query
 
     public function bottom()
     {
+        // Live-preview full-page tab for a NOT-YET-SAVED block: append the
+        // hydrated (unsaved) block at the end so the operator sees it in
+        // context. Read-only — nothing is persisted.
+        if ($this->pendingItemId === 'new') {
+            return $this->renderPendingNewBlock();
+        }
+
         if (!$this->withEditor) return null;
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
@@ -123,10 +154,23 @@ class PagePreview extends Query
 
     public function render($pageItem)
     {
+        // Live-preview pending override: when this row is the one being edited
+        // in the drawer, swap in an in-memory model carrying the unsaved
+        // request() edits so the full-page tab reflects what's being typed.
+        // Read-only — the hydrated model is never saved.
+        if ($this->pendingItemId && $pageItem?->id && (string) $pageItem->id === (string) $this->pendingItemId) {
+            $pageItem = PageItemForm::hydratePendingItem($pageItem, $this->page->id);
+        }
+
+        return $this->renderPageItem($pageItem);
+    }
+
+    protected function renderPageItem($pageItem)
+    {
         $pageItemType = $pageItem?->getPageItemType();
 
         if (Features::hasFeature('teams')) {
-            $team = $pageItem->page->team;
+            $team = $pageItem?->page?->team;
 
             $pageItemType?->setVariables([
                 'team_name' => $team?->name,
@@ -139,6 +183,24 @@ class PagePreview extends Query
         $pageItemType?->setEditPanelId($this->panelId);
 
         return $pageItemType?->toPreviewElement($this->withEditor);
+    }
+
+    /**
+     * Live-preview only: render the unsaved new block (no id yet) hydrated from
+     * request() values, appended after the saved page. Read-only.
+     */
+    protected function renderPendingNewBlock()
+    {
+        try {
+            $pending = PageItemForm::hydratePendingItem(null, $this->page->id);
+            $pending->setRelation('page', $this->page);
+
+            $element = $this->renderPageItem($pending);
+        } catch (\Throwable $e) {
+            $element = null;
+        }
+
+        return $element ? _Rows($element)->class('vlLivePreviewPendingNew') : null;
     }
 
     public function getPageItemForm()

@@ -123,6 +123,9 @@ class PageStylingForm extends Form
             _SubmitButton('cms::cms.apply-design')
                 ->class('w-full')
                 ->alert('cms::cms.saved-successfully')
+                // Full reload: exterior bg color and content max-width are applied as inline
+                // styles on the .vlEditorCenterPanel/.vlCanvasFrame wrappers (PageEditorLayout),
+                // which live outside the preview panel — a panel refresh can't re-render them.
                 ->onSuccess(fn($e) => $e->run('() => {
                     setTimeout(() => window.location.reload(), 500);
                 }')),
