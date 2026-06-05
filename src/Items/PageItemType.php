@@ -226,7 +226,8 @@ abstract class PageItemType
          ->attr(['data-block-id' => $item->id, 'data-block-type' => $typeName, 'data-empty-label' => __('cms::cms.click-to-edit')])
          ->onClick
          ->selfGet('getPageItemForm', ['item_id' => $item->id, 'page_id' => $item->page->id])
-         ->inPanel($this->editPanelId);
+         ->inDrawer()
+         ->warnBeforeClose(__('cms::cms.unsaved-changes-confirm'));
     }
 
     protected function legacyPreviewItem($item, $itemType, $el)
@@ -263,10 +264,10 @@ abstract class PageItemType
             _Link()->icon(_Sax('edit-2',16))->class('vlBlockActionBtn')
                 ->balloon('cms::cms.edit-block', 'down')
                 ->selfGet('getPageItemForm', ['item_id' => $this->pageItem->id, 'page_id' => $this->pageItem->page_id])
-                ->inPanel($editPanelId)
-                ->onSuccess(fn($e) => $e->run('() => { if (window.vlPageEditor) vlPageEditor.openDrawer() }')),
+                ->inDrawer()
+                ->warnBeforeClose(__('cms::cms.unsaved-changes-confirm')),
             _DeleteLink()->icon(_Sax('trash',16))->class('vlBlockActionBtn vlBlockActionBtnDanger')
-                ->byKey($this->pageItem)->browse()
+                ->byKey($this->pageItem)
                 ->balloon('cms::cms.delete-block', 'down'),
         )->class('vlBlockActions');
     }
@@ -606,6 +607,17 @@ abstract class PageItemType
      * Called before the page item is mounted in a group. Before toHtml or toElement.
      */
     public function beforeMountInGroup($groupItem) {}
+
+    /**
+     * Non-persisting request/model derivations needed so the live preview matches
+     * a real save (e.g. resolving a preset choice into concrete style values that
+     * setStylesToModel reads from request()). Called on the transient item during
+     * live-preview hydration, NOT on the save path. Default no-op.
+     *
+     * MUST NOT persist: no save(), no Storage, no getOrCreateStyles. Only
+     * in-memory/request() derivations are allowed here.
+     */
+    public function applyPreviewMapping() {}
 
     /* TABLES HTML HELPERS */
     protected function alignElement($el, $align = 'center', $styles = '', $width = '100%', $tableStyles = '')

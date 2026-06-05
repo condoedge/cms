@@ -138,18 +138,11 @@ class PageTemplateChooser extends Modal
 
     protected function globalTemplates()
     {
-        return PageModel::where('is_template', true)
-            ->whereNull('team_id')
-            ->orderBy('order')
-            ->orderBy('id')
-            ->get();
+        return app(PageTemplateService::class)->listableTemplates('global');
     }
 
     protected function teamTemplates()
     {
-        return PageModel::where('is_template', true)
-            ->where('team_id', currentTeamId())
-            ->orderByDesc('updated_at')
-            ->get();
+        return app(PageTemplateService::class)->listableTemplates('team', currentTeamId());
     }
 }

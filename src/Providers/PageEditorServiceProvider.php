@@ -28,8 +28,28 @@ class PageEditorServiceProvider extends ServiceProvider
 
         $this->loadViews();
 
+        $this->setMacros();
+
         PageModel::creating(function ($page) {
             $page->beforeSave();
+        });
+    }
+
+    protected function setMacros(): void
+    {
+        // Opens a same-class method ($method) in the NATIVE kompo drawer, warning before close
+        // when there are unsaved changes. Drawer width/side come from the `.kompoDrawer`/editor SCSS.
+        \Kompo\Link::macro('openInEditorDrawer', function(string $method, array $params = []) {
+            return $this->selfGet($method, $params)->inDrawer()
+                ->warnBeforeClose(__('cms::cms.unsaved-changes-confirm'));
+        });
+
+        // After a successful action (submit/delete/link), re-renders the editor's preview panel.
+        // Registered on the broad macroable base so it works on Buttons AND Links (both extend Trigger
+        // extends Element). The preview panel's size/placement come from the editor SCSS.
+        \Kompo\Elements\Element::macro('refreshPreviewOnSuccess', function() {
+            return $this->onSuccess(fn($e) => $e->selfGet('getPagePreview')
+                ->inPanel(\Anonimatrix\PageEditor\Components\Cms\PageEditorLayout::PREVIEW_PANEL));
         });
     }
 

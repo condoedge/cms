@@ -37,16 +37,11 @@ class TemplateGallery extends Modal
 
     protected function getTemplates()
     {
-        $query = PageModel::where('is_template', true);
+        // Combined global + team list. Pass the team id only when teams are on so
+        // the service applies the (team OR global) constraint; otherwise list all.
+        $teamId = Features::hasFeature('teams') ? auth()->user()->current_team_id : null;
 
-        if (Features::hasFeature('teams')) {
-            $query->where(function ($q) {
-                $q->where('team_id', auth()->user()->current_team_id)
-                  ->orWhereNull('team_id');
-            });
-        }
-
-        return $query->orderByDesc('updated_at')->get();
+        return app(PageTemplateService::class)->listableTemplates('all', $teamId);
     }
 
     protected function emptyState()
@@ -84,12 +79,15 @@ class TemplateGallery extends Modal
                 _Button('cms::cms.use-template')
                     ->class('text-xs')
                     ->selfPost('createFromTemplate', ['template_id' => $template->id])
+                    // Full reload: applying a template re-bootstraps the whole editor — it adds
+                    // blocks and applies page-level styling (exterior bg, max-width) that live on
+                    // the editor wrapper, outside any panel this modal can target after closing.
                     ->onSuccess(fn($e) => $e->closeModal()->run('() => { window.location.reload(); }')),
                 _Link()->icon(_Sax('trash', 16))
                     ->class('text-gray-400 hover:text-red-600')
                     ->balloon('cms::cms.delete-template', 'down')
                     ->selfPost('deleteTemplate', ['template_id' => $template->id])
-                    ->onSuccess(fn($e) => $e->selfGet('refreshGallery')->inPanel('template-gallery-panel')),
+                    ->refresh(),
             )->class('items-center gap-2 flex-shrink-0'),
         )->class('p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-all');
     }
@@ -111,10 +109,5 @@ class TemplateGallery extends Modal
         if ($template->is_template) {
             $template->forceDelete();
         }
-    }
-
-    public function refreshGallery()
-    {
-        return new static(null, []);
     }
 }

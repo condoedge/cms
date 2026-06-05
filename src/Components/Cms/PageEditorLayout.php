@@ -54,15 +54,7 @@ class PageEditorLayout extends Form
         return _Div(
             $this->leftPanel(),
             $this->centerPanel(),
-            $this->drawerBackdrop(),
-            $this->rightPanel(),
         )->class('vlEditorBody');
-    }
-
-    protected function drawerBackdrop()
-    {
-        return _Link()->class('vlDrawerBackdrop')
-            ->run('() => { if (window.vlPageEditor) vlPageEditor.closeDrawer() }');
     }
 
     protected function leftPanel()
@@ -97,24 +89,10 @@ class PageEditorLayout extends Form
             ->attr(['role' => 'main', 'aria-label' => __('cms::cms.canvas')]);
     }
 
-    protected function rightPanel()
-    {
-        return _Div(
-            _Flex(
-                _Html('cms::cms.block-properties')->class('vlDrawerTitle'),
-                _Link()->icon('x')->class('vlDrawerClose')
-                    ->run('() => { vlPageEditor.closeDrawer() }'),
-            )->class('vlDrawerHeader'),
-            _Panel()->id(static::PROPERTY_PANEL),
-        )->class('vlEditorRightPanel')->attr(['role' => 'complementary', 'aria-label' => __('cms::cms.block-properties')]);
-    }
-
     protected function bindEditorJs(): void
     {
         $js = file_get_contents(__DIR__.'/../../../resources/js/page-editor.js');
-        $panelId = json_encode(static::PROPERTY_PANEL);
-        $dirtyMsg = json_encode(__('cms::cms.unsaved-changes-confirm'));
 
-        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')('.$panelId.', '.$dirtyMsg.'); }'));
+        $this->onLoad(fn ($e) => $e->run('() => { ('.$js.')(); }'));
     }
 }

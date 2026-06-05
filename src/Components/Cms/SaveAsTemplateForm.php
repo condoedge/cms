@@ -34,7 +34,7 @@ class SaveAsTemplateForm extends Modal
             _Html('cms::cms.save-as-template-desc')->class('text-sm text-gray-500 mb-4'),
 
             _Input('cms::cms.template-name')
-                ->name('template_name')
+                ->name('template_name', false)
                 ->value($this->model->title ? $this->model->title . ' - Template' : ''),
         ];
     }

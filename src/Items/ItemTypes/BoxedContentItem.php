@@ -61,10 +61,33 @@ class BoxedContentItem extends PageItemType
     {
         parent::afterSave($model);
 
+        $this->mergePresetColorsIntoRequest();
+    }
+
+    /**
+     * Live-preview hook: resolve the chosen preset into concrete colors so the
+     * preview matches a real save. Reuses the exact same (non-persisting) merge
+     * as afterSave — no save(), no Storage.
+     */
+    public function applyPreviewMapping()
+    {
+        $this->mergePresetColorsIntoRequest();
+    }
+
+    /**
+     * Resolve the selected `preset-color` into concrete background/border/text
+     * colors and merge them into request() so setStylesToModel picks them up.
+     * NON-PERSISTING: only mutates the current request. Single source of truth
+     * for the preset→color mapping (shared by afterSave + applyPreviewMapping).
+     */
+    private function mergePresetColorsIntoRequest()
+    {
+        $preset = request('preset-color') ?? 'gray';
+
         request()->merge([
-            'background-color' => $this->presetsColors[(request('preset-color') ?? 'gray')]['background-color'],
-            'border-color' => $this->presetsColors[(request('preset-color') ?? 'gray')]['border-color'],
-            'color' => $this->presetsColors[(request('preset-color') ?? 'gray')]['color'],
+            'background-color' => $this->presetsColors[$preset]['background-color'],
+            'border-color' => $this->presetsColors[$preset]['border-color'],
+            'color' => $this->presetsColors[$preset]['color'],
         ]);
     }
 

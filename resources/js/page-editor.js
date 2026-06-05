@@ -1,24 +1,7 @@
-(function (propertyPanelId, dirtyConfirmMessage) {
+(function () {
     if (window.vlPageEditor) return;
 
     window.vlPageEditor = {
-        _dirty: false,
-        // Guard so the initial Vue render of a freshly loaded form (which fires
-        // its own input/change/style mutations) doesn't flip dirty before the
-        // operator has touched anything.
-        _dirtyArmed: false,
-
-        markDirty: function () { if (this._dirtyArmed) this._dirty = true; },
-        markClean: function () { this._dirty = false; },
-        isDirty: function () { return this._dirty; },
-
-        confirmDiscardIfDirty: function () {
-            if (!this._dirty) return true;
-            var ok = window.confirm(dirtyConfirmMessage);
-            if (ok) this._dirty = false;
-            return ok;
-        },
-
         setDevice: function (device) {
             var frame = document.querySelector('.vlCanvasFrame');
             var toggles = document.querySelectorAll('.vlDeviceToggle');
@@ -30,13 +13,14 @@
             else { frame.classList.remove('vlMobilePreview'); }
         },
 
+        // Highlight-only: the native Kompo drawer opens via the block's own onClick.
+        // This just marks the clicked block as selected on the canvas.
         selectBlock: function (blockEl) {
             document.querySelectorAll('.vlPageBlock').forEach(function (b) {
                 b.classList.remove('vlPageBlockSelected');
             });
             if (blockEl) {
                 blockEl.classList.add('vlPageBlockSelected');
-                this.openDrawer();
             }
         },
 
@@ -44,14 +28,10 @@
             return document.querySelector('.vlPageBlockSelected');
         },
 
-        showToast: function (message) {
-            var existing = document.querySelector('.vlEditorToast');
-            if (existing) existing.remove();
-            var toast = document.createElement('div');
-            toast.className = 'vlEditorToast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(function () { if (toast.parentNode) toast.remove(); }, 2500);
+        clearSelection: function () {
+            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
+                b.classList.remove('vlPageBlockSelected');
+            });
         },
 
         filterBlocks: function (query) {
@@ -72,77 +52,25 @@
             });
         },
 
-        refreshPreview: function () {
-            var wrapper = document.querySelector('.vlQueryWrapperPagePreview');
-            if (!wrapper) { window.location.reload(); return; }
-            var el = wrapper;
-            var vm = null;
-            for (var i = 0; i < 8 && el; i++) {
-                if (el.__vue__ && typeof el.__vue__.browseQuery === 'function') {
-                    vm = el.__vue__;
-                    break;
-                }
-                el = el.parentElement;
-            }
-            if (vm) { vm.browseQuery(); }
-            else { window.location.reload(); }
-        },
-
-        openDrawer: function () {
-            var panel = document.querySelector('.vlEditorRightPanel');
-            var backdrop = document.querySelector('.vlDrawerBackdrop');
-            if (panel) panel.classList.add('vlDrawerOpen');
-            if (backdrop) backdrop.classList.add('vlDrawerBackdropVisible');
-        },
-
-        closeDrawer: function () {
-            if (!this.confirmDiscardIfDirty()) return;
-            var panel = document.querySelector('.vlEditorRightPanel');
-            var backdrop = document.querySelector('.vlDrawerBackdrop');
-            if (panel) panel.classList.remove('vlDrawerOpen');
-            if (backdrop) backdrop.classList.remove('vlDrawerBackdropVisible');
-            this.clearSelection();
-        },
-
-        clearSelection: function () {
-            document.querySelectorAll('.vlPageBlock').forEach(function (b) {
-                b.classList.remove('vlPageBlockSelected');
-            });
-        },
-
-        waitAndClickBlock: function (blockId, attempts) {
-            attempts = attempts || 0;
-            if (attempts > 20) return;
-            var block = document.querySelector('.vlPageBlock[data-block-id="' + blockId + '"]');
-            if (block) {
-                block.click();
-                block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                sessionStorage.removeItem('vlPendingBlockId');
-            } else {
-                setTimeout(function () { vlPageEditor.waitAndClickBlock(blockId, attempts + 1); }, 300);
-            }
-        },
-
         toggleMobilePanel: function (panel) {
             if (panel === 'blocks') {
                 var leftPanel = document.querySelector('.vlEditorLeftPanel');
                 if (leftPanel) leftPanel.classList.toggle('vlPanelMobileOpen');
-            } else if (panel === 'properties') { this.openDrawer(); }
+            }
+        },
+
+        // Close the topmost native Kompo drawer by triggering its built-in X
+        // (the drawer owns open/close; this just reaches its close affordance for
+        // keyboard shortcuts and block-to-block navigation).
+        closeTopDrawer: function () {
+            var closes = document.querySelectorAll('.vlDrawerClose');
+            if (closes.length) closes[closes.length - 1].click();
         }
     };
 
-    // Portal the drawer + backdrop into <body> so position:fixed escapes any
-    // ancestor with a transform that would otherwise become the containing block.
-    function vlPortalDrawer() {
-        var drawer = document.querySelector('.vlEditorRightPanel');
-        var backdrop = document.querySelector('.vlDrawerBackdrop');
-        if (!drawer || !backdrop) { setTimeout(vlPortalDrawer, 200); return; }
-        if (drawer.parentElement !== document.body) document.body.appendChild(drawer);
-        if (backdrop.parentElement !== document.body) document.body.appendChild(backdrop);
-    }
-    vlPortalDrawer();
-
     document.addEventListener('click', function (e) {
+        // Closing the drawer (native X, Esc, or arrow-nav all route through it) clears the canvas highlight.
+        if (e.target.closest('.vlDrawerClose')) { vlPageEditor.clearSelection(); return; }
         if (e.target.closest('.vlBlockActions')) return;
         var block = e.target.closest('.vlPageBlock');
         if (block) { vlPageEditor.selectBlock(block); }
@@ -160,7 +88,7 @@
         }
         if (isInput) return;
         if (e.key === 'Escape') {
-            vlPageEditor.closeDrawer();
+            vlPageEditor.closeTopDrawer();
             return;
         }
         if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -177,80 +105,66 @@
                 var blocks = Array.from(document.querySelectorAll('.vlPageBlock'));
                 var idx = blocks.indexOf(selected);
                 var next = e.key === 'ArrowDown' ? blocks[idx + 1] : blocks[idx - 1];
-                if (next) { next.click(); next.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+                if (next) {
+                    // Close the current block's drawer before opening the next one, so drawers don't stack.
+                    vlPageEditor.closeTopDrawer();
+                    next.click();
+                    next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             }
         }
     });
 
-    // Track unsaved edits anywhere inside the right panel.
-    // - input/change cover regular text fields, selects, toggles, color pickers, file inputs
-    // - drop covers drag-and-drop image uploads (Image.vue accepts files via drop)
-    // - the MutationObserver below catches the image preview itself (a div whose `style` is
-    //   rewritten to background-image: url(blob:...)) which is what actually changes when an
-    //   image upload completes; the bare change event from <input type=file> is sometimes
-    //   swallowed by Kompo before bubbling up.
-    var drawerInputHandler = function (e) {
-        if (e.target && e.target.closest && e.target.closest('.vlEditorRightPanel')) {
-            vlPageEditor.markDirty();
-        }
-    };
-    document.addEventListener('input', drawerInputHandler, true);
-    document.addEventListener('change', drawerInputHandler, true);
-    document.addEventListener('drop', drawerInputHandler, true);
+    // ---- Live preview bridge (Phase 4) ----
+    // A single stateless cosmetic listener scoped to the property drawer: when
+    // the operator edits a field, re-click the ACTIVE preview tab button so the
+    // server re-renders the preview panel from the unsaved form values. Each tab
+    // button selfGets its own render method (+ withAllFormValues), so re-clicking
+    // the active one refreshes whichever tab is showing — no shared hidden state.
+    //  - input (debounced): only when the active tab is "block" (live as you
+    //    type); skipped on the "page" tab (too heavy per keystroke).
+    //  - change (commit/blur): always, so the full-page tab refreshes on commit.
+    var vlPreviewDebounce = null;
 
-    function vlInitDrawerStyleObserver() {
-        var rightPanel = document.querySelector('.vlEditorRightPanel');
-        if (!rightPanel) { setTimeout(vlInitDrawerStyleObserver, 500); return; }
-        var styleObserver = new MutationObserver(function (mutations) {
-            if (!vlPageEditor._dirtyArmed) return;
-            for (var i = 0; i < mutations.length; i++) {
-                var m = mutations[i];
-                // image preview backgrounds + freshly inserted <img> nodes signal an upload
-                if (m.type === 'attributes' && m.attributeName === 'style') {
-                    var styleAttr = m.target.getAttribute('style') || '';
-                    if (styleAttr.indexOf('background-image') !== -1) {
-                        vlPageEditor.markDirty();
-                        return;
-                    }
-                }
-                if (m.type === 'childList') {
-                    for (var j = 0; j < m.addedNodes.length; j++) {
-                        var n = m.addedNodes[j];
-                        if (n.nodeType === 1 && (n.tagName === 'IMG' || (n.querySelector && n.querySelector('img')))) {
-                            vlPageEditor.markDirty();
-                            return;
-                        }
-                    }
-                }
-            }
-        });
-        styleObserver.observe(rightPanel, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['style'],
-        });
+    function vlActivePreviewTabBtn(drawer) {
+        return drawer.querySelector('.vlLivePreviewTabActive');
     }
-    vlInitDrawerStyleObserver();
 
-    function vlInitDrawerObserver() {
-        var panel = document.getElementById(propertyPanelId);
-        if (!panel) { setTimeout(vlInitDrawerObserver, 500); return; }
-        var observer = new MutationObserver(function () {
-            if (panel.children.length > 0 && panel.innerHTML.trim() !== '') {
-                // New block content just landed — start with a clean slate AND
-                // disarm dirty-tracking so Vue's initial render doesn't flip it.
-                // Re-arm after a short quiet period.
-                vlPageEditor._dirtyArmed = false;
-                vlPageEditor.markClean();
-                vlPageEditor.openDrawer();
-                setTimeout(function () { vlPageEditor._dirtyArmed = true; }, 800);
-            }
-        });
-        observer.observe(panel, { childList: true, subtree: true });
+    function vlRefreshActivePreview(drawer) {
+        var active = vlActivePreviewTabBtn(drawer);
+        if (active) active.click();
     }
-    vlInitDrawerObserver();
 
+    function vlIsPreviewControl(target) {
+        // Ignore the preview tab buttons / panel themselves so editing inside the
+        // preview (or clicking a tab) doesn't recursively re-trigger a refresh.
+        return !!(target.closest && (
+            target.closest('.vlLivePreviewTabs') ||
+            target.closest('.vlLivePreviewCanvas')
+        ));
+    }
+
+    document.addEventListener('input', function (e) {
+        var drawer = e.target.closest && e.target.closest('.vlPropertyDrawer');
+        if (!drawer || vlIsPreviewControl(e.target)) return;
+        var active = vlActivePreviewTabBtn(drawer);
+        if (!active || active.getAttribute('data-preview-tab') !== 'block') return;
+        if (vlPreviewDebounce) clearTimeout(vlPreviewDebounce);
+        vlPreviewDebounce = setTimeout(function () { vlRefreshActivePreview(drawer); }, 300);
+    }, true);
+
+    document.addEventListener('change', function (e) {
+        var drawer = e.target.closest && e.target.closest('.vlPropertyDrawer');
+        if (!drawer || vlIsPreviewControl(e.target)) return;
+        if (vlPreviewDebounce) { clearTimeout(vlPreviewDebounce); vlPreviewDebounce = null; }
+        vlRefreshActivePreview(drawer);
+    }, true);
+
+    // Stays as JS deliberately: the server already renders a .vlEmptyBlockPlaceholder
+    // for blocks whose toElement() is null (PageItemType::toPreviewSinglePageItem).
+    // This catches the OTHER case — a block that renders real markup but collapses to
+    // ~0px (e.g. content of " " or "<p></p>"). That requires post-render layout
+    // measurement (offsetHeight), which has no server/kompo equivalent.
     function vlMarkEmptyBlocks() {
         document.querySelectorAll('.vlPageBlock').forEach(function (block) {
             var content = block.querySelector('.vlPageBlockContent');
@@ -266,7 +180,4 @@
     });
     var canvas = document.querySelector('.vlCanvasFrame');
     if (canvas) canvasObs.observe(canvas, { childList: true, subtree: true });
-
-    var pendingId = sessionStorage.getItem('vlPendingBlockId');
-    if (pendingId) vlPageEditor.waitAndClickBlock(pendingId);
 })

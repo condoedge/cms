@@ -281,69 +281,16 @@
     transition: max-width 0.3s ease;
 }
 
-/* ---- Right Panel - Drawer ---- */
-.vlEditorRightPanel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 560px;
-    height: 100vh;
+/* ---- Property Drawer content ---- */
+/* The native Kompo drawer (.kompoDrawer) owns positioning/overlay; this only
+   styles the form that fills it. Width comes from the form's
+   `w-screen max-w-xl` Tailwind classes. */
+.vlPropertyDrawer {
     background: #ffffff;
+    height: 100%;
     border-left: 1px solid #e5e7eb;
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 60;
-    transform: translateX(100%);
-    transition: transform 0.25s ease;
-    box-shadow: none;
-    &.vlDrawerOpen {
-        transform: translateX(0);
-        box-shadow: -8px 0 30px rgba(0,0,0,0.12);
-    }
-}
-.vlDrawerBackdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.15);
-    z-index: 55;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-    &.vlDrawerBackdropVisible {
-        opacity: 1;
-        pointer-events: auto;
-    }
-}
-.vlDrawerHeader {
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    border-bottom: 1px solid #f3f4f6;
-    padding: 14px 16px;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.vlDrawerTitle {
-    @apply text-base;
-    font-weight: 600;
-    color: #111827;
-}
-.vlDrawerClose {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    color: #9ca3af;
-    cursor: pointer;
-    transition: all 0.15s;
-    &:hover {
-        background: #f3f4f6;
-        color: #111827;
-    }
 }
 
 /* ---- Empty block placeholder ---- */
@@ -438,30 +385,6 @@
     color: #9ca3af;
     padding: 0 6px;
     white-space: nowrap;
-}
-
-/* ---- Toast notification ---- */
-.vlEditorToast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #065f46;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    @apply text-sm;
-    font-weight: 500;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    z-index: 9999;
-    animation: vlToastIn 0.2s ease, vlToastOut 0.2s ease 2s forwards;
-}
-@keyframes vlToastIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes vlToastOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(8px); }
 }
 
 /* ---- Empty canvas state ---- */
@@ -624,7 +547,7 @@
     .vlEditorCenterPanel {
         padding: 16px;
     }
-    .vlEditorRightPanel {
+    .vlPropertyDrawer {
         width: 100%;
     }
     .vlMobilePanelToggle {
@@ -644,14 +567,14 @@
 /* Adjust Kompo defaults inside drawer — generous vertical rhythm so each
    control stands on its own and labels visually attach to their field
    rather than floating between two of them. */
-.vlEditorRightPanel .vlFormField {
+.vlPropertyDrawer .vlFormField {
     margin-top: 0 !important;
     margin-bottom: 16px !important;
 }
-.vlEditorRightPanel .vlFormField:last-child {
+.vlPropertyDrawer .vlFormField:last-child {
     margin-bottom: 0 !important;
 }
-.vlEditorRightPanel .vlFormLabel {
+.vlPropertyDrawer .vlFormLabel {
     @apply text-sm #{!important};
     color: #6b7280 !important;
     margin-bottom: 6px !important;
@@ -660,18 +583,18 @@
    ("whiteField only on colored backgrounds"), we strip the white fill and
    replace it with a clean white-on-white look + a thin gray border so the
    field's edges remain visible against the drawer's white card surface. */
-.vlEditorRightPanel .whiteField .vlInputWrapper {
+.vlPropertyDrawer .whiteField .vlInputWrapper {
     background-color: #ffffff !important;
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
 }
-.vlEditorRightPanel .whiteField .vlInputWrapper:focus-within {
+.vlPropertyDrawer .whiteField .vlInputWrapper:focus-within {
     border-color: #2563eb !important;
 }
 
 /* Image-width range slider: drop the field box so the native slider sits flush
    (no odd gray box / unstyled thumb) and pick up the editor's blue accent. */
-.vlEditorRightPanel .vlFormField:has(input[type="range"]) .vlInputWrapper {
+.vlPropertyDrawer .vlFormField:has(input[type="range"]) .vlInputWrapper {
     background: transparent;
     border: none;
     box-shadow: none;
@@ -680,7 +603,7 @@
 /* Native slider tinted with the editor's blue — proper native thumb, no custom
    track/JS. accent-color fills only up to the thumb, so there's a small native gap
    after it at max (removing that needs a custom track, which we keep out). */
-.vlEditorRightPanel input[type="range"] {
+.vlPropertyDrawer input[type="range"] {
     width: 100%;
     accent-color: #2563eb;
     cursor: pointer;
@@ -690,19 +613,19 @@
    div.card-gray-100.p-4 — strip that gray card AND the inner gray
    vlInputWrapper Kompo adds, so the editor sits flush in its containing
    _PageEditorSection card. Bump min-height so the editing area is 2× taller. */
-.vlEditorRightPanel .card-gray-100,
-.vlEditorRightPanel .vlTranslatableEditor .vlInputWrapper,
-.vlEditorRightPanel .ck.ck-editor__main,
-.vlEditorRightPanel .ck.ck-content {
+.vlPropertyDrawer .card-gray-100,
+.vlPropertyDrawer .vlTranslatableEditor .vlInputWrapper,
+.vlPropertyDrawer .ck.ck-editor__main,
+.vlPropertyDrawer .ck.ck-content {
     background-color: #ffffff !important;
     border: none !important;
 }
-.vlEditorRightPanel .card-gray-100 {
+.vlPropertyDrawer .card-gray-100 {
     padding: 0 !important;
     margin: 0 !important;
     border-radius: 0 !important;
 }
-.vlEditorRightPanel .ck.ck-content {
+.vlPropertyDrawer .ck.ck-content {
     min-height: 240px !important;
 }
 
@@ -736,8 +659,8 @@
 }
 /* But not if it's the first child of its section — that spacing belongs to
    the section padding, not the label. */
-.vlEditorRightPanel .vlStyleSubLabel:first-child,
-.vlEditorRightPanel *:first-child > .vlStyleSubLabel {
+.vlPropertyDrawer .vlStyleSubLabel:first-child,
+.vlPropertyDrawer *:first-child > .vlStyleSubLabel {
     margin-top: 0;
 }
 
@@ -767,16 +690,16 @@
 }
 
 /* Alignment Buttons */
-.vlEditorRightPanel .vlButtonGroup .vlInputWrapper {
+.vlPropertyDrawer .vlButtonGroup .vlInputWrapper {
     padding: 0 !important;
     background: transparent !important;
     border: none !important;
 }
-.vlEditorRightPanel .vlButtonGroup .vlOptionCont {
+.vlPropertyDrawer .vlButtonGroup .vlOptionCont {
     display: flex !important;
     gap: 4px !important;
 }
-.vlEditorRightPanel .vlButtonGroup .vlOptionCont > .vlOption + .vlOption {
+.vlPropertyDrawer .vlButtonGroup .vlOptionCont > .vlOption + .vlOption {
     border-left: none !important;
 }
 .vlAlignBtn {
@@ -971,7 +894,7 @@
 /* ============================================
    Override Kompo defaults inside editor
    ============================================ */
-.vlEditorRightPanel .vlCard {
+.vlPropertyDrawer .vlCard {
     box-shadow: none !important;
     border: none !important;
 }
@@ -988,4 +911,117 @@
 .vlQueryWrapperPagePreview {
     overflow-y: unset !important;
     overflow-x: unset !important;
+}
+
+/* ============================================
+   LIVE PREVIEW (in-drawer, Phase 4)
+   Two-column drawer body: live preview (left) + property form (right).
+   ============================================ */
+.vlPropertyLayout {
+    width: 100%;
+    align-items: stretch;
+    gap: 0;
+}
+
+/* Left column — the live preview pane on a light mini-canvas surface. */
+.vlLivePreviewColumn {
+    width: 42%;
+    min-width: 0;
+    flex: 0 0 42%;
+    border-right: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+}
+
+/* Right column — the existing property form. */
+.vlPropertyFormColumn {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 58%;
+    overflow-y: auto;
+}
+
+/* Tab switcher [This block][Full page] */
+.vlLivePreviewTabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 12px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.vlLivePreviewTab {
+    flex: 1 1 0;
+    padding: 7px 10px !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+    @apply text-xs #{!important};
+    text-align: center;
+    border: 1px solid transparent !important;
+    cursor: pointer;
+    &:hover {
+        background: #f3f4f6 !important;
+    }
+}
+.vlLivePreviewTabActive {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border-color: #bfdbfe !important;
+}
+
+/* Mini-canvas surface that holds the rendered preview. */
+.vlLivePreviewCanvas {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px 12px;
+}
+.vlLivePreview,
+.vlLivePreviewCanvas > * {
+    width: 100%;
+}
+
+/* Empty / unavailable preview hint. */
+.vlLivePreviewEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    background: #ffffff;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 16px;
+}
+.vlLivePreviewHint {
+    color: #9ca3af;
+    @apply text-sm;
+    text-align: center;
+}
+
+/* The unsaved (not-yet-saved) new block appended on the full-page tab. */
+.vlLivePreviewPendingNew {
+    outline: 2px dashed #93c5fd;
+    outline-offset: 2px;
+}
+
+/* Mobile / narrow: collapse to a single column — hide the preview pane and
+   give the form the full width. The tabs/preview are non-essential on small
+   screens (the operator edits, then verifies on a wider viewport). */
+@media (max-width: 900px) {
+    .vlLivePreviewColumn {
+        display: none;
+    }
+    .vlPropertyFormColumn {
+        width: 100%;
+        flex-basis: 100%;
+    }
 }
