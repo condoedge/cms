@@ -24,7 +24,7 @@ class ArticleRawList extends Table
 		return _Rows(
 			_Flexbetween(
 				_H1('cms::wiki.articles')->class('text-level3 articleRawListTitle'),
-				_Link('cms::wiki.create-article')->button()->icon('icon-plus')->href('knowledge.editor'),
+				!$this->canManageWiki() ? null : _Link('cms::wiki.create-article')->button()->icon('icon-plus')->href('knowledge.editor'),
 			),
             _FlexEnd(
                 _Input()->placeholder('cms::wiki.search')->name('title')->class('mb-0 whiteField w-full')->filter()
@@ -44,6 +44,8 @@ class ArticleRawList extends Table
 
     public function render($page)
     {
+        $canManage = $this->canManageWiki();
+
         return _TableRow(
             _Html(),
             _Link($page->title)->href('knowledge.editor', ['id'=> $page->id]),
@@ -51,9 +53,9 @@ class ArticleRawList extends Table
                 $page->tags->map(fn($t) => _Html($t->name)->class('text-sm bg-info bg-opacity-20 text-blue-500 rounded-lg px-2 py-1 max-w-max')),
             )->class('flex-wrap gap-2'),
             _Flex4(
-                _Link()->icon('pencil')->href('knowledge.editor', ['id'=> $page->id]),
-                _DeleteLink()->class('text-red-400')->byKey($page)->refresh(),
-                _Toggle()->class('!mb-0')->name('is_visible')->default($page->is_visible)->class('!mb-0')
+                !$canManage ? null : _Link()->icon('pencil')->href('knowledge.editor', ['id'=> $page->id]),
+                !$canManage ? null : _DeleteLink()->class('text-red-400')->byKey($page)->refresh(),
+                !$canManage ? null : _Toggle()->class('!mb-0')->name('is_visible')->default($page->is_visible)->class('!mb-0')
                     ->selfPost('changePageVisibility', ['id' => $page->id]),
             ),
         );
@@ -61,8 +63,21 @@ class ArticleRawList extends Table
 
     public function changePageVisibility($id)
     {
+        abort_unless($this->canManageWiki(), 403);
+
         $page = Page::findOrFail($id);
         $page->is_visible = request('is_visible');
         $page->save();
+    }
+
+    /**
+     * Wiki management (create / edit / delete / visibility) requires WRITE on the `wiki` permission
+     * when kompo/auth is installed. Without kompo/auth (standalone CMS) there is no permission layer,
+     * so management stays open — this keeps the package usable without that dependency.
+     */
+    protected function canManageWiki(): bool
+    {
+        return !function_exists('checkAuthPermission')
+            || checkAuthPermission('wiki', \Kompo\Auth\Models\Teams\PermissionTypeEnum::WRITE);
     }
 }
