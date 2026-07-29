@@ -259,6 +259,7 @@
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
     position: relative;
     overflow-y: auto;
+    overflow-x: clip;
     &::before {
         content: "";
         display: block;
@@ -635,6 +636,23 @@
    Collapsible's outer wrapper (Vue template structure). */
 .vlPageEditorCollapsible > div:first-child {
     padding-right: 1rem;
+}
+
+/* Image-width range slider: drop the field box so the native slider sits flush
+   (no odd gray box / unstyled thumb) and pick up the editor's blue accent. */
+.vlEditorDrawer .vlFormField:has(input[type="range"]) .vlInputWrapper {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+/* Native slider tinted with the editor's blue — proper native thumb, no custom
+   track/JS. accent-color fills only up to the thumb, so there's a small native gap
+   after it at max (removing that needs a custom track, which we keep out). */
+.vlEditorDrawer input[type="range"] {
+    width: 100%;
+    accent-color: #2563eb;
+    cursor: pointer;
 }
 
 /* Style Labels */

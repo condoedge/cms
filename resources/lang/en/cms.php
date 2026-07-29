@@ -129,13 +129,14 @@ return [
     "select-block" => "Select a block",
     "copy-this-block" => "Copy this block",
 
-    // Email Editor UI
+    // Page Editor UI
     "blocks" => "Blocks",
     "design" => "Design",
     "preview" => "Preview",
+    "untitled-page" => "Untitled page",
     "untitled-email" => "Untitled email",
     "back" => "Back",
-    "email-title" => "Email title",
+    "page-title" => "Page title",
     "saved-successfully" => "Saved successfully",
     "unsaved-changes-confirm" => "You have unsaved changes. Are you sure you want to close without saving? Your changes will be lost.",
     "close" => "Close",

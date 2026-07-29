@@ -51,6 +51,8 @@ class PageEditorLayout extends Form
 
     protected function editorBody()
     {
+        // The block-property editor opens in the native Kompo drawer (->inDrawer()),
+        // mounted once at the app root, so there is no persistent right panel/backdrop here.
         return _Div(
             $this->leftPanel(),
             $this->centerPanel(),

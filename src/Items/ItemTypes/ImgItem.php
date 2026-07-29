@@ -89,7 +89,7 @@ class ImgItem extends PageItemType
                     ->type('range')
                     ->value($maxWidth)
                     ->id($inputId)
-                    ->class('flex-1')
+                    ->class('flex-1 [&>.vlInputWrapper>.vlFormControl]:!px-0')
                     ->attr(['min' => 10, 'max' => 100, 'step' => 5])
                     ->onInput(fn ($e) => $e->run(
                         '() => { var i=document.getElementById("'.$inputId.'");var l=document.getElementById("'.$labelId.'");if(i&&l)l.textContent=i.value+"%"; }'
@@ -104,8 +104,7 @@ class ImgItem extends PageItemType
     {
         return _Select('cms::cms.object-fit')->name($this->formPrefix . 'object-fit', false)
             ->options(static::getObjectFitOptions())
-            ->default($this->styles->object_fit ?: 'cover')
-            ->class('whiteField');
+            ->default($this->styles->object_fit ?: 'cover');
     }
 
     protected function aspectRatioStyle()
@@ -114,8 +113,7 @@ class ImgItem extends PageItemType
 
         return _Select('cms::cms.aspect-ratio')->name($this->formPrefix . 'aspect-ratio', false)
             ->options(static::getAspectRatioOptions())
-            ->default($currentRatio)
-            ->class('whiteField');
+            ->default($currentRatio);
     }
 
     public static function getObjectFitOptions(): array

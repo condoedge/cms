@@ -1,4 +1,4 @@
-<video style="{!! $videoStyles !!}"
+<video style="width:100%; {!! $videoStyles !!}"
        class="{{ $classes }}"
        autoplay
        loop

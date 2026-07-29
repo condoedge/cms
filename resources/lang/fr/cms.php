@@ -129,13 +129,14 @@ return [
     "select-block" => "Choisir un bloc",
     "copy-this-block" => "Copier ce bloc",
 
-    // Email Editor UI
+    // Page Editor UI
     "blocks" => "Blocs",
     "design" => "Design",
     "preview" => "Aperçu",
+    "untitled-page" => "Page sans titre",
     "untitled-email" => "Courriel sans titre",
     "back" => "Retour",
-    "email-title" => "Titre du courriel",
+    "page-title" => "Titre de la page",
     "saved-successfully" => "Sauvegardé avec succès",
     "unsaved-changes-confirm" => "Vous avez des modifications non sauvegardées. Voulez-vous vraiment fermer sans sauvegarder ? Les changements seront perdus.",
     "close" => "Fermer",

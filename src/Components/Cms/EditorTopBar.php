@@ -39,10 +39,10 @@ class EditorTopBar extends Form
 
         return _Input()
             ->name('title_display', false)
-            ->value($this->model->title ?: __('cms::cms.untitled-email'))
-            ->placeholder('cms::cms.untitled-email')
+            ->value($this->model->title ?: __('cms::cms.untitled-page'))
+            ->placeholder('cms::cms.untitled-page')
             ->class('vlEditorTopBarTitle !mb-0')
-            ->attr(['aria-label' => __('cms::cms.email-title')]);
+            ->attr(['aria-label' => __('cms::cms.page-title')]);
     }
 
     protected function backButton()
@@ -50,7 +50,7 @@ class EditorTopBar extends Form
         return _Link()->icon('arrow-left')
             ->class('vlEditorTopBarBack')
             ->attr(['aria-label' => __('cms::cms.back')])
-            ->run('() => { window.history.back() }');
+            ->href('pages.list', ['tab_number' => 0]);
     }
 
     protected function centerSection()
@@ -95,10 +95,6 @@ class EditorTopBar extends Form
                 ->class('vlMobilePanelToggle vlEditorActionBtn')
                 ->attr(['aria-label' => __('cms::cms.toggle-blocks-panel')])
                 ->run('() => { vlPageEditor.toggleMobilePanel("blocks") }'),
-            _Link()->icon(_Sax('setting-2', 18))
-                ->class('vlMobilePanelToggle vlEditorActionBtn')
-                ->attr(['aria-label' => __('cms::cms.toggle-properties-panel')])
-                ->run('() => { vlPageEditor.toggleMobilePanel("properties") }'),
         )->class('items-center gap-1');
     }
 
@@ -152,7 +148,7 @@ class EditorTopBar extends Form
         if (!$this->model->id) return;
 
         $title = request('title_display');
-        if ($title && $title !== __('cms::cms.untitled-email')) {
+        if ($title && $title !== __('cms::cms.untitled-page')) {
             $this->model->title = $title;
             $this->model->save();
         }
@@ -178,3 +174,4 @@ class EditorTopBar extends Form
         return new TemplateGallery($this->model->id);
     }
 }
+ 

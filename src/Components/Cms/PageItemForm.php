@@ -238,7 +238,7 @@ class PageItemForm extends Form
             )->id('item_styles_form')->class('mt-2'),
             _Panel()->id(static::ITEM_FORM_STYLES_ID),
             $this->saveButtons(),
-        )->class('p-4');
+        )->class('p-4 vlEditorDrawer');
     }
 
     protected function unifiedPropertyPanel()
@@ -316,6 +316,7 @@ class PageItemForm extends Form
 
         return _Rows(
             // Block type header with title input
+            // Close is handled by the native drawer's own X + click-outside (->inDrawer()).
             _Rows(
                 _FlexBetween(
                     _Flex(
@@ -347,7 +348,7 @@ class PageItemForm extends Form
 
             // Action buttons
             $this->saveButtons(),
-        )->class('vlPropertyPanel');
+        )->class('vlPropertyPanel vlEditorDrawer');
     }
 
     protected function saveButtons()
