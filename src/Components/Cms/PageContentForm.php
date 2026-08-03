@@ -24,15 +24,10 @@ class PageContentForm extends Form
     public function render()
     {
         if ($this->usePageEditor && $this->model?->id) {
-            return $this->pageEditorRender();
+            return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
         }
 
         return $this->legacyRender();
-    }
-
-    protected function pageEditorRender()
-    {
-        return PageEditor::getPageEditorComponent($this->prefixGroup, $this->model?->id);
     }
 
     protected function legacyRender()
@@ -54,14 +49,5 @@ class PageContentForm extends Form
     protected function top()
     {
         return _Rows();
-    }
-
-    public function duplicatePage()
-    {
-        $page = PageModel::findOrFail(request('id'));
-
-        $newPage = $page->createPageCopyWithRelations();
-
-        return $newPage;
     }
 }

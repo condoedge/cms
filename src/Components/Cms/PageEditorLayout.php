@@ -18,6 +18,7 @@ class PageEditorLayout extends Form
     public function created()
     {
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
+        $this->prefixGroup = $this->prop('prefix_group') ?? "";
     }
 
     public function render()

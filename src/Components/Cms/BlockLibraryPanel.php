@@ -17,6 +17,7 @@ class BlockLibraryPanel extends Form
     public function created()
     {
         $this->pageId = $this->prop('page_id');
+        $this->prefixGroup = $this->prop('prefix_group') ?? "";
     }
 
     public function render()
@@ -25,6 +26,7 @@ class BlockLibraryPanel extends Form
             _SwipeableTabs(
                 _Tab($this->blocksTab())->label('cms::cms.blocks')->class('vlBlockLibTabContent'),
                 _Tab($this->designTab())->label('cms::cms.design')->class('vlBlockLibTabContent'),
+                _Tab($this->extraInfoTab())->label('cms::cms.extra-info')->class('vlBlockLibTabContent'),
             )->class('vlBlockLibTabs px-6 py-2')->tabParamKey('block_lib_tab'),
         )->class('vlBlockLibPanel');
     }
@@ -115,5 +117,13 @@ class BlockLibraryPanel extends Form
     protected function designTab()
     {
         return PageEditor::getPageStyleFormComponent($this->prefixGroup, $this->pageId);
+    }
+
+    protected function extraInfoTab()
+    {
+        return PageEditor::getPageInfoFormComponent($this->prefixGroup, $this->pageId, [
+            'page_id' => $this->pageId,
+            'only_partial_info' => true,
+        ]);
     }
 }

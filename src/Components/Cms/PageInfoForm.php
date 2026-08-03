@@ -7,7 +7,8 @@ use Kompo\Form;
 
 class PageInfoForm extends Form
 {
-    public function created(){
+    public function created()
+    {
         $this->model(PageModel::find($this->modelKey()) ?? PageModel::make());
     }
 
@@ -40,6 +41,7 @@ class PageInfoForm extends Form
 
     protected function submitMethod()
     {
-        return _SubmitButton('cms::cms.save')->class('mt-4');
+        return _SubmitButton('cms::cms.save')->class('mt-4')
+            ->alert('cms::cms.page-info-saved');
     }
 }

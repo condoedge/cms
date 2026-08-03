@@ -28,6 +28,10 @@ return [
         'save-as-template' => \Anonimatrix\PageEditor\Components\Cms\SaveAsTemplateForm::class,
         'send-test-email' => \Anonimatrix\PageEditor\Components\Cms\SendTestEmailForm::class,
         'preview-with-variables' => \Anonimatrix\PageEditor\Components\Cms\PreviewWithVariablesForm::class,
+
+        'knowledge' => [
+            'page-editor-layout' => \Anonimatrix\PageEditor\Components\Cms\WikiEditorLayout::class,
+        ]
     ],
 
     'types' => [

@@ -108,6 +108,10 @@ class PageEditorService
 
         $otherArgs = (count($args) > 0 && $prefixComponent) ? array_slice($args, 1) : $args;
 
+        // Knowing if it's form and first arg is the model id or the array of props, we need to merge the prefix_group into the props array
+        $indexWithProps = is_numeric($otherArgs[0] ?? null) ? 1 : 0;
+        $otherArgs[$indexWithProps] = array_merge($otherArgs[$indexWithProps] ?? [], ['prefix_group' => trim($prefixComponent, '.')]);
+
         return new (config('page-editor.components.' . $prefixComponent . $name, $default))(...$otherArgs);
     }
 

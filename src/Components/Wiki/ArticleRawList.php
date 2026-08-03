@@ -35,7 +35,7 @@ class ArticleRawList extends Table
     public function headers()
     {
         return [
-            _Th('#')->class('pl-14'),
+            // _Th('#')->class('pl-14'),
             _Th('cms::wiki.title')->class('pl-4'),
             _Th('cms::wiki.categories'),
             _Th('cms::wiki.actions')->class('pr-2 w-20'),
@@ -45,7 +45,7 @@ class ArticleRawList extends Table
     public function render($page)
     {
         return _TableRow(
-            _Html(),
+            // _Html(),
             _Link($page->title)->href('knowledge.editor', ['id'=> $page->id]),
             _Rows(
                 $page->tags->map(fn($t) => _Html($t->name)->class('text-sm bg-info bg-opacity-20 text-blue-500 rounded-lg px-2 py-1 max-w-max')),

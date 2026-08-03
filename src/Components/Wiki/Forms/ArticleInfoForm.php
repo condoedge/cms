@@ -22,13 +22,24 @@ class ArticleInfoForm extends PageInfoForm
 
     public function extraInputs()
     {
+        $onlyPartialInfo = $this->prop('only_partial_info');
+
         return _Rows(
-            _Input('cms::wiki.page-exterior-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color')->class('whiteField'),
+            $onlyPartialInfo ? null : _Input('cms::wiki.page-exterior-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color')->class('whiteField'),
             _Input('cms::wiki.subtitle')->name('subtitle')->class('whiteField'),
             _Select('cms::wiki.linked-route')->options(
                 collect(Route::getRoutes()->getRoutesByName())->mapWithKeys(fn($route, $name) => [$name => $name]),
             )->name('associated_route')->class('whiteField'),
             new ArticleCategoriesForm($this->model->id),
         );
+    }
+
+    public function inputs()
+    {
+        if ($this->prop('only_partial_info')) {
+            return [];
+        }
+
+        return parent::inputs();
     }
 }
