@@ -285,6 +285,7 @@ class ImgItem extends PageItemType
         $imageUrl = \Storage::disk('public')->url($this->content->image['path']);
         $altText = htmlspecialchars($this->content->title ?: '', ENT_QUOTES);
         $imgStyles = $this->imgStylesForEmail();
+        $widthAttr = $this->emailWidthAttr(); // before the width below is overwritten
         $align = $this->styles->getRawProperty('align-items') ?? 'center';
 
         $this->styles->removeProperties(['height', 'width', 'max-width', 'min-height', 'background-repeat', 'background-size', 'border-radius', 'object-fit', 'aspect-ratio']);
@@ -298,7 +299,7 @@ class ImgItem extends PageItemType
             'imageUrl' => $imageUrl,
             'altText' => $altText,
             'imgStyles' => $imgStyles,
-            'widthAttr' => $this->styles->width_raw ? (int) $this->styles->width_raw : '100%',
+            'widthAttr' => $widthAttr,
             'heightAttr' => ($this->styles->height_auto_raw ?? true) ? 'auto' : (int) $this->styles->height_raw,
             'linkUrl' => $hasValidLink ? htmlspecialchars($linkUrl, ENT_QUOTES) : null,
         ])->render();
@@ -336,6 +337,26 @@ class ImgItem extends PageItemType
     /**
      * Email-safe image styles (no object-fit, aspect-ratio, background-* properties).
      */
+    /**
+     * Outlook (Word engine) sizes images from the width attribute only, read as pixels:
+     * a 100 % image must say width="700", not width="100" (a thumbnail) nor width="100%".
+     */
+    protected function emailWidthAttr(): int
+    {
+        $container = (int) ($this->pageItem?->page?->getContentMaxWidth() ?: config('page-editor.email_container_width', 600));
+        $width = (float) $this->styles->width_raw;
+
+        if (!$width) {
+            return $container;
+        }
+
+        if (str_contains((string) $this->styles->width, '%')) {
+            return (int) round($container * min($width, 100) / 100);
+        }
+
+        return (int) min($width, $container);
+    }
+
     protected function imgStylesForEmail(): string
     {
         $height = ($this->styles->height_auto_raw ?? true) ? 'auto' : $this->styles->height;

@@ -17,6 +17,12 @@
         td { border-collapse: collapse; }
         img { border: 0; outline: none; text-decoration: none; display: block; -ms-interpolation-mode: bicubic; max-width: 100%; }
         p, h1, h2, h3, h4, h5, h6 { margin: 0; padding: 0; }
+        /* Inlined on each heading: Outlook and Gmail otherwise fall back to their own sizes, close to the body text. */
+        h1 { font-size: 32px; line-height: 1.2; font-weight: 700; }
+        h2 { font-size: 26px; line-height: 1.25; font-weight: 700; }
+        h3 { font-size: 22px; line-height: 1.3; font-weight: 700; }
+        h4 { font-size: 18px; line-height: 1.35; font-weight: 700; }
+        p { line-height: 1.5; }
         a { color: {{ $linkColor }}; }
         body { background-color: {{ $bgColor }}; font-family: {!! $fontFamily !!}; font-size: {{ $fontSize }}px; color: {{ $textColor }}; }
         {!! $inlineCss !!}
