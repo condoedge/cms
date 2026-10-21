@@ -28,7 +28,9 @@ class ArticleInfoForm extends PageInfoForm
             $onlyPartialInfo ? null : _Input('cms::wiki.page-exterior-color')->type('color')->value($this->model->getExteriorBackgroundColor())->name('exterior_background_color')->class('whiteField'),
             _Input('cms::wiki.subtitle')->name('subtitle')->class('whiteField'),
             _Select('cms::wiki.linked-route')->options(
-                collect(Route::getRoutes()->getRoutesByName())->mapWithKeys(fn($route, $name) => [$name => $name]),
+                collect(['knowledge.whats-new' => __('cms::wiki.new-features')])->merge(
+                    collect(Route::getRoutes()->getRoutesByName())->except('knowledge.whats-new')->mapWithKeys(fn($route, $name) => [$name => $name]),
+                ),
             )->name('associated_route')->class('whiteField'),
             new ArticleCategoriesForm($this->model->id),
         );

@@ -29,6 +29,7 @@ class KnowledgePage extends Page
     public static function whatsNewUnreadedCount()
     {
         return static::where('group_type', 'knowledge')->where('associated_route', 'knowledge.whats-new')
+        ->where('is_visible', 1)
         ->whereDoesntHave('views', function($q) {
             $q->where('user_id', auth()->user()?->id ?? 0);
         })

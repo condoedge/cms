@@ -44,6 +44,7 @@ return [
         "video" => "Vidéo",
         "full-screen-top-of-page-video" => "Vidéo plein écran en haut de la page",
         "whats-new-card" => "Carte de nouveauté",
+        "whats-new-card-desc" => "Image, titre et texte annonçant une nouvelle fonctionnalité",
         "spacer" => "Espaceur",
         "spacer-desc" => "Ajouter un espace vertical entre les blocs",
         "divider" => "Séparateur",

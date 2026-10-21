@@ -44,6 +44,7 @@ return [
         "video" => "Video",
         "full-screen-top-of-page-video" => "Full screen video at the top of the page",
         "whats-new-card" => "What's new card",
+        "whats-new-card-desc" => "Image, title and text announcing a new feature",
         "spacer" => "Spacer",
         "spacer-desc" => "Add vertical space between blocks",
         "divider" => "Divider",
