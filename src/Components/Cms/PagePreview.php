@@ -69,6 +69,11 @@ class PagePreview extends Query
             $this->itemsWrapperStyle = 'background-color:'.$this->page->getContentBackgroundColor()
                 .';max-width:'.(int) $this->page->getContentMaxWidth().'px;margin:0 auto;';
         }
+
+        // Optional inner padding per page group type (editor canvas and public render alike).
+        if ($padding = config('page-editor.preview_padding', [])[$this->page->group_type] ?? null) {
+            $this->itemsWrapperStyle .= 'padding:'.$padding.';';
+        }
     }
 
     public function top()

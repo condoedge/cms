@@ -6,7 +6,11 @@ return [
     // Reference width (px) of the email content column. Used for px-based math (button widths,
     // grid columns) since email clients can't be relied on for relative-unit layout.
     'email_container_width' => 600,
-    
+
+    // Inner padding of the page preview container, keyed by page group_type (CSS shorthand,
+    // e.g. 'knowledge' => '16px 24px'). Not applied to sent emails, so leave email groups unset.
+    'preview_padding' => [],
+
     'models' => [
         'page' => \Anonimatrix\PageEditor\Models\Page::class,
         'page_item' => \Anonimatrix\PageEditor\Models\PageItem::class,
