@@ -79,10 +79,10 @@ class PagePreview extends Query
     public function top()
     {
         if (!$this->withEditor) {
-            // In the drawer the toggle would cross-control the main editor canvas
-            // (its JS uses global selectors) and a fixed-width column has nothing
-            // to toggle anyway — so render no toggle there.
-            return $this->inDrawer ? null : $this->standalonePreviewDeviceToggle();
+            // Toggle only on the standalone preview route (page_id is a URL segment there).
+            // Embedded renders (drawer live preview, wiki articles, what's new) get none:
+            // its JS uses global selectors and would drive the wrong wrapper.
+            return $this->parameter('page_id') ? $this->standalonePreviewDeviceToggle() : null;
         }
 
         $hasItems = $this->page->id && $this->page->orderedMainPageItems()->count() > 0;
